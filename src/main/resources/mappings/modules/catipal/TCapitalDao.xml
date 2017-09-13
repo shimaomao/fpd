@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.catipal.dao.TCapitalDao">
+    
+	<sql id="tCapitalColumns">
+		a.id AS "id",
+		a.des AS "des",
+		a.limitamount AS "limitamount",
+		a.loanamount AS "loanamount",
+		a.profitamount AS "profitamount",
+		a.rongziamount AS "rongziamount",
+		a.zhuceamount AS "zhuceamount",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="tCapitalJoins">
+		LEFT JOIN sys_office o ON o.id = a.organ_id
+		LEFT JOIN sys_user u ON u.id = a.create_by
+	</sql>
+    
+	<select id="get" resultType="TCapital">
+		SELECT 
+			<include refid="tCapitalColumns"/>
+		FROM t_capital a
+		<include refid="tCapitalJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	<select id="getByOrganId" resultType="TCapital">
+		SELECT 
+			<include refid="tCapitalColumns"/>
+		FROM t_capital a
+		<include refid="tCapitalJoins"/>
+		WHERE a.organ_id = #{organId} and a.del_flag = 0
+		ORDER BY a.update_date DESC
+		 LIMIT 1
+	</select>
+	<select id="findList" resultType="TCapital">
+		SELECT 
+			<include refid="tCapitalColumns"/>
+		FROM t_capital a
+		<include refid="tCapitalJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TCapital">
+		SELECT 
+			<include refid="tCapitalColumns"/>
+		FROM t_capital a
+		<include refid="tCapitalJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="organId!=null and organId!=''">
+			AND a.organ_id=#{organId}
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_capital(
+			id,
+			des,
+			limitamount,
+			loanamount,
+			profitamount,
+			rongziamount,
+			zhuceamount,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{des},
+			#{limitamount},
+			#{loanamount},
+			#{profitamount},
+			#{rongziamount},
+			#{zhuceamount},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_capital SET 	
+			des = #{des},
+			limitamount = #{limitamount},
+			loanamount = #{loanamount},
+			profitamount = #{profitamount},
+			rongziamount = #{rongziamount},
+			zhuceamount = #{zhuceamount},
+			create_date = #{createDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_capital SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

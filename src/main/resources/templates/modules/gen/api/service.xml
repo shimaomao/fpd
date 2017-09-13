@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>service</name>
+	<filePath>src/main/api/${packageName}/${moduleName}/service/${subModuleName}</filePath>
+	<fileName>${ClassName}ApiService.java</fileName>
+	<content><![CDATA[
+/**
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
+ */
+package ${packageName}.${moduleName}.service<#if subModuleName != "">.${subModuleName}</#if>;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.wanfin.fpd.common.persistence.Page;
+import com.wanfin.fpd.common.service.CrudService;
+import ${packageName}.${moduleName}.entity<#if subModuleName != "">.${subModuleName}</#if>.${ClassName};
+import ${packageName}.${moduleName}.dao<#if subModuleName != "">.${subModuleName}</#if>.${ClassName}ApiDao;
+
+/**
+ * ${functionName}Service
+ * @author ${functionAuthor}
+ * @version ${functionVersion}
+ */
+@Service
+@Transactional(readOnly = true)
+public class ${ClassName}ApiService extends CrudService<${ClassName}ApiDao, ${ClassName}> {
+	
+	/**
+	 * 获取单条数据
+	 * @param entity
+	 * @return
+	 */
+	public ${ClassName} get(String id) {
+		return super.get(id);
+	}
+	
+	/**
+	 * 查询数据列表
+	 * @param entity
+	 * @return
+	 */
+	public List<${ClassName}> findList(${ClassName} entity) {
+		return super.findList(entity);
+	}
+	
+	/**
+	 * 分页查询数据列表
+	 * @param entity
+	 * @return
+	 */
+	public Page<${ClassName}> findPage(Page<${ClassName}> page, ${ClassName} entity) {
+		return super.findPage(page, entity);
+	}
+	
+	/**
+	 * 插入数据
+	 * @param entity
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	public void save(${ClassName} entity) {
+		super.save(entity);
+	}
+	
+	/**
+	 * 状态删除数据
+	 * @param entity
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	public void delete(${ClassName} entity) {
+		super.delete(entity);
+	}
+	
+	/**
+	 * 根据ids字符串查询数据列表（,分隔符）;
+	 * @param ids
+	 * @return
+	 */
+	public List<${ClassName}> findListByIds(String ids) {
+		return dao.findListByIds(ids);
+	}
+	
+	/**
+	 * 根据ids字符列表查询数据列表;
+	 * @param ids
+	 * @return
+	 */
+	public List<${ClassName}> findListByIds(List<String> ids) {
+		return dao.findListByIds(ids);
+	}
+	
+	/**
+	 * 批量插入数据
+	 * @param entity
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	public void insertPL(List<${ClassName}> entitys) {
+		dao.insertPL(entitys);
+	}
+	
+	/**
+	 * 批量更新数据
+	 * @param entity
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	public void updatePL(List<${ClassName}> entitys) {
+		dao.updatePL(entitys);
+	}
+	
+	/**
+	 * 批量删除数据
+	 * @param id
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	public void deletePL(String ids) {
+		dao.deletePL(ids);
+	}
+	
+	/**
+	 * 批量删除数据（一般为逻辑删除，更新del_flag字段为1）
+	 * @param entity
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	public void deletePL(List<${ClassName}> entitys) {
+		dao.deletePL(entitys);
+	}
+	
+	/**
+	 * 物理删除数据
+	 * @param id
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	public void deleteWL(String id) {
+		dao.deleteWL(id);
+	}
+	
+	/**
+	 * 物理删除数据
+	 * @param entity
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	public void deleteWL(${ClassName} entity) {
+		dao.deleteWL(entity);
+	}
+	
+	/**
+	 * 批量物理删除数据
+	 * @param id
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	public void deleteWLPL(String ids) {
+		dao.deleteWLPL(ids);
+	}
+	
+	/**
+	 * 批量物理删除数据
+	 * @param entity
+	 * @return
+	 */
+	@Transactional(readOnly = false)
+	public void deleteWLPL(List<${ClassName}> entity) {
+		dao.deleteWLPL(entity);
+	}
+}]]>
+	</content>
+</template>

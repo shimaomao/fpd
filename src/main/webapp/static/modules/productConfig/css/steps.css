@@ -1,0 +1,65 @@
+ /**
+ * step
+ */
+.stepGroup{
+	width: 76%;
+	margin: auto;
+	background-color: #fff;
+}
+.stepGroup .linebox {
+	width: 100%;
+	margin-top: 20px;
+	padding-top: 10px;
+}
+.step{
+	position: relative;
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+	float: left;
+	margin-bottom: 10px;
+	background-color: #efefef;
+}
+.step:before{
+	content: '';
+	width: 0;
+	height: 0;
+	left: 0;
+	position: absolute;
+	border-left: 20px #fff solid;
+	border-top: 20px #efefef solid;
+	border-bottom: 20px #efefef solid;
+}
+.step:after{
+	content: '';
+	width: 0;
+	height: 0;
+	right: 0;
+	position: absolute;
+	border-left: 20px #efefef solid;
+	border-top: 20px #fff solid;
+	border-bottom: 20px #fff solid;
+}
+.curStep{
+	background-color: #d8d8d8;	
+}
+.curStep:before{
+	content: '';
+	width: 0;
+	height: 0;
+	left: 0;
+	position: absolute;
+	border-left: 20px #fff solid;
+	border-top: 20px #d8d8d8 solid;
+	border-bottom: 20px #d8d8d8 solid;
+}
+.curStep:after{
+	content: '';
+	width: 0;
+	height: 0;
+	right: 0;
+	position: absolute;
+	border-left: 20px #d8d8d8 solid;
+	border-top: 20px #fff solid;
+	border-bottom: 20px #fff solid;
+}

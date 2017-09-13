@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.collateral.dao.CarDao">
+    
+	<sql id="carColumns">
+		a.id AS "id",
+		a.accident AS "accident",
+		a.car_kuang AS "carKuang",
+		a.car_money AS "carMoney",
+		a.car_num AS "carNum",
+		a.car_type AS "carType",
+		a.car_xi AS "carXi",
+		a.color AS "color",
+		a.configuration AS "configuration",
+		a.creator AS "creator",
+		a.dengji AS "dengji",
+		a.displacement AS "displacement",
+		a.engine AS "engine",
+		a.frame AS "frame",
+		a.made_date AS "madeDate",
+		a.market1 AS "market1",
+		a.market2 AS "market2",
+		a.mileage AS "mileage",
+		a.mo_money AS "moMoney",
+		a.producing AS "producing",
+		a.seating AS "seating",
+		a.use_date AS "useDate",
+		a.dizhi_contract_id AS "dizhiContractId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="carJoins">
+	</sql>
+    
+	<select id="get" resultType="Car">
+		SELECT 
+			<include refid="carColumns"/>
+		FROM t_car a
+		<include refid="carJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<!--add by shirf-->
+	<select id="getByPledge" resultType="Car">
+		SELECT 
+			<include refid="carColumns"/>
+		FROM t_car a
+		<include refid="carJoins"/>
+		WHERE a.dizhi_contract_id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Car">
+		SELECT 
+			<include refid="carColumns"/>
+		FROM t_car a
+		<include refid="carJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="beginAccident != null and endAccident != null and beginAccident != '' and endAccident != ''">
+				AND a.accident BETWEEN #{beginAccident} AND #{endAccident}
+			</if>
+			<if test="carKuang != null and carKuang != ''">
+				AND a.car_kuang = #{carKuang}
+			</if>
+			<if test="beginCarMoney != null and endCarMoney != null and beginCarMoney != '' and endCarMoney != ''">
+				AND a.car_money BETWEEN #{beginCarMoney} AND #{endCarMoney}
+			</if>
+			<if test="carNum != null and carNum != ''">
+				AND a.car_num = #{carNum}
+			</if>
+			<if test="carType != null and carType != ''">
+				AND a.car_type = #{carType}
+			</if>
+			<if test="beginMadeDate != null and endMadeDate != null and beginMadeDate != '' and endMadeDate != ''">
+				AND a.made_date BETWEEN #{beginMadeDate} AND #{endMadeDate}
+			</if>
+			<if test="beginMoMoney != null and endMoMoney != null and beginMoMoney != '' and endMoMoney != ''">
+				AND a.mo_money BETWEEN #{beginMoMoney} AND #{endMoMoney}
+			</if>
+			<if test="useDate != null and useDate != ''">
+				AND a.use_date = #{useDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Car">
+		SELECT 
+			<include refid="carColumns"/>
+		FROM t_car a
+		<include refid="carJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_car(
+			id,
+			accident,
+			car_kuang,
+			car_money,
+			car_num,
+			car_type,
+			car_xi,
+			color,
+			configuration,
+			creator,
+			dengji,
+			displacement,
+			engine,
+			frame,
+			made_date,
+			market1,
+			market2,
+			mileage,
+			mo_money,
+			producing,
+			seating,
+			use_date,
+			dizhi_contract_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{accident},
+			#{carKuang},
+			#{carMoney},
+			#{carNum},
+			#{carType},
+			#{carXi},
+			#{color},
+			#{configuration},
+			#{creator},
+			#{dengji},
+			#{displacement},
+			#{engine},
+			#{frame},
+			#{madeDate},
+			#{market1},
+			#{market2},
+			#{mileage},
+			#{moMoney},
+			#{producing},
+			#{seating},
+			#{useDate},
+			#{dizhiContractId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_car SET 	
+			accident = #{accident},
+			car_kuang = #{carKuang},
+			car_money = #{carMoney},
+			car_num = #{carNum},
+			car_type = #{carType},
+			car_xi = #{carXi},
+			color = #{color},
+			configuration = #{configuration},
+			creator = #{creator},
+			dengji = #{dengji},
+			displacement = #{displacement},
+			engine = #{engine},
+			frame = #{frame},
+			made_date = #{madeDate},
+			market1 = #{market1},
+			market2 = #{market2},
+			mileage = #{mileage},
+			mo_money = #{moMoney},
+			producing = #{producing},
+			seating = #{seating},
+			use_date = #{useDate},
+			dizhi_contract_id = #{dizhiContractId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_car SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

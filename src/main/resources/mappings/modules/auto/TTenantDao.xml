@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.auto.dao.TTenantDao">
+    
+	<sql id="tTenantColumns">
+		a.id AS "id",
+		a.admin_name AS "adminName",
+		a.description AS "description",
+		a.tenant_name AS "tenantName",
+		a.state AS "state",
+		a.bsys AS "bsys",
+		a.type AS "type",
+		a.logo_path AS "logoPath",
+		a.simple_name AS "simpleName",
+		a.mark AS "mark"
+	</sql>
+	
+	<sql id="tTenantJoins">
+	</sql>
+    
+	<select id="get" resultType="TTenant">
+		SELECT 
+			<include refid="tTenantColumns"/>
+		FROM t_tenant a
+		<include refid="tTenantJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TTenant">
+		SELECT 
+			<include refid="tTenantColumns"/>
+		FROM t_tenant a
+		<include refid="tTenantJoins"/>
+		<where>
+			<if test="simpleName != null and simpleName != ''">
+				a.simple_name = #{simpleName}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TTenant">
+		SELECT 
+			<include refid="tTenantColumns"/>
+		FROM t_tenant a
+		<include refid="tTenantJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_tenant(
+			id,
+			admin_name,
+			description,
+			tenant_name,
+			state,
+			bsys,
+			type,
+			logo_path,
+			simple_name,
+			mark
+		) VALUES (
+			#{id},
+			#{adminName},
+			#{description},
+			#{tenantName},
+			#{state},
+			#{bsys},
+			#{type},
+			#{logoPath},
+			#{simpleName},
+			#{mark}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_tenant SET 	
+			admin_name = #{adminName},
+			description = #{description},
+			tenant_name = #{tenantName},
+			state = #{state},
+			bsys = #{bsys},
+			type = #{type},
+			logo_path = #{logoPath},
+			simple_name = #{simpleName},
+			mark = #{mark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM t_tenant
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

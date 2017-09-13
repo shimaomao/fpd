@@ -1,0 +1,377 @@
+<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ include file="/WEB-INF/views/include/taglib.jsp"%>
+<html>
+<head>
+	<title>小贷财务报表管理</title>
+	<meta name="decorator" content="default"/>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			//$("#name").focus();
+			$("#inputForm").validate({
+				submitHandler: function(form){
+					loading('正在提交，请稍等...');
+					form.submit();
+				},
+				errorContainer: "#messageBox",
+				errorPlacement: function(error, element) {
+					$("#messageBox").text("输入有误，请先更正。");
+					if (element.is(":checkbox")||element.is(":radio")||element.parent().is(".input-append")){
+						error.appendTo(element.parent().parent());
+					} else {
+						error.insertAfter(element);
+					}
+				}
+			});
+		});
+	</script>
+</head>
+<body>
+	<ul class="nav nav-tabs">
+		<li><a href="${ctx}/catipal/tCaiwu/listLr">小贷利润表列表</a></li>
+		<li class="active"><a href="${ctx}/catipal/tCaiwu/form?informFilingType=2&id=${tCaiwu.id}">小贷利润表<shiro:hasPermission name="catipal:tCaiwu:edit">${not empty tCaiwu.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="catipal:tCaiwu:edit">查看</shiro:lacksPermission></a></li>
+	</ul><br/>
+	
+	<form id="inputForm"  action="${ctx}/catipal/tCaiwu/save" method="post" enctype="multipart/form-data" >		
+		<sys:message content="${message}"/>			
+		
+		<input id="caiwu.id" name="caiwu.id"   type="hidden" value="${caiwu.id}"   />
+		<input id="caiwu.informFilingType" name="caiwu.informFilingType"   type="hidden" value="${caiwu.informFilingType == null  ? 2 : caiwu.informFilingType}"   />
+	
+	
+		
+		<table class="table-form">	
+							
+	      <tr style="text-align:center;line-height: 23px;" class="tit_left_bg">
+             
+             <td   colspan="2">所属月份：</td>
+            <td ><input id="caiwu.baoDate" name="caiwu.baoDate"  maxlength="20" type="text" value="${caiwu.baoDate}" class="Wdate" readonly="readonly" onfocus="WdatePicker({dateFmt: 'yyyy-MM'})" /></td>
+    
+          
+            <td   colspan="4" >金额单位：万元	</td>、
+            <td >	</td>
+          </tr>	
+          
+          <tr style="text-align:center;line-height: 23px;" class="tit_left_bg">
+            <td style="width: 20px;" >项目</td>
+            <td  style="width: 20px;" >行次</td>
+            <td  style="width: 10px;" >本月数</td>
+            <td  style="width: 10px;" >本年累计数</td>
+            <td  style="width: 10px;" >项目</td>
+          	 <td  style="width: 10px;" >行次</td>
+            <td  style="width: 10px;" >本月数</td>
+            <td  style="width: 10px;" >本年累计数</td>
+           
+          </tr>
+          <tr>
+            <td >一、营业收入</td>
+            <td >1</td>
+            <td ><input id="" name="caiwu.c1"  type="text" value="${ caiwu.c1}" /></td>
+            <td ><input id="" name="caiwu.c1t"  type="text" value="${ caiwu.c1t}" /></td>
+            
+            <td >四、利润总额（亏损总额“-”号填列）</td>
+           <td >24</td>
+            <td ><input id="" name="caiwu.c24"  type="text" value="${ caiwu.c24}" /></td>
+            <td ><input id="" name="caiwu.c24t"  type="text" value="${ caiwu.c24t}" /></td>
+           
+          </tr>              	
+          
+          <tr>
+            <td >1.利息净收入</td>
+            <td >2</td>
+            <td ><input id="" name="caiwu.c2"  type="text" value="${ caiwu.c2}" /></td>
+            <td ><input id="" name="caiwu.c2t"  type="text" value="${ caiwu.c2t}" /></td>
+            
+            <td >减：所得税费用</td>
+            <td >25</td>
+            <td ><input id="" name="caiwu.c41"  type="text" value="${ caiwu.c41}" /></td>
+            <td ><input id="" name="caiwu.c41t"  type="text" value="${ caiwu.c41t}" /></td>
+           
+          </tr>
+          <tr>
+            <td >利息收入</td>
+            <td >3</td>
+            <td ><input id="" name="caiwu.c3"  type="text" value="${ caiwu.c3}" /></td>
+            <td ><input id="" name="caiwu.c3t"  type="text" value="${ caiwu.c3t}" /></td>
+            
+            <td >五、净利润（净亏损以“-”号填列）</td>
+            <td >26	</td>
+            <td ><input id="" name="caiwu.c42"  type="text" value="${ caiwu.c42}" /></td>
+            <td ><input id="" name="caiwu.c42t"  type="text" value="${ caiwu.c42t}" /></td>
+           
+          </tr>
+          <tr>
+            <td >存款利息收入</td>
+            <td >4</td>
+            <td ><input id="" name="caiwu.c4"  type="text" value="${ caiwu.c4}" /></td>
+            <td ><input id="" name="caiwu.c4t"  type="text" value="${ caiwu.c4t}" /></td>
+            
+            <td >加：（一）年初未分配利润</td>
+            <td >27	</td>
+            <td ><input id="" name="caiwu.c43"  type="text" value="${ caiwu.c43}" /></td>
+            <td ><input id="" name="caiwu.c43t"  type="text" value="${ caiwu.c43t}" /></td>
+           
+          </tr>
+          
+          <tr>
+            <td >贷款利息收入</td>
+            <td >	5</td>
+            <td ><input id="" name="caiwu.c5"  type="text" value="${ caiwu.c5}" /></td>
+            <td ><input id="" name="caiwu.c5t"  type="text" value="${ caiwu.c5t}" /></td>
+            
+            <td >（二）盈余公积补亏</td>
+            <td >28	</td>
+            <td ><input id="" name="caiwu.c44"  type="text" value="${ caiwu.c44}" /></td>
+            <td ><input id="" name="caiwu.c44t"  type="text" value="${ caiwu.c44t}" /></td>
+           
+          </tr>
+          
+          <tr>
+            <td > 利息支出</td>
+            <td >	6</td>
+            <td ><input id="" name="caiwu.c6"  type="text" value="${ caiwu.c6}" /></td>
+            <td ><input id="" name="caiwu.c6t"  type="text" value="${ caiwu.c6t}" /></td>
+            
+            <td >（三）其他调整因素</td>
+            <td >	29</td>
+            <td ><input id="" name="caiwu.c45"  type="text" value="${ caiwu.c45}" /></td>
+            <td ><input id="" name="caiwu.c45t"  type="text" value="${ caiwu.c45t}" /></td>
+           
+          </tr>
+          <tr>
+            <td >2.手续费及佣金净收入</td>
+            <td >	7</td>
+            <td ><input id="" name="caiwu.c7"  type="text" value="${ caiwu.c7}" /></td>
+            <td ><input id="" name="caiwu.c7t"  type="text" value="${ caiwu.c7t}" /></td>
+            
+            <td >六、可供分配的利润</td>
+            <td >	30</td>
+            <td ><input id="" name="caiwu.c46"  type="text" value="${ caiwu.c46}" /></td>
+            <td ><input id="" name="caiwu.c46t"  type="text" value="${ caiwu.c46t}" /></td>
+           
+          </tr>
+          
+          <tr>
+            <td > 手续费及佣金收入</td>
+            <td >	8</td>
+            <td ><input id="" name="caiwu.c8"  type="text" value="${ caiwu.c8}" /></td>
+            <td ><input id="" name="caiwu.c8t"  type="text" value="${ caiwu.c8t}" /></td>
+            
+            <td > 减：（一）提取法定盈余公积</td>
+            <td >31	</td>
+            <td ><input id="" name="caiwu.c47"  type="text" value="${ caiwu.c47}" /></td>
+            <td ><input id="" name="caiwu.c47t"  type="text" value="${ caiwu.c47t}" /></td>
+           
+          </tr>
+          
+          <tr>
+            <td > 手续费及佣金支出</td>
+            <td >	9</td>
+            <td ><input id="" name="caiwu.c9"  type="text" value="${ caiwu.c9}" /></td>
+            <td ><input id="" name="caiwu.c9t"  type="text" value="${ caiwu.c9t}" /></td>
+            
+            <td >(二）提取一般风险准备</td>
+            <td >	32</td>
+            <td ><input id="" name="caiwu.c48"  type="text" value="${ caiwu.c48}" /></td>
+            <td ><input id="" name="caiwu.c48t"  type="text" value="${ caiwu.c48t}" /></td>
+           
+          </tr>
+          			
+          <tr>
+            <td >3.投资收益（损失“-”号填列）</td>
+            <td >	10</td>
+            <td ><input id="" name="caiwu.c10"  type="text" value="${ caiwu.c10}" /></td>
+            <td ><input id="" name="caiwu.c10t"  type="text" value="${ caiwu.c10t}" /></td>
+            
+            <td >（三)提取职工奖励及福利费基金</td>
+            <td >	33</td>
+            <td ><input id="" name="caiwu.c49"  type="text" value="${ caiwu.c49}" /></td>
+            <td ><input id="" name="caiwu.c49t"  type="text" value="${ caiwu.c49t}" /></td>
+           
+          </tr>		
+          
+          <tr>
+            <td >其中：对联营企业和合营企业的投资收益</td>
+            <td >	11</td>
+            <td ><input id="" name="caiwu.c11"  type="text" value="${ caiwu.c11}" /></td>
+            <td ><input id="" name="caiwu.c11t"  type="text" value="${ caiwu.c11t}" /></td>
+            
+            <td >（四）提取企业发展基金</td>
+            <td >	34</td>
+            <td ><input id="" name="caiwu.c50"  type="text" value="${ caiwu.c50}" /></td>
+            <td ><input id="" name="caiwu.c50t"  type="text" value="${ caiwu.c50t}" /></td>
+           
+          </tr>	
+          
+          <tr>
+            <td >4.公允价值变动收益（损失“-”号填列）</td>
+            <td >	12	</td>
+            <td ><input id="" name="caiwu.c12"  type="text" value="${ caiwu.c12}" /></td>
+            <td ><input id="" name="caiwu.c12t"  type="text" value="${ caiwu.c12t}" /></td>
+            
+            <td >（五）利润归还投资</td>
+            <td >	35</td>
+            <td ><input id="" name="caiwu.c51"  type="text" value="${ caiwu.c51}" /></td>
+            <td ><input id="" name="caiwu.c51t"  type="text" value="${ caiwu.c51t}" /></td>
+           
+          </tr>	
+          
+          <tr>
+            <td >5.汇总收益（损失“-”号填列）</td>
+            <td >	13</td>
+            <td ><input id="" name="caiwu.c13"  type="text" value="${ caiwu.c13}" /></td>
+            <td ><input id="" name="caiwu.c13t"  type="text" value="${ caiwu.c13t}" /></td>
+            
+            <td >（六）其他</td>
+            <td >	36</td>
+            <td ><input id="" name="caiwu.c52"  type="text" value="${ caiwu.c52}" /></td>
+            <td ><input id="" name="caiwu.c52t"  type="text" value="${ caiwu.c52t}" /></td>
+           
+          </tr>	
+          
+          <tr>
+            <td >6.其他业务收入</td>
+            <td >	14</td>
+            <td ><input id="" name="caiwu.c14"  type="text" value="${ caiwu.c14}" /></td>
+            <td ><input id="" name="caiwu.c14t"  type="text" value="${ caiwu.c14t}" /></td>
+            
+            <td >七、可供投资者分配的利润</td>
+            <td >37</td>
+            <td ><input id="" name="caiwu.c53"  type="text" value="${ caiwu.c53}" /></td>
+            <td ><input id="" name="caiwu.c53t"  type="text" value="${ caiwu.c53t}" /></td>
+           
+          </tr>	
+          
+          <tr>
+            <td >二、营业支出</td>
+            <td >	15</td>
+            <td ><input id="" name="caiwu.c15"  type="text" value="${ caiwu.c15}" /></td>
+            <td ><input id="" name="caiwu.c15t"  type="text" value="${ caiwu.c15t}" /></td>
+            
+            <td > 减：（一）应付优先股股利</td>
+            <td >	38</td>
+            <td ><input id="" name="caiwu.c54"  type="text" value="${ caiwu.c54}" /></td>
+            <td ><input id="" name="caiwu.c54t"  type="text" value="${ caiwu.c54t}" /></td>
+           
+          </tr>		
+          <tr>
+            <td > 1.营业税金及附加</td>
+            <td >	16	</td>
+            <td ><input id="" name="caiwu.c16"  type="text" value="${ caiwu.c16}" /></td>
+            <td ><input id="" name="caiwu.c16t"  type="text" value="${ caiwu.c16t}" /></td>
+            
+            <td >（二）提取任意盈余公积</td>
+            <td >	39</td>
+            <td ><input id="" name="caiwu.c55"  type="text" value="${ caiwu.c55}" /></td>
+            <td ><input id="" name="caiwu.c55t"  type="text" value="${ caiwu.c55t}" /></td>
+           
+          </tr>	
+          <tr>
+            <td >2.业务及管理费</td>
+            <td >	17</td>
+            <td ><input id="" name="caiwu.c17"  type="text" value="${ caiwu.c17}" /></td>
+            <td ><input id="" name="caiwu.c17t"  type="text" value="${ caiwu.c17t}" /></td>
+            
+            <td >（三）应付普通股股利（应付利润）</td>
+            <td >	40</td>
+            <td ><input id="" name="caiwu.c40"  type="text" value="${ caiwu.c40}" /></td>
+            <td ><input id="" name="caiwu.c40t"  type="text" value="${ caiwu.c40t}" /></td>
+           
+          </tr>	
+          <tr>
+            <td >3.财务费用</td>
+            <td >18</td>
+            <td ><input id="" name="caiwu.c18"  type="text" value="${ caiwu.c18}" /></td>
+            <td ><input id="" name="caiwu.c18t"  type="text" value="${ caiwu.c18t}" /></td>
+            
+            <td >（四）转作资本（股本）的普通股股利</td>
+            <td >	41	</td>
+            <td ><input id="" name="caiwu.c57"  type="text" value="${ caiwu.c57}" /></td>
+            <td ><input id="" name="caiwu.c57t"  type="text" value="${ caiwu.c57t}" /></td>
+           
+          </tr>	
+          <tr>
+            <td >  4.资产减值损失</td>
+            <td >	19</td>
+            <td ><input id="" name="caiwu.c19"  type="text" value="${ caiwu.c19}" /></td>
+            <td ><input id="" name="caiwu.c19t"  type="text" value="${ caiwu.c19t}" /></td>
+            
+            <td >（五）其他	</td>
+            <td >	42	</td>
+            <td ><input id="" name="caiwu.c58"  type="text" value="${ caiwu.c58}" /></td>
+            <td ><input id="" name="caiwu.c58t"  type="text" value="${ caiwu.c58t}" /></td>
+           
+          </tr>	
+          <tr>
+            <td >   5.其他业务成本</td>
+            <td >20</td>
+            <td ><input id="" name="caiwu.c20"  type="text" value="${ caiwu.c20}" /></td>
+            <td ><input id="" name="caiwu.c20t"  type="text" value="${ caiwu.c20t}" /></td>
+            
+            <td >	八、未分配利润</td>
+            <td >	43</td>
+            <td ><input id="" name="caiwu.c59"  type="text" value="${ caiwu.c59}" /></td>
+            <td ><input id="" name="caiwu.c59t"  type="text" value="${ caiwu.c59t}" /></td>
+           
+          </tr>	
+          
+          <tr>
+            <td >三、营业利润（亏损“-”号填列）</td>
+            <td >	21	</td>
+            <td ><input id="" name="caiwu.c21"  type="text" value="${ caiwu.c21}" /></td>
+            <td ><input id="" name="caiwu.c21t"  type="text" value="${ caiwu.c21t}" /></td>
+            
+            <td >	九、每股收益</td>
+            <td >	44	</td>
+            <td ><input id="" name="caiwu.c60"  type="text" value="${ caiwu.c60}" /></td>
+            <td ><input id="" name="caiwu.c60t"  type="text" value="${ caiwu.c60t}" /></td>
+           
+          </tr>	
+          <tr>
+            <td >加：营业外收入</td>
+            <td >	22	</td>
+            <td ><input id="" name="caiwu.c22"  type="text" value="${ caiwu.c22}" /></td>
+            <td ><input id="" name="caiwu.c22t"  type="text" value="${ caiwu.c22t}" /></td>
+            
+            <td >（一）基本每股收益	</td>
+            <td >45</td>
+            <td ><input id="" name="caiwu.c61"  type="text" value="${ caiwu.c61}" /></td>
+            <td ><input id="" name="caiwu.c61t"  type="text" value="${ caiwu.c61t}" /></td>
+           
+          </tr>
+          <tr>
+            <td >减：营业外支出</td>
+            <td >	23</td>
+            <td ><input id="" name="caiwu.c23"  type="text" value="${ caiwu.c23}" /></td>
+            <td ><input id="" name="caiwu.c23t"  type="text" value="${ caiwu.c23t}" /></td>
+            
+            <td >	（二）稀释每股收益	</td>
+            <td >46	</td>
+            <td ><input id="" name="caiwu.c62"  type="text" value="${ caiwu.c62}" /></td>
+            <td ><input id="" name="caiwu.c62t"  type="text" value="${ caiwu.c62t}" /></td>
+           
+          </tr>
+         
+          
+          <!-- -->
+         <tr>
+            <td >单位负责人：
+			</td>
+           <td ><input id="" name="caiwu.cf"  type="text" value="${ caiwu.cf}" /></td>
+            <td >       			财务主管：</td>
+            <td >	<input id="" name="caiwu.cj"  type="text" value="${ caiwu.cj}" /></td>
+            
+            <td >		制表：	</td>          
+            <td ><input id="" name="caiwu.cz"  type="text" value="${ caiwu.cz}" /></td>
+           
+          </tr>		          
+		  
+        </table>	
+		
+		
+		<div class="form-actions">
+			<shiro:hasPermission name="catipal:tCaiwu:edit"></shiro:hasPermission><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
+			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
+		</div>
+	</form>
+</body>
+</html>

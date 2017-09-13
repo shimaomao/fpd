@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.postlending.dao.advance.AdvanceDao">
+    
+	<sql id="advanceColumns">
+		a.id AS "id",
+		a.proc_ins_id AS "procInsId",
+		a.advanceamount AS "advanceamount",
+		a.apply_date AS "applyDate",
+		a.floatrate AS "floatrate",
+		a.status AS "status",
+		a.surplusamount AS "surplusamount",
+		a.loan_contract_id AS "loanContractId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.advance_interest AS "advanceInterest",
+		a.advance_damages AS "advanceDamages"
+	</sql>
+	
+	<sql id="advanceJoins">
+	</sql>
+    
+	<select id="get" resultType="Advance">
+		SELECT 
+			<include refid="advanceColumns"/>
+		FROM t_advance a
+		<include refid="advanceJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Advance">
+		SELECT 
+			<include refid="advanceColumns"/>
+		FROM t_advance a
+		<include refid="advanceJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="loanContractId != null and loanContractId != ''">
+				AND a.loan_contract_id = #{loanContractId}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Advance">
+		SELECT 
+			<include refid="advanceColumns"/>
+		FROM t_advance a
+		<include refid="advanceJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_advance(
+			id,
+			proc_ins_id,
+			advanceamount,
+			apply_date,
+			floatrate,
+			status,
+			surplusamount,
+			loan_contract_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id,
+			advance_interest,
+		    advance_damages
+		) VALUES (
+			#{id},
+			#{procInsId},
+			#{advanceamount},
+			#{applyDate},
+			#{floatrate},
+			#{status},
+			#{surplusamount},
+			#{loanContractId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId},
+			#{advanceInterest},
+			#{advanceDamages}
+		)
+	</insert>
+	
+	<update id="updateStatus">
+		UPDATE t_advance SET
+			status = #{status}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="update">
+		UPDATE t_advance SET 	
+			proc_ins_id = #{procInsId},
+			advanceamount = #{advanceamount},
+			advance_interest  = #{advanceInterest},
+		    advance_damages = #{advanceDamages},
+			apply_date = #{applyDate},
+			floatrate = #{floatrate},
+			status = #{status},
+			surplusamount = #{surplusamount},
+			loan_contract_id = #{loanContractId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_advance SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

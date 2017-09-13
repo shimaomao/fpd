@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.tcompanyinfo.dao.TCompanyInforDao">
+    
+	<sql id="tCompanyInforColumns">
+		a.id AS "id",
+		a.address AS "address",
+		a.birthday AS "birthday",
+		a.card_type AS "cardType",
+		a.email AS "email",
+		a.sex AS "sex",
+		a.cardid AS "cardid",
+		a.jishuzhicheng AS "jishuzhicheng",
+		a.job_year AS "jobYear",
+		a.marry AS "marry",
+		a.mess_addr AS "messAddr",
+		a.name AS "name",
+		a.national AS "national",
+		a.native_place AS "nativePlace",
+		a.phone AS "phone",
+		a.political_affiliation AS "politicalAffiliation",
+		a.position AS "position",
+		a.professional AS "professional",
+		a.school AS "school",
+		a.status AS "status",
+		a.twomenu AS "twomenu",
+		a.xiangguan_job_year AS "xiangguanJobYear",
+		a.xue_li AS "xueLi",
+		a.company_id AS "companyId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="tCompanyInforJoins">
+	</sql>
+    
+	<select id="get" resultType="TCompanyInfor">
+		SELECT 
+			<include refid="tCompanyInforColumns"/>
+		FROM t_company_infor a
+		<include refid="tCompanyInforJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TCompanyInfor">
+		SELECT 
+			<include refid="tCompanyInforColumns"/>
+		FROM t_company_infor a
+		<include refid="tCompanyInforJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="companyId != null and companyId != ''">
+				AND a.company_id = #{companyId}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TCompanyInfor">
+		SELECT 
+			<include refid="tCompanyInforColumns"/>
+		FROM t_company_infor a
+		<include refid="tCompanyInforJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_company_infor(
+			id,
+			address,
+			birthday,
+			card_type,
+			email,
+			sex,
+			cardid,
+			jishuzhicheng,
+			job_year,
+			marry,
+			mess_addr,
+			name,
+			national,
+			native_place,
+			phone,
+			political_affiliation,
+			position,
+			professional,
+			school,
+			status,
+			twomenu,
+			xiangguan_job_year,
+			xue_li,
+			company_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{address},
+			#{birthday},
+			#{cardType},
+			#{email},
+			#{sex},
+			#{cardid},
+			#{jishuzhicheng},
+			#{jobYear},
+			#{marry},
+			#{messAddr},
+			#{name},
+			#{national},
+			#{nativePlace},
+			#{phone},
+			#{politicalAffiliation},
+			#{position},
+			#{professional},
+			#{school},
+			#{status},
+			#{twomenu},
+			#{xiangguanJobYear},
+			#{xueLi},
+			#{companyId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_company_infor SET 	
+			address = #{address},
+			birthday = #{birthday},
+			card_type = #{cardType},
+			email = #{email},
+			sex = #{sex},
+			cardid = #{cardid},
+			jishuzhicheng = #{jishuzhicheng},
+			job_year = #{jobYear},
+			marry = #{marry},
+			mess_addr = #{messAddr},
+			name = #{name},
+			national = #{national},
+			native_place = #{nativePlace},
+			phone = #{phone},
+			political_affiliation = #{politicalAffiliation},
+			position = #{position},
+			professional = #{professional},
+			school = #{school},
+			status = #{status},
+			twomenu = #{twomenu},
+			xiangguan_job_year = #{xiangguanJobYear},
+			xue_li = #{xueLi},
+			company_id = #{companyId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_company_infor SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

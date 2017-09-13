@@ -1,0 +1,17 @@
+/**
+ * ptag
+ */
+.container-fluid{
+	background-color: #fff;
+	box-shadow:0px 2px 3px #d5d7da;
+}
+.ptag{
+	line-height: 40px;
+	background: url(../images/fk.png);
+	background-repeat: no-repeat;
+	background-position: left center;
+	padding-left: 30px;
+}
+.ptag a{
+	color: #000;
+}

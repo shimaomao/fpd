@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.preloaninvestigate.dao.PreLoanInvestigateDao">
+    
+	<sql id="preLoanInvestigateColumns">
+		a.id AS "id",
+		a.title AS "title",
+		a.content AS "content",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.customer_id AS "customerId",
+		a.customer_name AS "customerName",
+		a.customer_type AS "customerType",
+		a.loanamount AS "loanamount",
+		a.rate AS "rate",
+		a.period AS "period",
+		a.loantype AS "loantype",
+		a.paytype AS "paytype",
+		a.purpose AS "purpose",
+		a.investigate_number AS "investigateNumber",
+		a.customer_phone AS "customerPhone",
+		a.investiga_date AS "investigaDate",
+		a.status AS "status"
+	</sql>
+	
+	<sql id="preLoanInvestigateJoins">
+	      LEFT JOIN sys_office o ON o.id = a.organ_id
+		  LEFT JOIN sys_user u ON u.id = a.create_by
+	</sql>
+    
+	<select id="get" resultType="PreLoanInvestigate">
+		SELECT 
+			<include refid="preLoanInvestigateColumns"/>
+		FROM t_pre_loan_investigate a
+		<include refid="preLoanInvestigateJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="PreLoanInvestigate">
+		SELECT 
+			<include refid="preLoanInvestigateColumns"/>
+		FROM t_pre_loan_investigate a
+		<include refid="preLoanInvestigateJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="title != null and title != ''">
+				AND a.title = #{title}
+			</if>
+			<if test="currentUser.company.id != ''">
+			   and a.organ_id = #{currentUser.company.id}
+			</if>
+			<if test="customerName != null and customerName != ''">
+				AND a.customer_name = #{customerName}
+			</if>
+			
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="PreLoanInvestigate">
+		SELECT 
+			<include refid="preLoanInvestigateColumns"/>
+		FROM t_pre_loan_investigate a
+		<include refid="preLoanInvestigateJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_pre_loan_investigate(
+			id,
+			title,
+			content,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id,
+			customer_id,
+			customer_name,
+			customer_type,
+			loanamount,
+			rate,
+			period,
+			loantype,
+			paytype,
+			purpose,
+			investigate_number,
+			customer_phone,
+			investiga_date,
+			status
+		) VALUES (
+			#{id},
+			#{title},
+			#{content},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId},
+			#{customerId},
+			#{customerName},
+			#{customerType},
+			#{loanamount},
+			#{rate},
+			#{period},
+			#{loantype},
+			#{paytype},
+			#{purpose},
+			#{investigateNumber},
+			#{customerPhone},
+			#{investigaDate},
+			#{status}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_pre_loan_investigate SET 	
+			title = #{title},
+			content = #{content},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId},
+			customer_id = #{customerId},
+			customer_name = #{customerName},
+			customer_type = #{customerType},
+			loanamount= #{loanamount},
+			rate= #{rate},
+			period = #{period},
+			loantype = #{loantype},
+			paytype = #{paytype},
+			purpose = #{purpose},
+			investigate_number= #{investigateNumber},
+			customer_phone= #{customerPhone},
+			investiga_date = #{investigaDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_pre_loan_investigate SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateStatus">
+		UPDATE t_pre_loan_investigate SET
+			status = #{status}
+		WHERE id = #{id}
+	</update>
+	
+	
+</mapper>

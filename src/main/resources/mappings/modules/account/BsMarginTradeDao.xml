@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.account.dao.BsMarginTradeDao">
+    
+	<sql id="bsMarginTradeColumns">
+		a.id AS "id",
+		<!-- a.financial_product_id AS "financialProductId", -->
+		a.entity_id AS "entityId",
+		a.entity_type AS "entityType",
+		a.margin_money AS "marginMoney",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.office_id AS "office.id"<!-- ,
+		o12.name AS "office.name" -->
+	</sql>
+	
+	<sql id="bsMarginTradeJoins">
+		<!-- LEFT JOIN sys_office o12 ON o12.id = a.office_id -->
+	</sql>
+    
+	<select id="get" resultType="BsMarginTrade">
+		SELECT 
+			<include refid="bsMarginTradeColumns"/>
+		FROM bs_margin_trade a
+		<include refid="bsMarginTradeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getEntityId" resultType="BsMarginTrade">
+		SELECT 
+			<include refid="bsMarginTradeColumns"/>
+		FROM bs_margin_trade a
+		<include refid="bsMarginTradeJoins"/>
+		WHERE a.entity_id = #{entityId} AND a.entity_type = #{entityType}
+	</select>
+	
+	<select id="findList" resultType="BsMarginTrade">
+		SELECT 
+			<include refid="bsMarginTradeColumns"/>
+		FROM bs_margin_trade a
+		<include refid="bsMarginTradeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="entityId != null and entityId != ''">
+				AND a.entity_id = #{entityId}
+			</if>
+			<if test="entityType != null and entityType != ''">
+				AND a.entity_type = #{entityType}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BsMarginTrade">
+		SELECT 
+			<include refid="bsMarginTradeColumns"/>
+		FROM bs_margin_trade a
+		<include refid="bsMarginTradeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO bs_margin_trade(
+			id,
+			entity_id,
+			entity_type,
+			margin_money,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id,
+			office_id
+		) VALUES (
+			#{id},
+			#{entityId},
+			#{entityType},
+			#{marginMoney},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId},
+			#{office.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE bs_margin_trade SET 	
+			entity_id = #{entityId},
+			entity_type = #{entityType},
+			margin_money = #{marginMoney},
+			status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId},
+			office_id = #{office.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE bs_margin_trade SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

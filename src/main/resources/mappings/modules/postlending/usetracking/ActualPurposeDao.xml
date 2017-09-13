@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.postlending.dao.usetracking.ActualPurposeDao">
+    
+	<sql id="actualPurposeColumns">
+		a.id AS "id",
+		a.proc_ins_id AS "procInsId",
+		a.content AS "content",
+		a.insert_time AS "insertTime",
+		a.title AS "title",
+		a.loan_contract_id AS "loanContractId",
+		a.from_user_id AS "fromUserId",
+		a.address AS "address",
+		a.apply_date AS "applyDate",
+		a.bad_amount AS "badAmount",
+		a.bad_lixi AS "badLixi",
+		a.bad_num AS "badNum",
+		a.bxnl_analysis AS "bxnlAnalysis",
+		a.bzxl_analysis AS "bzxlAnalysis",
+		a.card_num AS "cardNum",
+		a.card_type AS "cardType",
+		a.check_amount AS "checkAmount",
+		a.check_bad_amount AS "checkBadAmount",
+		a.check_num AS "checkNum",
+		a.contract_number AS "contractNumber",
+		a.customer_id AS "customerId",
+		a.customer_name AS "customerName",
+		a.customer_type AS "customerType",
+		a.cznl_analysis AS "cznlAnalysis",
+		a.dbqt_analysis AS "dbqtAnalysis",
+		a.dcyy_analysis AS "dcyyAnalysis",
+		a.end_date AS "endDate",
+		a.fzr_idea AS "fzrIdea",
+		a.hkyy_analysis AS "hkyyAnalysis",
+		a.jcr_idea AS "jcrIdea",
+		a.jz_analysis AS "jzAnalysis",
+		a.lack_amount AS "lackAmount",
+		a.lack_num AS "lackNum",
+		a.law_analysis AS "lawAnalysis",
+		a.lixi_end_date AS "lixiEndDate",
+		a.loan_amount AS "loanAmount",
+		a.loan_num AS "loanNum",
+		a.other_analysis AS "otherAnalysis",
+		a.purpose AS "purpose",
+		a.qszk_analysis AS "qszkAnalysis",
+		a.run_analysis AS "runAnalysis",
+		a.surety AS "surety",
+		a.tcnl_analysis AS "tcnlAnalysis",
+		a.usages AS "usages",
+		a.xz_analysis AS "xzAnalysis",
+		a.is_read AS "isRead",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.product_id AS "product.id"
+	</sql>
+	
+	<sql id="actualPurposeJoins">
+	</sql>
+    
+	<select id="get" resultType="ActualPurpose">
+		SELECT 
+			<include refid="actualPurposeColumns"/>
+		FROM t_actual_purpose a
+		<include refid="actualPurposeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getByProcInsId" resultType="ActualPurpose">
+		SELECT 
+			<include refid="actualPurposeColumns"/>
+		FROM t_actual_purpose a
+		<include refid="actualPurposeJoins"/>
+		WHERE a.proc_ins_id = #{procInsId}
+	</select>
+	
+	<select id="findList" resultType="ActualPurpose">
+		SELECT 
+			<include refid="actualPurposeColumns"/>
+		FROM t_actual_purpose a
+		<include refid="actualPurposeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="loanContractId != null and loanContractId != ''">
+				AND a.loan_contract_id = #{loanContractId}
+			</if>
+			<if test="product != null and product.id != null and product.id != ''">
+				AND a.product_id = #{product.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ActualPurpose">
+		SELECT 
+			<include refid="actualPurposeColumns"/>
+		FROM t_actual_purpose a
+		<include refid="actualPurposeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="product != null and product.id != null and product.id != ''">
+				AND a.product_id = #{product.id}
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_actual_purpose(
+			id,
+			content,
+			insert_time,
+			title,
+			loan_contract_id,
+			from_user_id,
+			address,
+			apply_date,
+			bad_amount,
+			bad_lixi,
+			bad_num,
+			bxnl_analysis,
+			bzxl_analysis,
+			card_num,
+			card_type,
+			check_amount,
+			check_bad_amount,
+			check_num,
+			contract_number,
+			customer_id,
+			customer_name,
+			customer_type,
+			cznl_analysis,
+			dbqt_analysis,
+			dcyy_analysis,
+			end_date,
+			fzr_idea,
+			hkyy_analysis,
+			jcr_idea,
+			jz_analysis,
+			lack_amount,
+			lack_num,
+			law_analysis,
+			lixi_end_date,
+			loan_amount,
+			loan_num,
+			other_analysis,
+			purpose,
+			qszk_analysis,
+			run_analysis,
+			surety,
+			tcnl_analysis,
+			usages,
+			xz_analysis,
+			is_read,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id,
+			product_id
+		) VALUES (
+			#{id},
+			#{content},
+			#{insertTime},
+			#{title},
+			#{loanContractId},
+			#{fromUserId},
+			#{address},
+			#{applyDate},
+			#{badAmount},
+			#{badLixi},
+			#{badNum},
+			#{bxnlAnalysis},
+			#{bzxlAnalysis},
+			#{cardNum},
+			#{cardType},
+			#{checkAmount},
+			#{checkBadAmount},
+			#{checkNum},
+			#{contractNumber},
+			#{customerId},
+			#{customerName},
+			#{customerType},
+			#{cznlAnalysis},
+			#{dbqtAnalysis},
+			#{dcyyAnalysis},
+			#{endDate},
+			#{fzrIdea},
+			#{hkyyAnalysis},
+			#{jcrIdea},
+			#{jzAnalysis},
+			#{lackAmount},
+			#{lackNum},
+			#{lawAnalysis},
+			#{lixiEndDate},
+			#{loanAmount},
+			#{loanNum},
+			#{otherAnalysis},
+			#{purpose},
+			#{qszkAnalysis},
+			#{runAnalysis},
+			#{surety},
+			#{tcnlAnalysis},
+			#{usages},
+			#{xzAnalysis},
+			#{isRead},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId},
+			#{product.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_actual_purpose SET 	
+			content = #{content},
+			insert_time = #{insertTime},
+			title = #{title},
+			loan_contract_id = #{loanContractId},
+			from_user_id = #{fromUserId},
+			address = #{address},
+			apply_date = #{applyDate},
+			bad_amount = #{badAmount},
+			bad_lixi = #{badLixi},
+			bad_num = #{badNum},
+			bxnl_analysis = #{bxnlAnalysis},
+			bzxl_analysis = #{bzxlAnalysis},
+			card_num = #{cardNum},
+			card_type = #{cardType},
+			check_amount = #{checkAmount},
+			check_bad_amount = #{checkBadAmount},
+			check_num = #{checkNum},
+			contract_number = #{contractNumber},
+			customer_id = #{customerId},
+			customer_name = #{customerName},
+			customer_type = #{customerType},
+			cznl_analysis = #{cznlAnalysis},
+			dbqt_analysis = #{dbqtAnalysis},
+			dcyy_analysis = #{dcyyAnalysis},
+			end_date = #{endDate},
+			fzr_idea = #{fzrIdea},
+			hkyy_analysis = #{hkyyAnalysis},
+			jcr_idea = #{jcrIdea},
+			jz_analysis = #{jzAnalysis},
+			lack_amount = #{lackAmount},
+			lack_num = #{lackNum},
+			law_analysis = #{lawAnalysis},
+			lixi_end_date = #{lixiEndDate},
+			loan_amount = #{loanAmount},
+			loan_num = #{loanNum},
+			other_analysis = #{otherAnalysis},
+			purpose = #{purpose},
+			qszk_analysis = #{qszkAnalysis},
+			run_analysis = #{runAnalysis},
+			surety = #{surety},
+			tcnl_analysis = #{tcnlAnalysis},
+			usages = #{usages},
+			xz_analysis = #{xzAnalysis},
+			is_read = #{isRead},
+			status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateStatus">
+		UPDATE t_actual_purpose SET 	
+			status = #{status}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_actual_purpose SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

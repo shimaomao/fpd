@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.credit.dao.report.ReportEmployeeDao">
+    
+	<sql id="reportEmployeeColumns">
+		a.id AS "id",
+		a.credit_apply_id AS "creditApplyId",
+		a.tpl_code AS "tplCode",
+		a.department AS "department",
+		a.name AS "name",
+		a.salesman AS "salesman",
+		a.accept_date AS "acceptDate",
+		a.credit_money AS "creditMoney",
+		a.credit_period AS "creditPeriod",
+		a.rate AS "rate",
+		a.loan_money AS "loanMoney",
+		a.loan_period AS "loanPeriod",
+		a.consulting_fee AS "consultingFee",
+		a.repay_type AS "repayType",
+		a.business_source AS "businessSource",
+		a.ftl_content AS "ftlContent",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="reportEmployeeJoins">
+	</sql>
+    
+	<select id="get" resultType="ReportEmployee">
+		SELECT 
+			<include refid="reportEmployeeColumns"/>
+		FROM t_report_employee a
+		<include refid="reportEmployeeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getByCreditApply" resultType="ReportEmployee">
+		SELECT 
+			<include refid="reportEmployeeColumns"/>
+		FROM t_report_employee a
+		<include refid="reportEmployeeJoins"/>
+		WHERE a.del_flag = 0 AND a.credit_apply_id = #{creditApplyId}
+	</select>
+	
+	<select id="findList" resultType="ReportEmployee">
+		SELECT 
+			<include refid="reportEmployeeColumns"/>
+		FROM t_report_employee a
+		<include refid="reportEmployeeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="creditApplyId != null and creditApplyId != ''">
+				AND a.credit_apply_id = #{creditApplyId}
+			</if>
+			<if test="tplCode != null and tplCode != ''">
+				AND a.tpl_code = #{tplCode}
+			</if>
+			<if test="department != null and department != ''">
+				AND a.department = #{department}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="salesman != null and salesman != ''">
+				AND a.salesman = #{salesman}
+			</if>
+			<if test="repayType != null and repayType != ''">
+				AND a.repay_type = #{repayType}
+			</if>
+			<if test="businessSource != null and businessSource != ''">
+				AND a.business_source = #{businessSource}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ReportEmployee">
+		SELECT 
+			<include refid="reportEmployeeColumns"/>
+		FROM t_report_employee a
+		<include refid="reportEmployeeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_report_employee(
+			id,
+			credit_apply_id,
+			tpl_code,
+			department,
+			name,
+			salesman,
+			accept_date,
+			credit_money,
+			credit_period,
+			rate,
+			loan_money,
+			loan_period,
+			consulting_fee,
+			repay_type,
+			business_source,
+			ftl_content,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{creditApplyId},
+			#{tplCode},
+			#{department},
+			#{name},
+			#{salesman},
+			#{acceptDate},
+			#{creditMoney},
+			#{creditPeriod},
+			#{rate},
+			#{loanMoney},
+			#{loanPeriod},
+			#{consultingFee},
+			#{repayType},
+			#{businessSource},
+			#{ftlContent},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_report_employee SET 	
+			credit_apply_id = #{creditApplyId},
+			tpl_code = #{tplCode},
+			department = #{department},
+			name = #{name},
+			salesman = #{salesman},
+			accept_date = #{acceptDate},
+			credit_money = #{creditMoney},
+			credit_period = #{creditPeriod},
+			rate = #{rate},
+			loan_money = #{loanMoney},
+			loan_period = #{loanPeriod},
+			consulting_fee = #{consultingFee},
+			repay_type = #{repayType},
+			business_source = #{businessSource},
+			ftl_content = #{ftlContent},
+			status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_report_employee SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

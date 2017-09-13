@@ -1,0 +1,136 @@
+ /**
+ * step
+ */
+.stepGroup{
+	width: 76%;
+	margin: auto;
+	background-color: #fff;
+}
+.stepGroup .linebox {
+	width: 100%;
+	margin-top: 10px;
+	padding-top: 0px;
+}
+.step{
+	position: relative;
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+	float: left;
+	margin-bottom: 10px;
+	background-color: #efefef;
+}
+.step:before{
+	content: '';
+	width: 0;
+	height: 0;
+	left: 0;
+	position: absolute;
+	border-left: 20px #fff solid;
+	border-top: 20px #efefef solid;
+	border-bottom: 20px #efefef solid;
+}
+.step:after{
+	content: '';
+	width: 0;
+	height: 0;
+	right: 0;
+	position: absolute;
+	border-left: 20px #efefef solid;
+	border-top: 20px #fff solid;
+	border-bottom: 20px #fff solid;
+}
+.curStep{
+	background-color: #d8d8d8;	
+}
+.curStep:before{
+	content: '';
+	width: 0;
+	height: 0;
+	left: 0;
+	position: absolute;
+	border-left: 20px #fff solid;
+	border-top: 20px #d8d8d8 solid;
+	border-bottom: 20px #d8d8d8 solid;
+}
+.curStep:after{
+	content: '';
+	width: 0;
+	height: 0;
+	right: 0;
+	position: absolute;
+	border-left: 20px #d8d8d8 solid;
+	border-top: 20px #fff solid;
+	border-bottom: 20px #fff solid;
+}
+ 
+ 
+ /**
+ * tabs
+ */
+ .tabsGroup{
+	width: 96%;
+	margin: 20px auto;
+	border-radius: 20px;
+	background-color: #fff;
+}
+.tabsGroup .tbox{
+	height: 60px;
+	line-height: 60px;
+	border-bottom: 2px #cdcfd2 solid;
+	width: 100%;
+}
+.tabsGroup .tbox label{
+	line-height: 60px;
+	display: inline-block;
+	padding-left: 20px;
+	padding-right: 20px;
+}
+.tabsGroup .tbox:first-child{
+	text-align: center;
+}
+/*// 当前被选TAB样式*/
+.active{
+	border-bottom: 2px #3692e7 solid;
+	font-weight: bold;
+	color: #3692e7;
+}
+ 
+ 
+/**
+ * ptag
+ */
+.container-fluid{
+	background-color: #fff;
+	box-shadow:0px 2px 3px #d5d7da;
+
+}
+.ptag{
+	line-height: 40px;
+	background: url(../images/fk.png);
+	background-repeat: no-repeat;
+	background-position: left center;
+	padding-left: 30px;
+}
+.ptag a{
+	color: #000;
+}
+
+
+
+
+.box-down{
+	background-color: #fff;
+	box-shadow:0px 3px 2px #eee;
+	margin-bottom: 5px;
+}
+input.box-bnt{
+	display:block;
+	width: 100px;
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+	color: #fff;
+	background-color: #3692e7;
+	margin: 20px auto;
+}

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.employee.dao.CsContactDao">
+    
+	<sql id="csContactColumns">
+		a.id AS "id",
+		a.customer_id AS "customerId",
+		a.name AS "name",
+		a.sex AS "sex",
+		a.relation AS "relation",
+		a.contact_way AS "contactWay",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="csContactJoins">
+	</sql>
+    
+	<select id="get" resultType="CsContact">
+		SELECT 
+			<include refid="csContactColumns"/>
+		FROM t_cs_contact a
+		<include refid="csContactJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CsContact">
+		SELECT 
+			<include refid="csContactColumns"/>
+		FROM t_cs_contact a
+		<include refid="csContactJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="customerId != null and customerId != ''">
+				AND a.customer_id = #{customerId}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CsContact">
+		SELECT 
+			<include refid="csContactColumns"/>
+		FROM t_cs_contact a
+		<include refid="csContactJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_cs_contact(
+			id,
+			customer_id,
+			name,
+			sex,
+			relation,
+			contact_way,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{customerId},
+			#{name},
+			#{sex},
+			#{relation},
+			#{contactWay},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_cs_contact SET 	
+			customer_id = #{customerId},
+			name = #{name},
+			sex = #{sex},
+			relation = #{relation},
+			contact_way = #{contactWay},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_cs_contact SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

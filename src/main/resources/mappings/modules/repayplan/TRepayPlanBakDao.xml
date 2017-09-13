@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.repayplan.dao.TRepayPlanBakDao">
+
+	<sql id="tRepayPlanColumns">
+		a.id AS "id",
+		a.lot_num AS "lotNum",
+		a.cs_num AS "csNum",
+		a.interest AS "interest",
+		a.interest_real AS "interestReal",
+		a.is_yu_qi AS "isYuQi",
+		a.num AS "num",
+		a.over_date AS "overDate",
+		a.pay_interest_date AS
+		"payInterestDate",
+		a.pay_interest_status AS "payInterestStatus",
+		a.principal AS "principal",
+		a.principal_real AS "principalReal",
+		a.status AS "status",
+		a.yu_qi AS "yuQi",
+		a.loan_contract_bak_id AS
+		"loanContractId",
+		a.start_date AS "startDate",
+		a.account_date AS
+		"accountDate",
+		a.end_date AS "endDate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.is_valid AS "isValid",
+		c.id AS "loanContractBak.id",
+		c.contract_number AS "loanContractBak.contractNumber",
+		c.customer_name AS "loanContractBak.customerName",
+		c.loan_amount AS "loanContractBak.loanAmount",
+		c.loan_period AS "loanContractBak.loanPeriod",
+		c.period_type AS "loanContractBak.periodType"
+	</sql>
+
+	<sql id="tRepayPlanJoins">
+		LEFT JOIN t_loan_contract_bak c on c.id = a.loan_contract_bak_id
+	</sql>
+
+	<select id="get" resultType="TRepayPlanBak">
+		SELECT
+		<include refid="tRepayPlanColumns" />
+		FROM t_repay_plan_bak a
+		<include refid="tRepayPlanJoins" />
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="TRepayPlanBak">
+		SELECT
+		<include refid="tRepayPlanColumns" />
+		FROM t_repay_plan_bak a
+		<include refid="tRepayPlanJoins" />
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL} and a.is_valid = '1'
+			<!-- add by srf -->
+			<if test="loanContractId != null and loanContractId != ''">
+				AND a.loan_contract_bak_id = #{loanContractId}
+			</if>
+			<if test="productid != null and productid != ''">
+				AND c.product_id = #{productid}
+			</if>
+			<if test="isYuQi != null and isYuQi != ''">
+				AND a.yu_qi = #{isYuQi}
+			</if>
+			<if test="isValid != null and isValid != ''">
+				AND a.is_valid = #{isValid}
+			</if>
+			<if test="status != null">
+				AND  
+				<if test="dbName == 'oracle'">','||#{status}||',' like '%,'||a.status||',%'</if>
+				<if test="dbName == 'mssql'"> ','+#{status}+',' like '%,'+a.status+',%'</if>
+				<if test="dbName == 'mysql'">concat(',',#{status},',') like  concat('%,',a.status,',%')</if>
+			</if>
+			<if test="beginAccountDate != null and endAccountDate != null and beginAccountDate != '' and endAccountDate != ''">
+				AND str_to_date(a.account_date,'%Y-%m-%d %H:%i:%s') BETWEEN #{beginAccountDate} AND #{endAccountDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.lot_num, a.num asc
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- add by srf -->
+	<select id="findListCondition" resultType="TRepayPlanBak">
+		SELECT
+		<include refid="tRepayPlanColumns" />
+		FROM t_repay_plan_bak a
+		<include refid="tRepayPlanJoins" />
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL} and a.is_valid = '1'
+			<!-- add by srf -->
+			<if test="loanContractId != null and loanContractId != ''">
+				AND a.loan_contract_bak_id = #{loanContractId}
+			</if>
+			<if test="status != null">
+				AND  
+				<if test="dbName == 'oracle'">','||#{status}||',' like '%,'||a.status||',%'</if>
+				<if test="dbName == 'mssql'"> ','+#{status}+',' like '%,'+a.status+',%'</if>
+				<if test="dbName == 'mysql'">concat(',',#{status},',') like  concat('%,',a.status,',%')</if>
+			</if>
+			<if test="beginAccountDate != null and endAccountDate != null and beginAccountDate != '' and endAccountDate != ''">
+				AND str_to_date(a.account_date,'%Y-%m-%d %H:%i:%s') BETWEEN #{beginAccountDate} AND #{endAccountDate}
+			</if>
+		</where>
+		ORDER BY a.lot_num, a.num ASC
+	</select>
+
+	<select id="findAllList" resultType="TRepayPlanBak">
+		SELECT
+		<include refid="tRepayPlanColumns" />
+		FROM t_repay_plan_bak a
+		<include refid="tRepayPlanJoins" />
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.lot_num, a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<!-- add by srf 2016-03-31 -->
+    <select id="allRepayment" resultType="java.util.Map">
+    	SELECT
+    		SUM(interest) as interest,
+    		SUM(principal) as principal,
+    		SUM(interest_real) as interest_real,
+    		SUM(principal_real) as principal_real
+    	FROM t_repay_plan_bak a
+    	<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<!-- add by srf -->
+			<if test="loanContractId != null and loanContractId != ''">
+				AND a.loan_contract_bak_id = #{loanContractId}
+			</if>
+		</where>
+    </select>
+
+	<insert id="insert">
+		INSERT INTO t_repay_plan_bak(
+		id,
+		lot_num,
+		cs_num,
+		interest,
+		interest_real,
+		is_yu_qi,
+		num,
+		over_date,
+		pay_interest_date,
+		pay_interest_status,
+		principal,
+		principal_real,
+		status,
+		yu_qi,
+		loan_contract_bak_id,
+		start_date,
+		account_date,
+		end_date,
+		create_by,
+		create_date,
+		update_by,
+		update_date,
+		remarks,
+		del_flag,
+		organ_id,
+		is_valid
+		) VALUES (
+		#{id},
+		#{lotNum},
+		#{csNum},
+		#{interest},
+		#{interestReal},
+		#{isYuQi},
+		#{num},
+		#{overDate},
+		#{payInterestDate},
+		#{payInterestStatus},
+		#{principal},
+		#{principalReal},
+		#{status},
+		#{yuQi},
+		#{loanContractId},
+		#{startDate},
+		#{accountDate},
+		#{endDate},
+		#{createBy.id},
+		#{createDate},
+		#{updateBy.id},
+		#{updateDate},
+		#{remarks},
+		#{delFlag},
+		#{organId},
+		#{isValid}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE t_repay_plan_bak SET
+		cs_num = #{csNum},
+		interest = #{interest},
+		interest_real = #{interestReal},
+		is_yu_qi = #{isYuQi},
+		num = #{num},
+		over_date = #{overDate},
+		pay_interest_date = #{payInterestDate},
+		pay_interest_status = #{payInterestStatus},
+		principal = #{principal},
+		principal_real = #{principalReal},
+		status = #{status},
+		yu_qi = #{yuQi},
+		loan_contract_bak_id = #{loanContractId},
+		start_date = #{startDate},
+		account_date = #{accountDate},
+		end_date = #{endDate},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate},
+		remarks = #{remarks},
+		organ_id = #{organId}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		UPDATE t_repay_plan_bak SET
+		del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 批量作废还款计划  add by zzm-->
+	<update id="inValidBatch">
+		UPDATE t_repay_plan_bak SET
+		is_valid = '0'
+		WHERE loan_contract_bak_id = #{loanContractId}
+		<if test="lotNum != null and lotNum != ''">
+		AND lot_num = #{lotNum}
+		</if>
+	</update>
+
+	<delete id="deletePLWL">
+		DELETE FROM t_repay_plan_bak
+		WHERE 1=1
+		<if test="loanContractId != null and loanContractId != ''">
+			AND loan_contract_bak_id = #{loanContractId}
+		</if>
+	</delete>
+
+</mapper>

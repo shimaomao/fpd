@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.wish.order.dao.WishOrderDao">
+
+    <sql id="wishOrderColumns">
+        a.id AS "id",
+        a.create_date AS "createDate",
+        a.create_by AS "createBy.id",
+        a.update_date AS "updateDate",
+        a.update_by AS "updateBy.id",
+        a.remarks AS "remarks",
+        a.del_flag AS "delFlag",
+        a.order_id AS "orderId",
+        a.payment_amount AS "paymentAmount",
+        a.order_date AS "orderDate",
+        a.date_diff AS "dateDiff",
+        a.is_refunded AS "isRefunded",
+        a.refund_date AS "refundDate",
+        a.refund_time_diff AS "refundTimeDiff",
+        a.refund_amount AS "refundAmount",
+        a.order_month AS "orderMonth",
+        a.has_been_disbursed AS "hasBeenDisbursed",
+        a.loan_operation AS "loanOperation",
+        a.user_id AS "userId",
+        a.is_chargeback AS "isChargeback" ,
+        a.merchant_id AS "merchantId",
+        a.loan_period AS "loanPeriod",
+        a.current_expected_payment_eligibility_date AS "currentExpectedPaymentEligibilityDate",
+        <!-- 	a.is_store_currently_trusted AS "isStoreCurrentlyTrusted", -->
+        a.merchant_store_link AS "merchantStoreLink",
+        a.amount AS "amount",
+        a.loan_contract_id AS "loanContractId"
+        <!-- a.is_charge_back AS "isChargeback" -->
+    </sql>
+
+    <sql id="wishOrderJoins">
+    </sql>
+
+    <select id="get" resultType="WishOrder">
+        SELECT
+        <include refid="wishOrderColumns"/>
+        FROM t_wish_order a
+        <include refid="wishOrderJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+
+    <select id="getByOrderId" resultType="WishOrder">
+        SELECT
+        <include refid="wishOrderColumns"/>
+        FROM t_wish_order a
+        <include refid="wishOrderJoins"/>
+        WHERE a.order_id = #{orderId}
+    </select>
+
+
+    <select id="findList" resultType="WishOrder">
+        SELECT
+        <include refid="wishOrderColumns"/>
+        FROM t_wish_order a
+        <include refid="wishOrderJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            and a.is_refunded<![CDATA[ <> ]]>1
+            and a.has_been_disbursed<![CDATA[ <> ]]>1
+            and a.is_chargeback<![CDATA[ <> ]]>1
+        </where>
+        <if test="loanOperation != null and loanOperation !=''">
+            and a.loan_operation = #{loanOperation}
+        </if>
+        <if test="beginDate != null and beginDate != ''">
+            and a.order_date <![CDATA[  >=  ]]> beginDate
+        </if>
+        <if test="endDate != null and endDate != ''">
+            and a.order_date <![CDATA[   <=  ]]> endDate
+        </if>
+        <if test="userId != null and userId !=''">
+            and a.user_id = #{userId}
+        </if>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.order_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findAllList" resultType="WishOrder">
+        SELECT
+        <include refid="wishOrderColumns"/>
+        FROM t_wish_order a
+        <include refid="wishOrderJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+
+    <select id="getSumAmount" parameterType="WishOrder" resultType="java.lang.Double">
+        SELECT
+        IFNULL(sum(a.payment_amount),0)
+        FROM t_wish_order a
+        WHERE
+        a.del_flag = #{DEL_FLAG_NORMAL}
+        and a.is_refunded<![CDATA[ <> ]]>1
+        or a.is_refunded is null
+        and a.has_been_disbursed<![CDATA[ <> ]]>1
+        or a.has_been_disbursed is null
+        and a.is_chargeback<![CDATA[ <> ]]>1
+        or a.is_chargeback is null
+        <if test="loanOperation != null and loanOperation !=''">
+            and a.loan_operation = #{loanOperation}
+        </if>
+        <if test="userId != null and userId !=''">
+            and a.user_id = #{userId}
+        </if>
+    </select>
+
+
+    <insert id="insert">
+		INSERT INTO t_wish_order(
+			id,
+			create_date,
+			create_by,
+			update_date,
+			update_by,
+			remarks,
+			del_flag,
+			order_id,
+			payment_amount,
+			order_date,
+			date_diff,
+			is_refunded,
+			refund_date,
+			refund_time_diff,
+			order_month,
+			has_been_disbursed,
+			loan_operation,
+			user_id,
+			
+			merchant_id,
+			loan_period,
+			current_expected_payment_eligibility_date,
+ 			is_store_currently_trusted,
+			merchant_store_link,
+			amount,
+			is_chargeback,
+			refund_amount
+
+		) VALUES (
+			#{id},
+			#{createDate},
+			#{createBy.id},
+			#{updateDate},
+			#{updateBy.id},
+			#{remarks},
+			#{delFlag},
+			#{orderId},
+			#{paymentAmount},
+			#{orderDate},
+			#{dateDiff},
+			#{isRefunded},
+			#{refundDate},
+			#{refundTimeDiff},
+			#{orderMonth},
+			#{hasBeenDisbursed},
+			#{loanOperation},
+			#{userId},
+			
+			#{merchantId},
+			#{loanPeriod},			
+			#{currentExpectedPaymentEligibilityDate},
+		 	#{isStoreCurrentlyTrusted},
+			#{merchantStoreLink},
+
+			#{amount},
+			#{isChargeback},
+			#{refundAmount}
+		)
+	</insert>
+
+    <update id="update">
+        UPDATE t_wish_order SET
+        update_date = #{updateDate},
+        update_by = #{updateBy.id},
+        remarks = #{remarks},
+        order_id = #{orderId},
+        payment_amount = #{paymentAmount},
+        order_date = #{orderDate},
+        date_diff = #{dateDiff},
+        is_refunded = #{isRefunded},
+        refund_date = #{refundDate},
+        refund_time_diff = #{refundTimeDiff},
+        order_month = #{orderMonth},
+        has_been_disbursed = #{hasBeenDisbursed},
+        loan_operation = #{loanOperation},
+
+        merchant_id = #{merchantId},
+        loan_period = #{loanPeriod},
+        current_expected_payment_eligibility_date = #{currentExpectedPaymentEligibilityDate},
+        is_store_currently_trusted = #{isStoreCurrentlyTrusted},
+        merchant_store_link = #{merchantStoreLink},
+        <!-- 	is_charge_back = #{isChargeback} -->
+        amount = #{amount},
+        is_chargeback = #{isChargeback},
+        refund_amount = #{refundAmount},
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateOldDate">
+        UPDATE t_wish_order SET
+        update_date = #{updateDate},
+        update_by = #{updateBy.id},
+        remarks = #{remarks},
+        payment_amount = #{paymentAmount},
+        order_date = #{orderDate},
+        date_diff = #{dateDiff},
+        is_refunded = #{isRefunded},
+        refund_date = #{refundDate},
+        refund_time_diff = #{refundTimeDiff},
+        order_month = #{orderMonth},
+        has_been_disbursed = #{hasBeenDisbursed},
+        <!-- loan_operation = #{loanOperation}, -->
+        is_store_currently_trusted = #{isStoreCurrentlyTrusted},
+        is_charge_back = #{isChargeback},
+        <!-- loan_period = #{loanPeriod}, -->
+        current_expected_payment_eligibility_date = #{currentExpectedPaymentEligibilityDate},
+        merchant_store_link = #{merchantStoreLink},
+        amount = #{amount},
+        is_chargeback = #{isChargeback},
+        refund_amount = #{refundAmount}
+        WHERE order_id = #{orderId}
+    </update>
+
+    <update id="delete">
+		UPDATE t_wish_order SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+    <update id="unlock">
+	   UPDATE t_wish_order w SET w.loan_contract_id=NULL,w.loan_operation='0' WHERE w.loan_contract_id=#{loanContractId}
+	</update>
+
+    <!-- <delete id="delOldDatas" parameterType="WishOrder">
+           DELETE FROM
+               t_wish_order
+           WHERE
+               user_id = #{userId}
+               AND order_date <![CDATA[  >=  ]]> #{beginDate}
+               AND order_date <![CDATA[  <=  ]]> #{endDate}
+    </delete> -->
+</mapper>

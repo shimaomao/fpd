@@ -1,0 +1,528 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.contract.dao.TLoanContractBakDao">
+    
+	<sql id="tLoanContractColumns">
+		a.id AS "id",	
+		a.souce_contract_id AS "souceContract.id",
+		a.bak_time AS "bakTime",
+		a.data_status AS "dataStatus",		
+		a.parent_id AS "parent.id",
+		a.apply_date AS "applyDate",
+		a.contract_number AS "contractNumber",
+		a.customer_id AS "customerId",
+		a.customer_name AS "customerName",
+		a.customer_type AS "customerType",
+		a.five_level AS "fiveLevel",
+		a.is_extend AS "isExtend",
+		a.loan_amount AS "loanAmount",
+		a.loan_date AS "loanDate",
+		a.loan_period AS "loanPeriod",
+		a.loan_rate AS "loanRate",
+		a.loan_rate_type AS "loanRateType",
+		a.pay_principal_date AS "payPrincipalDate",
+		a.loan_type AS "loanType",
+		a.max_number AS "maxNumber",
+		a.pay_day AS "payDay",
+		a.pay_type AS "payType",
+		a.period_type AS "periodType",
+		a.sign_date AS "signDate",
+		a.status AS "status",
+		a.product_id AS "productId",
+		a.purpose_id AS "purposeId",
+		a.area_id AS "area.id",
+		a.industry_id AS "industryId",
+		a.gathering_bank AS "gatheringBank",
+		a.gathering_name AS "gatheringName",
+		a.gathering_number AS "gatheringNumber",
+		a.guarant_number AS "guarantNumber",
+		a.pay_options AS "payOptions",
+		a.pay_day_type AS "payDayType",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.server_fee AS "serverFee",	 
+		a.mange_fee AS "mangeFee",	 	 
+		a.if_advance AS "ifAdvance",		
+		a.advance_damages AS "advanceDamages",	
+		a.late_fee AS "lateFee",			
+		a.rate_discont AS "rateDiscont",		 
+		a.if_interest_relief AS "ifInterestRelief",  
+		a.grace_period AS "gracePeriod",		
+		a.grace_period_penalty AS "gracePeriodPenalty",
+		a.late_penalty AS "latePenalty",		 
+		a.late_penalty_fee AS "latePenaltyFee",	
+		a.is_deal AS "isDeal",	
+		a.type AS "type",	
+		a.wtypeId AS "wtypeId",	
+		a.proc_ins_id AS "act.procInsId",
+		a24.name AS "area.name",
+		u39.name AS "productName",
+		u36.name AS "creatByerName",
+		(select of.name from sys_office of where u36.office_id = of.id) as "deptname",
+<!-- 		SUM(r.interest_real) AS "backmoney", -->
+<!-- 		SUM(r.principal_real) as "backlixi", -->
+		(SELECT SUM(r1.interest_real) from t_repay_plan r1 where r1.loan_contract_id = a.id ) AS "backmoney",
+	    (SELECT SUM(r1.principal_real) from t_repay_plan r1 where r1.loan_contract_id = a.id ) AS "backlixi",
+		(select max(p.pay_interest_date) from t_repay_plan p where p.loan_contract_id = a.id) as "backtime",
+		m.surety as "legalPerson",
+		m.surety_telephone as "suretyTelephone",
+		e.telephone as "linkphone",
+		a.transfer_id AS "TransferId",
+		a.is_transfered AS "isTransfered"
+	</sql>
+	
+	<sql id="tLoanContractJoins">
+		LEFT JOIN sys_area a24 ON a24.id = a.area_id
+		LEFT JOIN sys_user u36 ON u36.id = a.create_by
+		LEFT JOIN sys_user u38 ON u38.id = a.update_by
+		LEFT JOIN t_product u39 ON u39.id = a.product_id
+		LEFT JOIN t_company m on m.id  = a.customer_id
+        LEFT JOIN t_employee e on e.id = a.customer_id
+	</sql>
+    
+	<select id="get" resultType="TLoanContractBak">
+		SELECT 
+			<include refid="tLoanContractColumns"/>
+		FROM t_loan_contract_bak a
+		<include refid="tLoanContractJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TLoanContractBak">
+		SELECT 
+			<include refid="tLoanContractColumns"/>
+		FROM t_loan_contract_bak a
+		<include refid="tLoanContractJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="applyDate != null and applyDate != ''">
+				AND a.apply_date = #{applyDate}
+			</if>
+			<if test="contractNumber != null and contractNumber != ''">
+				AND a.contract_number = #{contractNumber}
+			</if>
+			<if test="loanAmount != null and loanAmount != ''">
+				AND a.loan_amount = #{loanAmount}
+			</if>
+			<if test="loanPeriod != null and loanPeriod != ''">
+				AND a.loan_period = #{loanPeriod}
+			</if>
+			<if test="customerId != null and customerId != ''">
+				AND a.customer_id = #{customerId}
+			</if>
+			<if test="customerType != null and customerType != ''">
+				AND a.customer_type = #{customerType}
+			</if>
+			<if test="periodType != null and periodType != ''">
+				AND a.period_type = #{periodType}
+			</if>
+			<if test="loanRate != null and loanRate != ''">
+				AND a.loan_rate = #{loanRate}
+			</if>
+			<if test="starttime != null and starttime != '' and endtime != null and endtime != '' ">
+				AND (a.loan_date   BETWEEN #{starttime} and #{endtime} or loan_date like  #{searchtime})
+			</if>
+			
+			<if test="loanType != null and loanType != ''">
+				AND (a.loan_type = #{loanType}
+				<foreach collection="loanTypeList" index="index" item="item" separator="," > 
+					OR
+					<if test="dbName == 'oracle'">','||a.loan_type||',' like '%,'||#{item}||',%'</if>
+					<if test="dbName == 'mssql'"> ','+a.loan_type+',' like '%,'+#{item}+',%'</if>
+					<if test="dbName == 'mysql'">concat(',',a.loan_type,',') like  concat('%,',#{item},',%')</if>
+				</foreach>
+				)
+			</if>
+			<if test="fiveLevel != null and fiveLevel != ''"><!-- add by shirf 20160416 -->
+				AND  
+				<if test="dbName == 'oracle'">','||#{fiveLevel}||',' like '%,'||a.five_level||',%'</if>
+				<if test="dbName == 'mssql'"> ','+#{fiveLevel}+',' like '%,'+a.five_level+',%'</if>
+				<if test="dbName == 'mysql'">concat(',',#{fiveLevel},',') like  concat('%,',a.five_level,',%')</if>
+			</if>
+			<if test="isDeal != null and isDeal != ''">
+				AND a.is_deal = #{isDeal}
+			</if>
+			<if test="productId != null and productId != ''"><!-- by zzm 20160519 -->
+				AND a.product_id = #{productId}
+			</if>
+			<if test="dataStatus != null and dataStatus != ''"><!-- by zzm 20160519 -->
+				AND a.data_status = #{dataStatus}
+			</if>
+			<if test="loanDate != null and loanDate != ''"><!-- by lx 20160628   用loanDate判断，实际是用searchtime进行搜索,因为loan_date是date类型，无法这样（2016-%6-%）-->
+				AND a.loan_date like #{searchtime}
+			</if>
+			<if test="searchtime != null and searchtime != '' and loanDate == ''"><!-- by lx 20160628   当放款日期有值的时候，不能进此条件-->
+				AND a.apply_date like #{searchtime}
+			</if>
+			<if test="status != null and status != ''">
+				AND  
+				<if test="dbName == 'oracle'">','||#{status}||',' like '%,'||a.status||',%'</if>
+				<if test="dbName == 'mssql'"> ','+#{status}+',' like '%,'+a.status+',%'</if>
+				<if test="dbName == 'mysql'">concat(',',#{status},',') like  concat('%,',a.status,',%')</if>
+			</if>
+			<if test="currentUser.company.id != ''">
+			   and a.organ_id = #{currentUser.company.id}
+			</if>
+			<if test="parent != null and parent.id != null and parent.id != ''">
+				AND a.parent_id = #{parent.id}
+			</if>
+			<if test="souceContract != null and souceContract.id != null and souceContract.id != ''">
+				AND a.souce_contract_id = #{souceContract.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				GROUP BY a.id ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				GROUP BY a.id ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findRefundList" resultType="TLoanContractBak">
+		SELECT 
+			<include refid="tLoanContractColumns"/>
+		FROM t_loan_contract_bak a
+		<include refid="tLoanContractJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="status != null and status != ''">
+				AND a.status >= #{status}
+			</if>
+			<if test="productId != null and productId != ''">
+				AND a.product_id = #{productId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TLoanContractBak">
+		SELECT 
+			<include refid="tLoanContractColumns"/>
+		FROM t_loan_contract_bak a
+		<include refid="tLoanContractJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="getByWtypeId" resultType="TLoanContractBak">
+		SELECT 
+			<include refid="tLoanContractColumns"/>
+		FROM t_loan_contract_bak a
+		<include refid="tLoanContractJoins"/>
+		<where>
+			a.del_flag = 0
+			AND a.wtypeId = #{wtypeId}
+		</where>		
+		ORDER BY a.update_date DESC
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_loan_contract_bak(
+			id,
+			souce_contract_id,
+			bak_time,
+			data_status,		
+			parent_id,
+			apply_date,
+			contract_number,
+			customer_id,
+			customer_name,
+			customer_type,
+			five_level,
+			is_extend,
+			loan_amount,
+			loan_date,
+			loan_period,
+			loan_rate,
+			loan_rate_type,
+			pay_principal_date,
+			loan_type,
+			max_number,
+			pay_day,
+			pay_type,
+			period_type,
+			sign_date,
+			status,
+			product_id,
+			purpose_id,
+			area_id,
+			industry_id,
+			gathering_bank,
+			gathering_name,
+			gathering_number,
+			guarant_number,
+			pay_options,
+			pay_day_type,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			server_fee,	 
+			mange_fee,	 	 
+			if_advance,		
+			advance_damages,	
+			late_fee,			
+			rate_discont,		 
+			if_interest_relief,  
+			grace_period,		
+			grace_period_penalty,
+			late_penalty,		 
+			late_penalty_fee,	
+			remarks,
+			del_flag,
+			type,
+			wtypeId,
+			transfer_id,
+			is_transfered,
+			organ_id
+		) VALUES (
+			#{id},
+			#{souceContract.id},
+			#{bakTime},
+			#{dataStatus},	
+			#{parent.id},
+			#{applyDate},
+			#{contractNumber},
+			#{customerId},
+			#{customerName},
+			#{customerType},
+			#{fiveLevel},
+			#{isExtend},
+			#{loanAmount},
+			#{loanDate},
+			#{loanPeriod},
+			#{loanRate},
+			#{loanRateType},
+			#{payPrincipalDate},
+			#{loanType},
+			#{maxNumber},
+			#{payDay},
+			#{payType},
+			#{periodType},
+			#{signDate},
+			#{status},
+			#{productId},
+			#{purposeId},
+			#{areaIdT},
+			#{industryId},
+			#{gatheringBank},
+			#{gatheringName},
+			#{gatheringNumber},
+			#{guarantNumber},
+			#{payOptions},
+			#{payDayType},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{serverFee},	 
+			#{mangeFee},	 	 
+			#{ifAdvance},		
+			#{advanceDamages},	
+			#{lateFee},			
+			#{rateDiscont},		 
+			#{ifInterestRelief},  
+			#{gracePeriod},		
+			#{gracePeriodPenalty},
+			#{latePenalty},		 
+			#{latePenaltyFee},	 
+			#{remarks},
+			#{delFlag},
+			#{type},
+			#{wtypeId},
+			#{transferId},
+			#{isTransfered},
+			#{organId}
+		)
+	</insert>
+	
+	<!-- add by shirf 20160406 -->
+	<update id="updateStatus">
+		UPDATE t_loan_contract_bak SET
+			status = #{status}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="update">
+		UPDATE t_loan_contract_bak SET 	
+			parent_id = #{parent.id},
+			souce_contract_id = #{souceContract.id},
+			bak_time = #{bakTime},
+			data_status = #{dataStatus},		
+			apply_date = #{applyDate},
+			contract_number = #{contractNumber},
+			customer_id = #{customerId},
+			customer_name = #{customerName},
+			customer_type = #{customerType},
+			five_level = #{fiveLevel},
+			is_extend = #{isExtend},
+			loan_amount = #{loanAmount},
+			loan_date = #{loanDate},
+			loan_period = #{loanPeriod},
+			loan_rate = #{loanRate},
+			loan_rate_type = #{loanRateType},
+			pay_principal_date = #{payPrincipalDate},
+			loan_type = #{loanType},
+			max_number = #{maxNumber},
+			pay_day = #{payDay},
+			pay_type = #{payType},
+			period_type = #{periodType},
+			sign_date = #{signDate},
+			status = #{status},
+			product_id = #{productId},
+			purpose_id = #{purposeId},
+			area_id = #{areaIdT},
+			industry_id = #{industryId},
+			gathering_bank = #{gatheringBank},
+			gathering_name = #{gatheringName},
+			gathering_number = #{gatheringNumber},
+			guarant_number = #{guarantNumber},
+			pay_options = #{payOptions},
+			pay_day_type = #{payDayType},
+			server_fee = #{serverFee},	 
+			mange_fee = #{mangeFee},	 	 
+			if_advance = #{ifAdvance},		
+			advance_damages = #{advanceDamages},	
+			late_fee = #{lateFee},			
+			rate_discont = #{rateDiscont},		 
+			if_interest_relief = #{ifInterestRelief},  
+			grace_period = #{gracePeriod},		
+			grace_period_penalty = #{gracePeriodPenalty},
+			late_penalty = #{latePenalty},		 
+			late_penalty_fee = #{latePenaltyFee},	  
+			remarks = #{remarks},
+			transfer_id = #{transferId},
+			is_transfered = #{isTransfered}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_loan_contract_bak SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- add by shirf 20160419 -->
+	<update id="updateBusinessId" >
+		UPDATE ${table} SET 
+			business_id = #{businessId}
+		WHERE business_id = #{id}
+	</update>
+	
+	
+	<!-- 逾期合同-->
+	<select id="findOverdueList" resultType="TLoanContractBak">
+		SELECT 
+			<include refid="tLoanContractColumns"/>
+		FROM t_loan_contract_bak a
+		<include refid="tLoanContractJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			and exists(SELECT 1 FROM t_repay_plan rp 
+					WHERE rp.del_flag = #{DEL_FLAG_NORMAL} 
+					AND rp.status in('0','1') 
+					AND rp.loan_contract_id = a.id
+					AND NOW() > rp.account_date )
+			<if test="contractNumber != null and contractNumber != ''">
+				AND a.contract_number = #{contractNumber}
+			</if>
+			<if test="loanPeriod != null and loanPeriod != ''">
+				AND a.loan_period = #{loanPeriod}
+			</if>
+			<if test="loanType != null and loanType != ''">
+				AND a.loan_type = #{loanType}
+			</if>
+			<if test="isDeal != null and isDeal != ''">
+				AND a.is_deal = #{isDeal}
+			</if>
+			<if test="productId != null and productId != ''"><!-- by zzm 20160519 -->
+				AND a.product_id = #{productId}
+			</if>
+			
+			<if test="status != null and status != ''">
+				AND  
+				<if test="dbName == 'oracle'">','||#{status}||',' like '%,'||a.status||',%'</if>
+				<if test="dbName == 'mssql'"> ','+#{status}+',' like '%,'+a.status+',%'</if>
+				<if test="dbName == 'mysql'">concat(',',#{status},',') like  concat('%,',a.status,',%')</if>
+			</if>
+			<if test="currentUser.company.id != ''">
+			   and a.organ_id = #{currentUser.company.id}
+			</if>
+			<if test="parent != null and parent.id != null and parent.id != ''">
+				AND a.parent_id = #{parent.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<!-- 未贷前调查的合同-->
+	<select id="findPreLoanIList" resultType="TLoanContractBak">
+		SELECT 
+			<include refid="tLoanContractColumns"/>
+		FROM t_loan_contract_bak a
+		<include refid="tLoanContractJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			and NOT EXISTS(SELECT 1 FROM t_pre_loan_investigate pi 
+					WHERE pi.del_flag = #{DEL_FLAG_NORMAL} 
+					AND pi.loan_contract_id = a.id)
+			<if test="contractNumber != null and contractNumber != ''">
+				AND a.contract_number = #{contractNumber}
+			</if>
+			<if test="productId != null and productId != ''"><!-- by zzm 20160519 -->
+				AND a.product_id = #{productId}
+			</if>
+			
+			<if test="status != null and status != ''">
+				AND  
+				<if test="dbName == 'oracle'">','||#{status}||',' like '%,'||a.status||',%'</if>
+				<if test="dbName == 'mssql'"> ','+#{status}+',' like '%,'+a.status+',%'</if>
+				<if test="dbName == 'mysql'">concat(',',#{status},',') like  concat('%,',a.status,',%')</if>
+			</if>
+			<if test="currentUser.company.id != ''">
+			   and a.organ_id = #{currentUser.company.id}
+			</if>
+			<if test="parent != null and parent.id != null and parent.id != ''">
+				AND a.parent_id = #{parent.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+</mapper>

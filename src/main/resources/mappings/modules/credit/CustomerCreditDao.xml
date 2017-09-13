@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.credit.dao.CustomerCreditDao">
+    
+	<sql id="customerCreditColumns">
+		a.id AS "id",
+		a.customer_id AS "customerId",
+		a.credit AS "credit",
+		a.score AS "score",
+		a.balance AS "balance",
+		a.credit_way AS "creditWay",
+		a.rel_id AS "relId",
+		a.creditDate AS "creditDate",
+		a.overDate AS "overDate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="customerCreditJoins">
+	</sql>
+    
+	<select id="get" resultType="CustomerCredit">
+		SELECT 
+			<include refid="customerCreditColumns"/>
+		FROM t_customer_credit a
+		<include refid="customerCreditJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getByCustorId" resultType="CustomerCredit">
+		SELECT 
+			<include refid="customerCreditColumns"/>
+		FROM t_customer_credit a
+		<include refid="customerCreditJoins"/>
+		WHERE a.del_flag = 0
+		AND a.customer_id = #{customerId}
+	</select>
+	
+	<select id="findList" resultType="CustomerCredit">
+		SELECT 
+			<include refid="customerCreditColumns"/>
+		FROM t_customer_credit a
+		<include refid="customerCreditJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="customerId != null and customerId != ''">
+				AND a.customer_id = #{customerId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CustomerCredit">
+		SELECT 
+			<include refid="customerCreditColumns"/>
+		FROM t_customer_credit a
+		<include refid="customerCreditJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_customer_credit(
+			id,
+			customer_id,
+			credit,
+			score,
+			balance,
+			credit_way,
+			rel_id,
+			creditDate,
+			overDate,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{customerId},
+			#{credit},
+			#{score},
+			#{balance},
+			#{creditWay},
+			#{relId},
+			#{creditDate},
+			#{overDate},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_customer_credit SET 	
+			customer_id = #{customerId},
+			credit = #{credit},
+			score = #{score},
+			balance = #{balance},
+			credit_way = #{creditWay},
+			rel_id = #{relId},
+			creditDate = #{creditDate},
+			overDate = #{overDate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_customer_credit SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="deleteByCondition">
+		UPDATE t_customer_credit SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		<where>
+			customer_id = #{customerId} AND rel_id = #{relId}
+		</where>
+	</update>
+	
+</mapper>

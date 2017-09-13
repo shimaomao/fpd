@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.product.dao.ProProductRelDao">
+    
+	<sql id="proProductRelColumns">
+		a.id AS "id",
+		a.product_id AS "productId",
+		a.product_manager_id AS "productManagerId",
+		a.tfinancial_product_id AS "tfinancialProductId",
+		a.t_product_id AS "tProductId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="proProductRelJoins">
+	</sql>
+    
+	<select id="get" resultType="ProProductRel">
+		SELECT 
+			<include refid="proProductRelColumns"/>
+		FROM pro_product_rel a
+		<include refid="proProductRelJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findProProductRel" resultType="ProProductRel">
+		SELECT 
+			<include refid="proProductRelColumns"/>
+		FROM pro_product_rel a
+		<include refid="proProductRelJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="productId != null and productId != ''">
+				AND a.product_id = #{productId}
+			</if>
+			<if test="productManagerId != null and productManagerId != ''">
+				AND a.product_manager_id = #{productManagerId}
+			</if>
+			<if test="tfinancialProductId != null and tfinancialProductId != ''">
+				AND a.tfinancial_product_id = #{tfinancialProductId}
+			</if>
+			<if test="tProductId != null and tProductId != ''">
+				AND a.t_product_id = #{tProductId}
+			</if>
+		</where>
+		limit 1
+	</select>
+	
+	<select id="findList" resultType="ProProductRel">
+		SELECT 
+			<include refid="proProductRelColumns"/>
+		FROM pro_product_rel a
+		<include refid="proProductRelJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="productId != null and productId != ''">
+				AND a.product_id = #{productId}
+			</if>
+			<if test="productManagerId != null and productManagerId != ''">
+				AND a.product_manager_id = #{productManagerId}
+			</if>
+			<if test="tfinancialProductId != null and tfinancialProductId != ''">
+				AND a.tfinancial_product_id = #{tfinancialProductId}
+			</if>
+			<if test="tProductId != null and tProductId != ''">
+				AND a.t_product_id = #{tProductId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ProProductRel">
+		SELECT 
+			<include refid="proProductRelColumns"/>
+		FROM pro_product_rel a
+		<include refid="proProductRelJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO pro_product_rel(
+			id,
+			product_id,
+			product_manager_id,
+			tfinancial_product_id,
+			t_product_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{productId},
+			#{productManagerId},
+			#{tfinancialProductId},
+			#{tProductId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE pro_product_rel SET 	
+			product_id = #{productId},
+			product_manager_id = #{productManagerId},
+			tfinancial_product_id = #{tfinancialProductId},
+			t_product_id = #{tProductId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE pro_product_rel SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

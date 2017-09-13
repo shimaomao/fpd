@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.contract.dao.ExtendPlanDao">
+    
+	<sql id="extendPlanColumns">
+		a.id AS "id",
+		a.urge_count AS "urgeCount",
+		a.interest AS "interest",
+		a.real_interest AS "realInterest",
+		a.is_overdue AS "isOverdue",
+		a.num AS "num",
+		a.over_date AS "overDate",
+		a.pay_interest_date AS "payInterestDate",
+		a.pay_interest_status AS "payInterestStatus",
+		a.principal AS "principal",
+		a.principal_real AS "principalReal",
+		a.status AS "status",
+		a.overdue_day AS "overdueDay",
+		a.start_date AS "startDate",
+		a.account_date AS "accountDate",
+		a.extend_contract_id AS "extendContractId",
+		a.end_date AS "endDate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="extendPlanJoins">
+	</sql>
+    
+	<select id="get" resultType="ExtendPlan">
+		SELECT 
+			<include refid="extendPlanColumns"/>
+		FROM t_extend_plan a
+		<include refid="extendPlanJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ExtendPlan">
+		SELECT 
+			<include refid="extendPlanColumns"/>
+		FROM t_extend_plan a
+		<include refid="extendPlanJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="extendContractId != null and extendContractId != ''">
+				AND a.extend_contract_id = #{extendContractId}
+			</if>
+			<if test="isOverdue != null and isOverdue != ''">
+				AND a.is_overdue = #{isOverdue}
+			</if>
+			<if test="status != null">
+				AND  
+				<if test="dbName == 'oracle'">','||#{status}||',' like '%,'||a.status||',%'</if>
+				<if test="dbName == 'mssql'"> ','+#{status}+',' like '%,'+a.status+',%'</if>
+				<if test="dbName == 'mysql'">concat(',',#{status},',') like  concat('%,',a.status,',%')</if>
+			</if>
+			<if test="beginAccountDate != null and endAccountDate != null and beginAccountDate != '' and endAccountDate != ''">
+				AND a.account_date BETWEEN #{beginAccountDate} AND #{endAccountDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ExtendPlan">
+		SELECT 
+			<include refid="extendPlanColumns"/>
+		FROM t_extend_plan a
+		<include refid="extendPlanJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_extend_plan(
+			id,
+			urge_count,
+			interest,
+			real_interest,
+			is_overdue,
+			num,
+			over_date,
+			pay_interest_date,
+			pay_interest_status,
+			principal,
+			principal_real,
+			status,
+			overdue_day,
+			start_date,
+			account_date,
+			extend_contract_id,
+			end_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{urgeCount},
+			#{interest},
+			#{realInterest},
+			#{isOverdue},
+			#{num},
+			#{overDate},
+			#{payInterestDate},
+			#{payInterestStatus},
+			#{principal},
+			#{principalReal},
+			#{status},
+			#{overdueDay},
+			#{startDate},
+			#{accountDate},
+			#{extendContractId},
+			#{endDate},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_extend_plan SET 	
+			urge_count = #{urgeCount},
+			interest = #{interest},
+			real_interest = #{realInterest},
+			is_overdue = #{isOverdue},
+			num = #{num},
+			over_date = #{overDate},
+			pay_interest_date = #{payInterestDate},
+			pay_interest_status = #{payInterestStatus},
+			principal = #{principal},
+			principal_real = #{principalReal},
+			status = #{status},
+			overdue_day = #{overdueDay},
+			start_date = #{startDate},
+			account_date = #{accountDate},
+			extend_contract_id = #{extendContractId},
+			end_date = #{endDate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_extend_plan SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

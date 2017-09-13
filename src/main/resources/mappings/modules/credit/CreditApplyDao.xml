@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.credit.dao.CreditApplyDao">
+    
+	<sql id="creditApplyColumns">
+		a.id AS "id",
+		a.proc_ins_id AS "procInsId",
+		a.apply_num AS "applyNum",
+		a.customer_id AS "customerId",
+		a.customer_type AS "customerType",
+		a.credit AS "credit",
+		a.valid_month as "validMonth",
+		a.expiration_date AS "expirationDate",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.customer_name AS "customerName",
+  		a.product_id as "productId",
+  		a.product_name as "productname",
+		m.name AS "companyName", 
+		e.name AS "employeeName",
+		d.balance AS "residueCredit"
+	</sql>         
+	
+	<sql id="creditApplyJoins">
+	LEFT JOIN sys_office o ON o.id = a.organ_id
+	LEFT JOIN sys_user u ON u.id = a.create_by
+	LEFT JOIN t_company m on m.id  = a.customer_id
+    LEFT JOIN t_employee e on e.id = a.customer_id
+    LEFT JOIN t_customer_credit d on a.id = d.rel_id
+    
+	</sql>
+    
+	<select id="get" resultType="CreditApply">
+		SELECT 
+			<include refid="creditApplyColumns"/>
+		FROM t_credit_apply a
+		<include refid="creditApplyJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getNewestCredit" resultType="CreditApply">
+		SELECT 
+			<include refid="creditApplyColumns"/>
+		FROM t_credit_apply a
+		<include refid="creditApplyJoins"/>
+		WHERE
+			a.del_flag = '0'
+			AND a.status = 'success'
+			AND a.customer_id = #{customerId}
+		ORDER BY a.create_date DESC limit 1
+	</select>
+	
+	<select id="getCreditApplyByStatus" resultType="Integer">
+		SELECT 
+			count(*)
+		FROM t_credit_apply a
+		WHERE a.status = #{status}
+		AND a.customer_id=#{customerId}
+	</select>
+	
+	<select id="getByCondition" resultType="CreditApply">
+		SELECT 
+			<include refid="creditApplyColumns"/>
+		FROM t_credit_apply a
+		<include refid="creditApplyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="procInsId != null and procInsId != ''">
+				AND a.proc_ins_id = #{procInsId}
+			</if>
+			<if test="applyNum != null and applyNum != ''">
+				AND a.apply_num LIKE 
+					<if test="dbName == 'oracle'">'%'||#{applyNum}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{applyNum}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{applyNum},'%')</if>
+			</if>
+			<if test="organId != null and organId != ''">
+			   and a.organ_id = #{organId}
+			</if>
+			<if test="customerId != null and customerId != ''">
+				AND a.customer_id = #{customerId}
+			</if>
+			<if test="customerType != null and customerType != ''">
+				AND a.customer_type = #{customerType}
+			</if>
+			<if test="remarks != null and remarks != ''">
+				AND a.remarks = #{remarks}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		limit 1
+	</select>
+	
+	<select id="findList" resultType="CreditApply">
+		SELECT 
+			<include refid="creditApplyColumns"/>
+		FROM t_credit_apply a
+		<include refid="creditApplyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="procInsId != null and procInsId != ''">
+				AND a.proc_ins_id = #{procInsId}
+			</if>
+			<if test="customerName != null and customerName != ''">
+				AND a.customer_name = #{customerName}
+			</if>
+			<if test="applyNum != null and applyNum != ''">
+				AND a.apply_num LIKE 
+					<if test="dbName == 'oracle'">'%'||#{applyNum}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{applyNum}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{applyNum},'%')</if>
+			</if>
+			<if test="currentUser.company.id != ''">
+			   and a.organ_id = #{currentUser.company.id}
+			</if>
+			<if test="customerId != null and customerId != ''">
+				AND a.customer_id = #{customerId}
+			</if>
+			<!-- 过滤只有创建人才能签订合同 start-->
+			<if test="createBy!= null">
+			  <if test="createBy.id != null and createBy.id != ''">
+				AND a.create_by = #{createBy.id}
+			  </if>
+			</if>
+			<!--end-->
+			<if test="customerType != null and customerType != ''">
+				AND a.customer_type = #{customerType}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>		
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CreditApply">
+		SELECT 
+			<include refid="creditApplyColumns"/>
+		FROM t_credit_apply a
+		<include refid="creditApplyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+<!-- 	<insert id="insert">
+		INSERT INTO t_credit_apply(
+			id,
+			proc_ins_id,
+			apply_num,
+			customer_id,
+			customer_type,
+			credit,
+			expiration_date,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{procInsId},
+			#{applyNum},
+			#{customerId},
+			#{customerType},
+			#{credit},
+			#{expirationDate},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert> -->
+	
+	<insert id="insert">
+		INSERT INTO t_credit_apply(
+			id,
+			proc_ins_id,
+			audit_type,
+			apply_num,
+			customer_id,
+			customer_type,
+			customer_name,
+			product_id,
+			product_name,
+			credit,
+			expiration_date,
+			valid_month,
+			credit_type,
+			approve,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{procInsId},
+			#{auditType},
+			#{applyNum},
+			#{customerId},
+			#{customerType},
+			#{customerName},
+			#{productId},
+			#{productname},
+			#{credit},
+			#{expirationDate},
+			#{validMonth},
+			#{creditType},
+			#{approve},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_credit_apply SET 	
+			proc_ins_id = #{procInsId},
+			apply_num = #{applyNum},
+			customer_id = #{customerId},
+			customer_type = #{customerType},
+			credit = #{credit},
+			expiration_date = #{expirationDate},
+			status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_credit_apply SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="deleteByCondition">
+		UPDATE t_credit_apply SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		<where>
+			customer_id = #{customerId} AND remarks = #{remarks}
+			<if test="organId != null and organId != ''">
+			   and organ_id = #{organId}
+			</if>
+		</where>	
+	</update>
+	
+</mapper>

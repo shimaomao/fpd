@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.employee.dao.CsHouseDao">
+    
+	<sql id="csHouseColumns">
+		a.id AS "id",
+		a.customer_id AS "customerId",
+		a.ownership_no AS "ownershipNo",
+		a.common_status AS "commonStatus",
+		a.owner AS "owner",
+		a.programme AS "programme",
+		a.location AS "location",
+		a.purpose AS "purpose",
+		a.buy_time AS "buyTime",
+		a.buyprice AS "buyprice",
+		a.build_time AS "buildTime",
+		a.usages AS "usages",
+		a.is_mortgage AS "isMortgage",
+		a.mortgagee AS "mortgagee",
+		a.mortgage_amount AS "mortgageAmount",
+		a.mortgage_balance AS "mortgageBalance",
+		a.loan_due_time AS "loanDueTime",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="csHouseJoins">
+	</sql>
+    
+	<select id="get" resultType="CsHouse">
+		SELECT 
+			<include refid="csHouseColumns"/>
+		FROM t_cs_house a
+		<include refid="csHouseJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CsHouse">
+		SELECT 
+			<include refid="csHouseColumns"/>
+		FROM t_cs_house a
+		<include refid="csHouseJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="customerId != null and customerId != ''">
+				AND a.customer_id = #{customerId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CsHouse">
+		SELECT 
+			<include refid="csHouseColumns"/>
+		FROM t_cs_house a
+		<include refid="csHouseJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_cs_house(
+			id,
+			customer_id,
+			ownership_no,
+			common_status,
+			owner,
+			programme,
+			location,
+			purpose,
+			buy_time,
+			buyprice,
+			build_time,
+			usages,
+			is_mortgage,
+			mortgagee,
+			mortgage_amount,
+			mortgage_balance,
+			loan_due_time,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{customerId},
+			#{ownershipNo},
+			#{commonStatus},
+			#{owner},
+			#{programme},
+			#{location},
+			#{purpose},
+			#{buyTime},
+			#{buyprice},
+			#{buildTime},
+			#{usages},
+			#{isMortgage},
+			#{mortgagee},
+			#{mortgageAmount},
+			#{mortgageBalance},
+			#{loanDueTime},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_cs_house SET 	
+			customer_id = #{customerId},
+			ownership_no = #{ownershipNo},
+			common_status = #{commonStatus},
+			owner = #{owner},
+			programme = #{programme},
+			location = #{location},
+			purpose = #{purpose},
+			buy_time = #{buyTime},
+			buyprice = #{buyprice},
+			build_time = #{buildTime},
+			usages = #{usages},
+			is_mortgage = #{isMortgage},
+			mortgagee = #{mortgagee},
+			mortgage_amount = #{mortgageAmount},
+			mortgage_balance = #{mortgageBalance},
+			loan_due_time = #{loanDueTime},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_cs_house SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

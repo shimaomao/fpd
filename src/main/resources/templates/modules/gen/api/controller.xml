@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>controller</name>
+	<filePath>src/main/api/${packageName}/${moduleName}/web/${subModuleName}</filePath>
+	<fileName>${ClassName}ApiController.java</fileName>
+	<content><![CDATA[
+/**
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
+ * @Project fpd 
+ * @Title ${ClassName}ApiController.java
+ * @Package ${packageName}.${moduleName}.controller<#if subModuleName != "">.${subModuleName}</#if>
+ * @Description [[_xxx_]]文件 
+ * @author Chenh
+ * @date 2016年5月12日 下午3:08:57 
+ * @version V1.0   
+ */ 
+package ${packageName}.${moduleName}.web<#if subModuleName != "">.${subModuleName}</#if>;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.wanfin.fpd.common.persistence.ApiEntity;
+import com.wanfin.fpd.common.utils.StringUtils;
+import com.wanfin.fpd.common.web.BaseController;
+import com.wanfin.fpd.core.ApiSval.JKey;
+import com.wanfin.fpd.core.ApiUriInfo;
+import com.wanfin.fpd.core.CollectionRes;
+import com.wanfin.fpd.core.Link;
+import com.wanfin.fpd.core.Link.LinkKey;
+import com.wanfin.fpd.core.LinkMapping;
+import ${packageName}.${moduleName}.entity<#if subModuleName != "">.${subModuleName}</#if>.${ClassName};
+import ${packageName}.${moduleName}.resource<#if subModuleName != "">.${subModuleName}</#if>.${ClassName}ApiResource;
+import ${packageName}.${moduleName}.service<#if subModuleName != "">.${subModuleName}</#if>.${ClassName}ApiService;
+import ${packageName}.xxyyzz.entity.Xxyyzz;
+import ${packageName}.xxyyzz.resource.XxyyzzApiResource;
+import ${packageName}.xxyyzz.service.XxyyzzApiService;
+
+import com.wanfin.fpd.modules.repayplan.entity.TRepayPlan;
+import com.wanfin.fpd.modules.repayplan.resource.TRepayPlanApiResource;
+import com.wanfin.fpd.modules.repayplan.service.TRepayPlanService;
+
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
+
+
+/**
+ * @Description [[_${functionName}_]] ${ClassName}ApiController控制器类
+ * @author ${functionAuthor}
+ * @version ${functionVersion}
+ * @date 2016年5月12日 下午3:08:57 
+ */
+@Controller
+@Api(value = LinkKey.${ClassName}, description = "${functionName}")
+@RequestMapping(value = Link.API_PATH + LinkKey.${ClassName})
+public class ${ClassName}ApiController extends BaseController{
+	private ${ClassName}ApiResource apiResource = new ${ClassName}ApiResource();
+	private XxyyzzApiResource xxyyzzApiResource = new XxyyzzApiResource();
+	
+	@Autowired
+	private ${ClassName}ApiService entityService;
+	
+	@Autowired
+	private XxyyzzService xxyyzzService;
+	
+	/************************************************************************************************
+	 * 【标准接口】
+	 ************************************************************************************************/
+	/**
+	 * @Description  GET 获取[[_${functionName}_]]列表(getAll)
+	 * 返回所有[[_${functionName}_]]的列表（数组）
+	 * 
+	 * @param entity [[_${functionName}_]]参数
+	 * @return
+	 * @author Chenh 
+	 * @date 2016年6月6日 下午12:57:08
+	 */
+	@ResponseBody
+	@ApiResponses({
+		@ApiResponse(code=200, message="成功！"),
+		
+		@ApiResponse(code=400, message="错误请求！"),
+		@ApiResponse(code=401, message="未授权！"),
+		@ApiResponse(code=403, message="禁止访问！"),
+		@ApiResponse(code=404, message="服务不存在！"),
+
+		@ApiResponse(code=500, message="服务器内部错误！")
+	})
+	@RequestMapping(value = {LinkMapping.GET_ALL}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON)
+   	@ApiOperation(value = "根据条件获取${functionName}列表", notes = "根据条件获取${functionName}列表", position = 1, httpMethod = "GET", response = Response.class)
+	public Response get(@ApiParam(name="entity", value="${functionName}(entity)") ${ClassName} entity) {
+        Collection<${ClassName}> entitys = entityService.findList(entity);
+		entity.setOper(RequestMethod.GET);
+        return Response.ok(apiResource.getCollectionRes(entity, entitys, LinkKey.${ClassName})).build();
+	}
+	
+	/**
+	 * @Description GET/{id} 获取[[_${functionName}_]](getById)
+	 * 返回单个资源[[_${functionName}_]]
+	 * 
+	 * @param entity [[_${functionName}_]]参数
+	 * @param id  [[_${functionName}_]]主键
+	 * @return
+	 * @author Chenh 
+	 * @date 2016年6月6日 下午12:58:28
+	 */
+	@ResponseBody
+	@ApiResponses({
+		@ApiResponse(code=200, message="成功！"),
+		
+		@ApiResponse(code=400, message="错误请求！"),
+		@ApiResponse(code=401, message="未授权！"),
+		@ApiResponse(code=403, message="禁止访问！"),
+		@ApiResponse(code=404, message="服务不存在！"),
+		
+		@ApiResponse(code=500, message="服务器内部错误！")
+	})
+	@RequestMapping(value = {LinkMapping.GET_BY_ID}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "根据ID获取${functionName}", notes = "根据用户名获取${functionName}", position = 2, httpMethod = "GET", response = Response.class)
+	public Response get(@ApiParam(name="entity", value="${functionName}(entity)") ${ClassName} entity, @PathVariable(JKey.ID) @ApiParam(name="id", value="主键(id)") String id) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		if(StringUtils.isNotEmpty(id)){
+			${ClassName} enty = entityService.get(id);
+			if (enty == null) {
+				return Response.noContent().build();
+			}
+			entity.setOper(RequestMethod.GET);
+			return Response.ok(apiResource.getApiResourceByExpand(entity, enty)).build();
+		}
+		result.put(JKey.MSG, "错误请求！");
+		return Response.status(Status.BAD_REQUEST).entity(result).build();
+	}
+	
+	/**
+	 * @Description POST 新增[[_${functionName}_]](save)
+	 * 创建某个指定[[_${functionName}_]]的信息
+	 * 返回新生成的资源[[_${functionName}_]]
+	 * 
+	 * @param entity [[_${functionName}_]]参数
+	 * @return
+	 * @author Chenh 
+	 * @date 2016年6月6日 下午12:59:04
+	 */
+	@ApiIgnore
+	@ResponseBody
+	@ApiResponses({
+		@ApiResponse(code=201, message="创建成功！"),
+		
+		@ApiResponse(code=400, message="错误请求！"),
+		@ApiResponse(code=401, message="未授权！"),
+		@ApiResponse(code=403, message="禁止访问！"),
+		@ApiResponse(code=404, message="服务不存在！"),
+		@ApiResponse(code=405, message="GET请求不支持！"),
+		@ApiResponse(code=412, message="参数错误！"),
+
+		@ApiResponse(code=500, message="服务器内部错误！")
+	})
+	@RequestMapping(value = {LinkMapping.SAVE}, method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "创建${functionName}", notes = "创建${functionName}", position = 3, httpMethod = "POST", response = Response.class)
+    public Response post(@ApiParam(name="entity", value="${functionName}(entity)") @RequestBody ${ClassName} entity) {
+        Map<String, Object> result = new HashMap<String, Object>();
+		if(entity != null){
+	        if(StringUtils.isEmpty(entity.getId())){
+		        entityService.save(entity);
+				entity.setOper(RequestMethod.POST);
+		        return resCreated(new ${ClassName}ApiResource(entity));
+	    	}
+			result.put(JKey.MSG, "参数错误！");
+			return Response.status(Status.PRECONDITION_FAILED).entity(result).build();
+    	}
+    	result.put(JKey.MSG, "错误请求！");
+		return Response.status(Status.BAD_REQUEST).entity(result).build();
+	}
+	
+	/**
+	 * @Description PUT 修改[[_${functionName}_]](update)
+	 * 	更新某个指定[[_${functionName}_]]的信息
+	 * 	返回[[_${functionName}_]]全部信息
+	 * 
+	 * @param entity [[_${functionName}_]]参数
+	 * @param id  [[_${functionName}_]]主键
+	 * @return
+	 * @author Chenh 
+	 * @date 2016年6月6日 下午12:58:28
+	 */
+	@ApiIgnore
+	@ResponseBody
+	@ApiResponses({
+		@ApiResponse(code=200, message="修改成功！"),
+		
+		@ApiResponse(code=400, message="错误请求！"),
+		@ApiResponse(code=401, message="未授权！"),
+		@ApiResponse(code=403, message="禁止访问！"),
+		@ApiResponse(code=404, message="服务不存在！"),
+		@ApiResponse(code=412, message="参数错误！"),
+
+		@ApiResponse(code=500, message="服务器内部错误！")
+	})
+	@RequestMapping(value = {LinkMapping.UPDATE}, method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "根据ID更新${functionName}", notes = "根据ID更新${functionName}", position = 4, httpMethod = "PUT", response = Response.class)
+    public Response put(@ApiParam(name="entity", value="${functionName}(entity)") @RequestBody ${ClassName} entity, @PathVariable(JKey.ID) @ApiParam(name="id", value="主键(id)") String id) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		if(entity != null){
+			if(StringUtils.isNotEmpty(entity.getId())){
+				entityService.save(entity);
+				entity.setOper(RequestMethod.PUT);
+				return Response.ok(new ${ClassName}ApiResource(entity)).build();
+			}
+			result.put(JKey.MSG, "参数错误！");
+			return Response.status(Status.PRECONDITION_FAILED).entity(result).build();
+		}
+    	result.put(JKey.MSG, "错误请求！");
+		return Response.status(Status.BAD_REQUEST).entity(result).build();
+	}
+	
+	/**
+	 * @Description PATCH 修改[[_${functionName}_]](update)
+	 * 	更新某个指定[[_${functionName}_]]的信息
+	 * 	返回[[_${functionName}_]]部分信息
+	 * 
+	 * @param entity [[_${functionName}_]]参数
+	 * @param id  [[_${functionName}_]]主键
+	 * @return
+	 * @author Chenh 
+	 * @date 2016年6月6日 下午12:58:28
+	 */
+	@ApiIgnore
+	@ResponseBody
+	@ApiResponses({
+		@ApiResponse(code=200, message="修改成功！"),
+		
+		@ApiResponse(code=400, message="错误请求！"),
+		@ApiResponse(code=401, message="未授权！"),
+		@ApiResponse(code=403, message="禁止访问！"),
+		@ApiResponse(code=404, message="服务不存在！"),
+		@ApiResponse(code=412, message="参数错误！"),
+
+		@ApiResponse(code=500, message="服务器内部错误！")
+	})
+	@RequestMapping(value = {LinkMapping.UPDATE}, method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "根据ID更新${functionName}", notes = "根据ID更新${functionName}", position = 5, httpMethod = "PATCH", response = Response.class)
+   	public Response patch(@ApiParam(name="entity", value="${functionName}(entity)") @RequestBody ${ClassName} entity, @PathVariable(JKey.ID) @ApiParam(name="id", value="主键(id)") String id) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		if(entity != null){
+			if(StringUtils.isNotEmpty(entity.getId())){
+				entityService.save(entity);
+				entity.setOper(RequestMethod.PATCH);
+				return Response.ok(new ${ClassName}ApiResource(entity)).build();
+			}
+			result.put(JKey.MSG, "参数错误！");
+			return Response.status(Status.PRECONDITION_FAILED).entity(result).build();
+		}
+    	result.put(JKey.MSG, "错误请求！");
+		return Response.status(Status.BAD_REQUEST).entity(result).build();
+	}
+	
+	/**
+	 * @Description DELETE 删除[[_${functionName}_]](delete)
+	 * 	删除某个指定[[_${functionName}_]]的信息
+	 * 	返回空信息
+	 * 
+	 * @param id  [[_${functionName}_]]主键
+	 * @return
+	 * @author Chenh 
+	 * @date 2016年6月6日 下午1:21:29
+	 */
+	@ApiIgnore
+	@ResponseBody
+	@ApiResponses({
+		@ApiResponse(code=200, message="删除成功！"),
+		
+		@ApiResponse(code=400, message="错误请求！"),
+		@ApiResponse(code=401, message="未授权！"),
+		@ApiResponse(code=403, message="禁止访问！"),
+		@ApiResponse(code=404, message="服务不存在！"),
+
+		@ApiResponse(code=500, message="服务器内部错误！")
+	})
+	@RequestMapping(value = {LinkMapping.DELETE_BY_ID}, method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "根据ID删除${functionName}", notes = "根据ID删除${functionName}", position = 6, httpMethod = "PATCH", response = Response.class)
+	public Response delete(@PathVariable(JKey.ID) @ApiParam(name="id", value="主键(id)") String id) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		if(StringUtils.isNotEmpty(id)){
+			entityService.delete(new ${ClassName}(id));
+			result.put(JKey.ID, id);
+			result.put(JKey.MSG, "删除成功！");
+			return Response.ok().entity(result).build();
+		}
+		result.put(JKey.MSG, "错误请求！");
+		return Response.status(Status.BAD_REQUEST).entity(result).build();
+	}
+	
+	
+	/************************************************************************************************
+	 * 【标准关联接口】
+	 * Xxyyzz ZZZZZZ
+	 ************************************************************************************************/
+	/**
+	 * @Description  GET/{rid}/xxyyzzs 根据${functionName}获取[[_ZZZZZZ_]]列表(Xxyyzz_GET_ALL)
+	 * 返回所有[[_ZZZZZZ_]]的列表（数组）
+	 * 
+	 * @param info API链接[[_ZZZZZZ_]]
+	 * @param entity [[_ZZZZZZ_]]参数
+	 * @param rid [[_${functionName}_]]主键
+	 * @return
+	 * @author Chenh 
+	 * @date 2016年6月6日 下午12:57:08
+	 */
+	@ResponseBody
+	@ApiResponses({
+		@ApiResponse(code=200, message="成功！"),
+		
+		@ApiResponse(code=400, message="错误请求！"),
+		@ApiResponse(code=401, message="未授权！"),
+		@ApiResponse(code=403, message="禁止访问！"),
+		@ApiResponse(code=404, message="服务不存在！"),
+		@ApiResponse(code=412, message="参数错误！"),
+
+		@ApiResponse(code=500, message="服务器内部错误！")
+	})
+	@RequestMapping(value = {LinkMapping.M_Xxyyzz.GET_ALL}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON)
+   	@ApiOperation(value = "根据条件获取ZZZZZZ对象列表", notes = "根据条件名获取ZZZZZZ对象列表", position = 1, httpMethod = "GET", response = Response.class)
+	public Response getXxyyzzs(@ApiParam(name="entity", value="ZZZZZZ(entity)") Xxyyzz entity, @PathVariable(JKey.RID) @ApiParam(name="rid", value="${functionName}(rid)") String rid) {
+        Map<String, Object> result = new HashMap<String, Object>();
+		if(entity == null || StringUtils.isEmpty(rid)){
+			result.put(JKey.MSG, "错误请求！");
+			return Response.status(Status.BAD_REQUEST).entity(result).build();
+		}
+		// TODO Start
+		entity.setLoanContractId(rid);
+		entity.setIsValid(Cons.YES);
+		// TODO End
+		if(StringUtils.isEmpty(entity.getLoanContractId())){
+			result.put(JKey.MSG, "参数错误！");
+			return Response.status(Status.PRECONDITION_FAILED).entity(result).build();
+		}
+        Collection<Xxyyzz> entitys = xxyyzzService.findList(entity);
+		entity.setOper(RequestMethod.GET);
+        return Response.ok(xxyyzzApiResource.getCollectionRes(entity, entitys, LinkKey.Xxyyzz)).build();
+	}
+}]]>
+	</content>
+</template>

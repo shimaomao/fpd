@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>dao</name>
+	<filePath>src/main/api/${packageName}/${moduleName}/dao/${subModuleName}</filePath>
+	<fileName>${ClassName}ApiDao.java</fileName>
+	<content><![CDATA[
+/**
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
+ */
+package ${packageName}.${moduleName}.dao<#if subModuleName != "">.${subModuleName}</#if>;
+
+import java.util.List;
+
+import com.wanfin.fpd.common.persistence.CrudDao;
+import com.wanfin.fpd.common.persistence.annotation.MyBatisDao;
+import ${packageName}.${moduleName}.entity<#if subModuleName != "">.${subModuleName}</#if>.${ClassName};
+
+/**
+ * ${functionName}DAO接口
+ * @author ${functionAuthor}
+ * @version ${functionVersion}
+ */
+@MyBatisDao
+public interface ${ClassName}ApiDao extends CrudDao<${ClassName}> {
+	/**
+	 * 根据ids字符串查询数据列表（,分隔符）;
+	 * @param ids
+	 * @return
+	 */
+	public List<${ClassName}> findListByIds(String ids);
+	
+	/**
+	 * 根据ids字符列表查询数据列表;
+	 * @param ids
+	 * @return
+	 */
+	public List<${ClassName}> findListByIds(List<String> ids);
+
+	/**
+	 * 批量插入数据
+	 * @param entity
+	 * @return
+	 */
+	public void insertPL(List<${ClassName}> entitys);
+	
+	/**
+	 * 批量更新数据
+	 * @param entity
+	 * @return
+	 */
+	public void updatePL(List<${ClassName}> entitys);
+	
+	/**
+	 * 批量删除数据（一般为逻辑删除，更新del_flag字段为1）
+	 * @param id
+	 * @see public int deletePL(${ClassName} entity)
+	 * @return
+	 */
+	public void deletePL(String ids);
+	
+	/**
+	 * 批量删除数据（一般为逻辑删除，更新del_flag字段为1）
+	 * @param entity
+	 * @return
+	 */
+	public void deletePL(List<${ClassName}> entitys);
+	
+	/**
+	 * 删除数据（一般为物理删除）
+	 * @param id
+	 * @see public int deleteWL(${ClassName} entity)
+	 * @return
+	 */
+	public void deleteWL(String id);
+	
+	/**
+	 * 删除数据（一般为物理删除）
+	 * @param entity
+	 * @return
+	 */
+	public void deleteWL(${ClassName} entity);
+	
+	/**
+	 * 批量删除数据（一般为逻辑删除，更新del_flag字段为1）
+	 * @param id
+	 * @see public int deleteWLPL(${ClassName} entity)
+	 * @return
+	 */
+	public void deleteWLPL(String ids);
+	
+	/**
+	 * 批量删除数据（一般为逻辑删除，更新del_flag字段为1）
+	 * @param entity
+	 * @return
+	 */
+	public void deleteWLPL(List<${ClassName}> entity);
+}]]>
+	</content>
+</template>

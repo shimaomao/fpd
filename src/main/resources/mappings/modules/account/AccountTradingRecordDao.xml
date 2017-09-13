@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.account.dao.AccountTradingRecordDao">
+    
+	<sql id="tradingRecordColumns">
+		a.id AS "id",
+		a.seq_no AS "seqNo",
+		a.trading_type AS "tradingType",
+		a.trading_way AS "tradingWay",
+		a.amount AS "amount",
+		a.available_balance AS "availableBalance",
+		a.total_funds AS "totalFunds",
+		a.freezing_funds AS "freezingFunds",
+		a.record_type AS "recordType",
+		a.account_id AS "accountId",
+		a.trading_time AS "tradingTime",
+		a.business_id AS "businessId",
+		a.business_name AS "businessName",
+		a.create_by AS "createBy.id", 
+  		a.create_date AS "createDate",
+  		a.update_by AS "updateBy.id", 
+  		a.update_date AS "updateDate",
+  		a.remarks AS "remarks", 
+  		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="tradingRecordJoins">
+	</sql>
+    
+	<select id="get" resultType="TradingRecord">
+		SELECT 
+			<include refid="tradingRecordColumns"/>
+		FROM bs_trading_record a
+		<include refid="tradingRecordJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TradingRecord">
+		SELECT 
+			<include refid="tradingRecordColumns"/>
+		FROM bs_trading_record a
+		<include refid="tradingRecordJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TradingRecord">
+		SELECT 
+			<include refid="tradingRecordColumns"/>
+		FROM bs_trading_record a
+		<include refid="tradingRecordJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<!-- 批量查询 -->
+	<!-- 根据Ids查询 -->
+	<select id="findListByIds" resultType="TradingRecord">
+		SELECT 
+			<include refid="tradingRecordColumns"/>
+		FROM bs_trading_record a
+		<include refid="tradingRecordJoins"/>
+		<where>										
+			  
+		</where>
+		<choose>
+			<when test="id != null and id != ''">
+				<if test="id != null and id != ''">
+					AND a.id in (${id})
+				</if>
+			</when>
+			<otherwise>
+				AND a.id = -1
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+		
+	<!-- 插入数据 -->
+	<insert id="insert">
+		INSERT INTO bs_trading_record(
+			id,
+			seq_no,
+			trading_type,
+			trading_way,
+			amount,
+			available_balance,
+			total_funds,
+		    freezing_funds,
+		    record_type,
+			account_id,
+			trading_time,
+			business_id,
+			business_name,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{seqNo},
+			#{tradingType},
+			#{tradingWay},
+			#{amount},
+			#{availableBalance},
+			#{totalFunds},
+			#{freezingFunds},
+			#{recordType},
+			#{accountId},
+			#{tradingTime},
+			#{businessId},
+			#{businessName},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+
+	<!-- 更新-->
+	<update id="update">
+		UPDATE bs_trading_record SET 	
+       			seq_no = #{seqNo},
+			trading_type = #{tradingType},
+			trading_way = #{tradingWay},
+			amount = #{amount},
+			available_balance = #{availableBalance},
+			total_funds = #{totalFunds},
+			freezing_funds = #{freezingFunds},
+			record_type = #{recordType},
+			account_id = #{accountId},
+			trading_time = #{tradingTime},
+			business_id = #{businessId},
+			business_name = #{businessName},
+			create_by=#{createBy.id},
+			create_date=#{createDate},
+			update_by=#{updateBy.id},
+			update_date=#{updateDate},
+			remarks=#{remarks},
+			del_flag=#{delFlag}
+		WHERE id = #{id}
+	</update>
+	<!-- 如果涉及批量修改操作这里需要修改关于item这块字段等需要核实修改 -->
+    <!-- 批量更新 在拼装mysql链接的url时，为其加上allowMultiQueries参数，设置为true 控制台会显示update 1条 实际更新多条-->
+	<update id="updatePL" parameterType = "java.util.List">
+		<foreach collection="list" item="item" index="idx" separator=";" > 
+			UPDATE bs_trading_record SET 
+					seq_no = #{item.seqNo},
+				trading_type = #{item.tradingType},
+				trading_way = #{item.tradingWay},
+				amount = #{item.amount},
+				login_name = #{item.loginName},
+				trader = #{item.trader},
+				trading_time = #{item.tradingTime},
+				business_id = #{item.businessId},
+				business_name = #{item.businessName}
+			WHERE id = #{item.id}
+	    </foreach>
+	</update>
+	
+	<!-- 逻辑删除 -->
+	<update id="delete">
+		DELETE FROM bs_trading_record
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 批量逻辑删除 -->
+	<update id = "deleteLJPL">
+		DELETE FROM bs_trading_record
+		WHERE  1=1 
+		<if test="id != null and id != ''">
+	    	AND id in ( ${id})
+	    </if>
+	</update>
+	
+	<!-- 物理删除 -->
+	<delete id = "deleteWLById">
+		DELETE FROM bs_trading_record
+			WHERE id = #{id}
+	</delete>
+	
+	<!-- 批量物理删除 -->
+	<delete id = "deleteWLPL">
+    	DELETE FROM bs_trading_record
+			WHERE  1=1 
+			<if test="id != null and id != ''">
+	    	   AND id in ( ${id})
+	        </if>
+    </delete>
+	
+</mapper>

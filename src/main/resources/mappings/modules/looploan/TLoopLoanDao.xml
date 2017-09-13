@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.looploan.dao.TLoopLoanDao">
+    
+	<sql id="tLoopLoanColumns">
+		a.id AS "id",
+		a.proc_ins_id AS "procInsId",
+		a.card_num AS "cardNum",
+		a.card_type AS "cardType",
+		a.credit_price AS "creditPrice",
+		a.remain_price AS "remainPrice",
+		a.loop_number AS "loopNumber",
+		a.max_number AS "maxNumber",
+		a.period AS "period",
+		a.period_type AS "periodType",
+		a.apply_date AS "applyDate",
+		a.customer_id AS "customerId",
+		a.customer_name AS "customerName",
+		a.customer_type AS "customerType",
+		a.float_rate AS "floatRate",
+		a.loan_rate_type AS "loanRateType",
+		a.loan_type AS "loanType",
+		a.pay_type AS "payType",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.industry AS "industry",
+		a.area AS "area",
+		a.purpose AS "purpose",
+		a.product_id AS "product.id"
+	</sql>
+	
+	<sql id="tLoopLoanJoins">
+		LEFT JOIN sys_area a27 ON a27.id = a.area
+	</sql>
+    
+	<select id="get" resultType="TLoopLoan">
+		SELECT 
+			<include refid="tLoopLoanColumns"/>
+		FROM t_loop_loan a
+		<include refid="tLoopLoanJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TLoopLoan">
+		SELECT 
+			<include refid="tLoopLoanColumns"/>
+		FROM t_loop_loan a
+		<include refid="tLoopLoanJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="loopNumber != null and loopNumber != ''">
+				AND a.loop_number LIKE 
+					<if test="dbName == 'oracle'">'%'||#{loopNumber}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{loopNumber}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{loopNumber},'%')</if>
+			</if>
+			<if test="period != null and period != ''">
+				AND a.period = #{period}
+			</if>
+			<if test="periodType != null and periodType != ''">
+				AND a.period_type = #{periodType}
+			</if>
+			<if test="customerName != null and customerName != ''">
+				AND a.customer_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{customerName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{customerName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{customerName},'%')</if>
+			</if>
+			<if test="product != null and product.id != null and product !=''">
+				AND a.product_id = #{product.id}
+			</if>
+			<if test="status != null and status !=''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TLoopLoan">
+		SELECT 
+			<include refid="tLoopLoanColumns"/>
+		FROM t_loop_loan a
+		<include refid="tLoopLoanJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_loop_loan(
+			id,
+			product_id,
+			card_num,
+			card_type,
+			credit_price,
+			remain_price,
+			loop_number,
+			max_number,
+			period,
+			period_type,
+			apply_date,
+			customer_id,
+			customer_name,
+			customer_type,
+			float_rate,
+			loan_rate_type,
+			loan_type,
+			pay_type,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id,
+			industry,
+			area,
+			purpose
+		) VALUES (
+			#{id},
+			#{product.id},
+			#{cardNum},
+			#{cardType},
+			#{creditPrice},
+			#{remainPrice},
+			#{loopNumber},
+			#{maxNumber},
+			#{period},
+			#{periodType},
+			#{applyDate},
+			#{customerId},
+			#{customerName},
+			#{customerType},
+			#{floatRate},
+			#{loanRateType},
+			#{loanType},
+			#{payType},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId},
+			#{industry},
+			#{area},
+			#{purpose}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_loop_loan SET 	
+			card_num = #{cardNum},
+			card_type = #{cardType},
+			credit_price = #{creditPrice},
+			remain_price = #{remainPrice},
+			loop_number = #{loopNumber},
+			max_number = #{maxNumber},
+			period = #{period},
+			period_type = #{periodType},
+			apply_date = #{applyDate},
+			customer_id = #{customerId},
+			customer_name = #{customerName},
+			customer_type = #{customerType},
+			float_rate = #{floatRate},
+			loan_rate_type = #{loanRateType},
+			loan_type = #{loanType},
+			pay_type = #{payType},
+			status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId},
+			industry = #{industry},
+			area = #{area},
+			purpose = #{purpose}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_loop_loan SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="remmoveBanding" >
+		UPDATE ${table} SET 
+			del_flag = '1'
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateBusinessId" >
+		UPDATE ${table} SET 
+			business_id = #{businessId}
+		WHERE business_id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.collateral.dao.MachineDao">
+    
+	<sql id="machineColumns">
+		a.id AS "id",
+		a.bian_xian AS "bianXian",
+		a.control AS "control",
+		a.dengji AS "dengji",
+		a.general AS "general",
+		a.made_date AS "madeDate",
+		a.method AS "method",
+		a.mo_money AS "moMoney",
+		a.model AS "model",
+		a.name AS "name",
+		a.new_money AS "newMoney",
+		a.performance AS "performance",
+		a.second1 AS "second1",
+		a.second2 AS "second2",
+		a.use_date AS "useDate",
+		a.dizhi_contract_id AS "dizhiContractId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="machineJoins">
+	</sql>
+    
+	<select id="get" resultType="Machine">
+		SELECT 
+			<include refid="machineColumns"/>
+		FROM t_machine a
+		<include refid="machineJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<!--add by shirf-->
+	<select id="getByPledge" resultType="Machine">
+		SELECT 
+			<include refid="machineColumns"/>
+		FROM t_machine a
+		<include refid="machineJoins"/>
+		WHERE a.dizhi_contract_id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Machine">
+		SELECT 
+			<include refid="machineColumns"/>
+		FROM t_machine a
+		<include refid="machineJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="control != null and control != ''">
+				AND a.control = #{control}
+			</if>
+			<if test="method != null and method != ''">
+				AND a.method = #{method}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="beginUseDate != null and endUseDate != null and beginUseDate != '' and endUseDate != ''">
+				AND a.use_date BETWEEN #{beginUseDate} AND #{endUseDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Machine">
+		SELECT 
+			<include refid="machineColumns"/>
+		FROM t_machine a
+		<include refid="machineJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_machine(
+			id,
+			bian_xian,
+			control,
+			dengji,
+			general,
+			made_date,
+			method,
+			mo_money,
+			model,
+			name,
+			new_money,
+			performance,
+			second1,
+			second2,
+			use_date,
+			dizhi_contract_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{bianXian},
+			#{control},
+			#{dengji},
+			#{general},
+			#{madeDate},
+			#{method},
+			#{moMoney},
+			#{model},
+			#{name},
+			#{newMoney},
+			#{performance},
+			#{second1},
+			#{second2},
+			#{useDate},
+			#{dizhiContractId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_machine SET 	
+			bian_xian = #{bianXian},
+			control = #{control},
+			dengji = #{dengji},
+			general = #{general},
+			made_date = #{madeDate},
+			method = #{method},
+			mo_money = #{moMoney},
+			model = #{model},
+			name = #{name},
+			new_money = #{newMoney},
+			performance = #{performance},
+			second1 = #{second1},
+			second2 = #{second2},
+			use_date = #{useDate},
+			dizhi_contract_id = #{dizhiContractId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_machine SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

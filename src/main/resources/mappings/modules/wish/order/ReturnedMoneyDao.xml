@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.wish.order.dao.ReturnedMoneyDao">
+    
+	<sql id="returnedMoneyColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.enter_time AS "enterTime",
+		a.amount AS "amount",
+		a.account_num AS "accountNum",
+		a.account_name AS "accountName",
+		a.account_bank AS "accountBank",
+		a.merchant_id AS "merchantId",
+		a.channel AS "channel",
+		a.real_pay_money AS "realPayMoney",
+		a.real_pay_currency AS "realPayCurrency",
+
+		a.order_id AS "orderId",
+		a.account_province AS "accountProvice",
+		a.account_city AS "accountCity",
+	<!-- 	a.account_category AS "account_category", -->
+		a.account_type AS "accountType",
+		a.identity_type AS "identityType",
+		a.identity_num AS "identityNum",
+		a.trade_currency AS "tradeCurrency",
+		a.merchant_order_id AS "merchantOrderId",
+		a.merchant_serial_num AS "merchantSerialNum",
+		a.repay_loan_money AS "repayLoanMoney",
+		a.is_deal AS "isDeal",
+		a.fee AS "fee",
+		a.user_id AS "userId",
+		a.user_name AS "userName",
+		a.cash_back_status AS "cashBackStatus",
+		a.last_back_amount AS "lastBackAmount",
+		a.status AS "status",
+		a.file_name AS "fileName",
+		a.file_id AS "fileId"
+		
+	</sql>
+	
+	<sql id="returnedMoneyJoins">
+	</sql>
+    
+	<select id="get" resultType="ReturnedMoney">
+		SELECT 
+			<include refid="returnedMoneyColumns"/>
+		FROM t_returned_money a
+		<include refid="returnedMoneyJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ReturnedMoney">
+		SELECT 
+			<include refid="returnedMoneyColumns"/>
+		FROM t_returned_money a
+		<include refid="returnedMoneyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="isDeal != null and isDeal != ''">
+				AND  
+				<if test="dbName == 'oracle'">','||#{isDeal}||',' like '%,'||a.is_deal||',%'</if>
+				<if test="dbName == 'mssql'"> ','+#{isDeal}+',' like '%,'+a.is_deal+',%'</if>
+				<if test="dbName == 'mysql'">concat(',',#{isDeal},',') like  concat('%,',a.is_deal,',%')</if>
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	<select id="findListByIds" resultType="ReturnedMoney">
+		SELECT 
+			<include refid="returnedMoneyColumns"/>
+		FROM t_returned_money a
+		<include refid="returnedMoneyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL} AND a.id in (${id})
+			<if test="isDeal != null and isDeal != ''">
+				AND a.is_deal = #{isDeal}
+			</if>
+			<if test="cashBackStatus != null and cashBackStatus != ''">
+				AND a.cash_back_status = #{cashBackStatus}
+			</if>
+		</where>
+		
+	</select>
+	
+	<select id="findAllList" resultType="ReturnedMoney">
+		SELECT 
+			<include refid="returnedMoneyColumns"/>
+		FROM t_returned_money a
+		<include refid="returnedMoneyJoins"/>
+		<where>
+			<!-- a.del_flag = #{DEL_FLAG_NORMAL} -->
+			0=0
+			<if test="isDeal != null and isDeal != ''">
+				AND  
+				<if test="dbName == 'oracle'">','||#{isDeal}||',' like '%,'||a.is_deal||',%'</if>
+				<if test="dbName == 'mssql'"> ','+#{isDeal}+',' like '%,'+a.is_deal+',%'</if>
+				<if test="dbName == 'mysql'">concat(',',#{isDeal},',') like  concat('%,',a.is_deal,',%')</if>
+			</if>
+			<if test="cashBackStatus != null and cashBackStatus != ''">
+				AND a.cash_back_status = #{cashBackStatus}
+			</if>
+			<if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
+			<if test="id != null and id != ''">
+				AND  
+				<if test="dbName == 'oracle'">','||#{id}||',' like '%,'||a.id||',%'</if>
+				<if test="dbName == 'mssql'"> ','+#{id}+',' like '%,'+a.id+',%'</if>
+				<if test="dbName == 'mysql'">concat(',',#{id},',') like  concat('%,',a.id,',%')</if>
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_returned_money(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			enter_time,
+			amount,
+			account_num,
+			account_name,
+			account_bank,
+			merchant_id,
+			channel,
+			real_pay_money,
+			real_pay_currency,
+			
+			order_id,
+			account_province,
+			account_city,
+			<!-- account_category, -->
+			account_type,
+			identity_type,
+			identity_num,
+			trade_currency,
+			merchant_order_id,
+			merchant_serial_num,
+			repay_loan_money,
+		    is_deal,
+		    fee,
+		    user_id,
+		    user_name,
+		    cash_back_status,
+		    last_back_amount,
+		    status,
+		    file_name,
+		    file_id
+			
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{enterTime},
+			#{amount},
+			#{accountNum},
+			#{accountName},
+			#{accountBank},
+			#{merchantId},
+			#{channel},
+			#{realPayMoney},
+			#{realPayCurrency},
+			
+			#{orderId},
+			#{accountProvice},
+			#{accountCity},
+			<!-- #{account_category}, -->
+			#{accountType},
+			#{identityType},
+			#{identityNum},
+			#{tradeCurrency},
+			#{merchantOrderId},
+			#{merchantSerialNum},
+			#{repayLoanMoney},
+			#{isDeal},
+			#{fee},
+			#{userId},
+			#{userName},
+			#{cashBackStatus},
+		    #{lastBackAmount},
+		    #{status},
+		    #{fileName},
+		    #{fileId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_returned_money SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			enter_time = #{enterTime},
+			amount = #{amount},
+			account_num = #{accountNum},
+			account_name = #{accountName},
+			account_bank = #{accountBank},
+			merchant_id = #{merchantId},
+			channel = #{channel},
+			real_pay_money = #{realPayMoney},
+			real_pay_currency = #{realPayCurrency},
+			
+			order_id = #{orderId},
+			account_province = #{accountProvice},
+			account_city = #{accountCity},
+			<!-- account_category = #{account_category}, -->
+			account_type = #{accountType},
+			identity_type = #{identityType},
+			identity_num = #{identityNum},
+			trade_currency = #{tradeCurrency},
+			merchant_order_id = #{merchantOrderId},
+			merchant_serial_num = #{merchantSerialNum},
+			repay_loan_money=#{repayLoanMoney},
+		    is_deal=#{isDeal},
+		    fee=#{fee},
+		    user_id=#{userId},
+		    user_name=#{userName},
+		    cash_back_status=#{cashBackStatus},
+		    last_back_amount=#{lastBackAmount},
+		    status = #{status},
+		    file_name = #{fileName},
+		    file_id = #{fileId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_returned_money SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

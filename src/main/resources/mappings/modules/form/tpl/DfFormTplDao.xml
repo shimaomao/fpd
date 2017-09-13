@@ -1,0 +1,561 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.form.dao.tpl.DfFormTplDao">
+    
+	<sql id="dfFormTplColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.sname AS "sname",
+		a.type AS "type",
+		a.model AS "model",
+		a.modsub AS "modsub",
+		a.json AS "json",
+		a.originalhtml AS "originalhtml",
+		a.parsehtml AS "parsehtml",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.office_id AS "office.id",
+		a.rel_id AS "relId",
+		a.product_id AS "product.id",
+		a.parent_id AS "parent.id",
+		o15.name AS "office.name",
+		u. NAME AS "u.name"
+	</sql>
+    
+	<sql id="dfFormTplProductColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.sname AS "sname",
+		a.type AS "type",
+		a.model AS "model",
+		a.modsub AS "modsub",
+		a.json AS "json",
+		a.originalhtml AS "originalhtml",
+		a.parsehtml AS "parsehtml",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.office_id AS "office.id",
+		a.rel_id AS "relId",
+		a.product_id AS "product.id",
+		a.parent_id AS "parent.id",
+		o15.name AS "office.name",
+		
+		p.wtypeId AS "product.wtypeId",
+		p.type AS "product.type",
+		p.name AS "product.name",
+		p.detail AS "product.detail"
+	</sql>
+	
+	<sql id="dfFormTplJoins">
+		LEFT JOIN sys_office o15 ON o15.id = a.office_id
+		LEFT JOIN sys_office o ON o.id = a.organ_id
+		LEFT JOIN sys_user u ON u.id = a.create_by
+	</sql>
+	<sql id="dfFormTplProductJoins">
+		<include refid="dfFormTplJoins"/>
+		LEFT JOIN t_product p ON p.id = a.product_id
+	</sql>
+    
+	<select id="get" resultType="DfFormTpl">
+		SELECT 
+			<include refid="dfFormTplColumns"/>
+		FROM df_form_tpl a
+		<include refid="dfFormTplJoins"/>
+		WHERE a.id = #{id}
+	</select>
+    
+	<select id="getByModelRelId" resultType="DfFormTpl">
+		SELECT 
+			<include refid="dfFormTplColumns"/>
+		FROM df_form_tpl a
+		<include refid="dfFormTplJoins"/>
+		WHERE a.rel_id = #{relId} AND a.model = #{model}
+		<if test="modsub != null and modsub != ''">
+			AND a.modsub = #{modsub}
+		</if>
+		<if test="product != null">
+			<if test="product.id != null and product.id != ''">
+				AND a.product_id = #{product.id}
+			</if>
+			<if test="product.name != null and product.name != ''">
+				AND p.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{product.name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{product.name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{product.name},'%')</if>
+			</if>
+		</if>
+	</select>
+    
+	<select id="getByModelHasRel" resultType="DfFormTpl">
+		SELECT 
+			<include refid="dfFormTplColumns"/>
+		FROM df_form_tpl a
+		<include refid="dfFormTplJoins"/>
+		WHERE a.model = #{model} AND a.rel_id != ''
+		<if test="modsub != null and modsub != ''">
+			AND a.modsub = #{modsub}
+		</if>
+		<if test="product != null">
+			<if test="product.id != null and product.id != ''">
+				AND a.product_id = #{product.id}
+			</if>
+		</if>
+	</select>
+	
+	<select id="getByProductHasRelId" resultType="DfFormTpl">
+		SELECT 
+			<include refid="dfFormTplColumns"/>
+		FROM df_form_tpl a
+		<include refid="dfFormTplJoins"/>
+		WHERE 1=1 
+		AND a.rel_id != '' 
+		AND a.rel_id is not null
+		<if test="product != null and product.id != null and product.id != ''">
+				AND a.product_id = #{product.id}
+		</if>
+	</select>
+	
+	<select id="findList" resultType="DfFormTpl">
+		SELECT 
+			<include refid="dfFormTplColumns"/>
+		FROM df_form_tpl a
+		<include refid="dfFormTplJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="organId != null and organId != ''">
+			   AND a.organ_id = #{organId}
+			</if>
+			<if test="organId == null or organId == ''">
+				<if test="currentUser.company.id != ''">
+				   AND a.organ_id = #{currentUser.company.id}
+				</if>
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="office != null and office.id != null and office.id != ''">
+				AND a.office_id = #{office.id}
+			</if>
+			<if test="sname != null and sname != ''">
+				AND a.sname LIKE 
+					<if test="dbName == 'oracle'">'%'||#{sname}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{sname}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{sname},'%')</if>
+			</if>
+			<if test="relId != null and relId != ''">
+			   AND a.rel_id = #{relId}
+			</if>
+			<if test="model != null and model != ''">
+				AND a.model = #{model}
+			</if>
+			<if test="modsub != null and modsub != ''">
+				AND a.modsub = #{modsub}
+			</if>
+			<if test="product != null">
+				<if test="product.id != null and product.id != ''">
+					AND a.product_id = #{product.id}
+				</if>
+			</if>
+		</where>
+		
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY product_id ASC, name DESC, a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	<!-- 获取表单模块  relId = null 的数据-->
+	<select id="findTplList" resultType="DfFormTpl">
+		SELECT 
+			<include refid="dfFormTplColumns"/>
+		FROM df_form_tpl a
+		<include refid="dfFormTplJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND (a.rel_id IS NULL OR a.rel_id = '')
+			AND (a.product_id IS NULL OR a.product_id = '')
+			<if test="product != null">
+				<if test="product.id != null and product.id != ''">
+					AND a.product_id = #{product.id}
+				</if>
+			</if>
+			<if test="currentUser.company.id != ''">
+			   AND a.organ_id = #{currentUser.company.id}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="sname != null and sname != ''">
+				AND a.sname LIKE 
+					<if test="dbName == 'oracle'">'%'||#{sname}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{sname}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{sname},'%')</if>
+			</if>
+			<if test="model != null and model != ''">
+				AND a.model = #{model}
+			</if>
+			<if test="modsub != null and modsub != ''">
+				AND a.modsub = #{modsub}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY product_id ASC, name DESC, a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<!-- 获取表单模块  relId != null 的数据-->
+	<select id="findRelTplList" resultType="DfFormTpl">
+		SELECT 
+			<include refid="dfFormTplProductColumns"/>
+		FROM df_form_tpl a
+		<include refid="dfFormTplProductJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND (a.rel_id is not null AND a.rel_id != '')
+			<if test="product != null">
+				<if test="product.id != null and product.id != ''">
+					AND a.product_id = #{product.id}
+				</if>
+			</if>
+			<if test="currentUser.company.id != ''">
+			   AND a.organ_id = #{currentUser.company.id}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="sname != null and sname != ''">
+				AND a.sname LIKE 
+					<if test="dbName == 'oracle'">'%'||#{sname}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{sname}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{sname},'%')</if>
+			</if>
+			<if test="model != null and model != ''">
+				AND a.model = #{model}
+			</if>
+			<if test="modsub != null and modsub != ''">
+				AND a.modsub = #{modsub}
+			</if>
+			<if test="product != null">
+				<if test="product.id != null and product.id != ''">
+					AND a.product_id = #{product.id}
+				</if>
+				<if test="product.name != null and product.name != ''">
+					AND p.name LIKE 
+						<if test="dbName == 'oracle'">'%'||#{product.name}||'%'</if>
+						<if test="dbName == 'mssql'">'%'+#{product.name}+'%'</if>
+						<if test="dbName == 'mysql'">concat('%',#{product.name},'%')</if>
+				</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY product_id ASC, name DESC, a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	
+	<!-- 获取表单-租户初始化表单模板-->
+	<select id="findInitTplList" resultType="SysInitFormtplVo">
+		SELECT 
+			<include refid="dfFormTplColumns"/>
+		FROM df_form_tpl a
+		<include refid="dfFormTplJoins"/>
+		<where> 1=1 
+ 			AND (a.parent_id = '' or a.parent_id IS NULL)
+ 			AND (a.rel_id = '' or a.rel_id IS NULL)
+ 			AND (a.product_id = '' or a.product_id IS NULL)
+ 			AND a.create_by = '1'
+ 			AND a.modsub = 'tpl'
+
+			<if test="model != null and model != ''">
+				AND a.model = #{model}
+			</if>
+			<if test="delFlag != null and delFlag != ''">
+				AND a.del_flag = #{delFlag}
+			</if>
+			<if test="delFlag == null or delFlag == ''">
+				AND a.del_flag = #{DEL_FLAG_NORMAL}
+			</if>
+			and a.office_id IN 
+			<foreach collection="officeIds" index="index" item="officeId" separator="," open="(" close=")">
+				#{officeId}
+			</foreach>
+		</where>
+	</select>
+	
+	
+	<!-- 获取表单-租户表单模板-->
+	<select id="findInitTplListByOrgan" resultType="SysInitFormtplVo">
+		SELECT 
+			<include refid="dfFormTplColumns"/>
+		FROM df_form_tpl a
+		<include refid="dfFormTplJoins"/>
+		<where> 1=1 
+ 			AND (a.rel_id = '' or a.rel_id IS NULL)
+ 			AND (a.product_id = '' or a.product_id IS NULL)
+ 			AND a.modsub = 'tpl'
+			<if test="model != null and model != ''">
+				AND a.model = #{model}
+			</if>
+			<if test="delFlag != null and delFlag != ''">
+				AND a.del_flag = #{delFlag}
+			</if>
+			<if test="delFlag == null or delFlag == ''">
+				AND a.del_flag = #{DEL_FLAG_NORMAL}
+			</if>
+			and a.office_id IN 
+			<foreach collection="officeIds" index="index" item="officeId" separator="," open="(" close=")">
+				#{officeId}
+			</foreach>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="DfFormTpl">
+		SELECT 
+			<include refid="dfFormTplColumns"/>
+		FROM df_form_tpl a
+		<include refid="dfFormTplJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="currentUser.company.id != ''">
+			   AND a.organ_id = #{currentUser.company.id}
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY product_id ASC, name DESC, a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO df_form_tpl(
+			id,
+			name,
+			sname,
+			type,
+			model,
+			modsub,
+			json,
+			originalhtml,
+			parsehtml,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id,
+			office_id,
+			rel_id,
+			product_id,
+			parent_id
+		) VALUES (
+			#{id},
+			#{name},
+			#{sname},
+			#{type},
+			#{model},
+			#{modsub},
+			#{json},
+			#{originalhtml},
+			#{parsehtml},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId},
+			#{office.id},
+			#{relId},
+			#{product.id},
+			#{parent.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE df_form_tpl SET 	
+			name = #{name},
+			sname = #{sname},
+			type = #{type},
+			model = #{model},
+			modsub = #{modsub},
+			json = #{json},
+			originalhtml = #{originalhtml},
+			parsehtml = #{parsehtml},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			office_id = #{office.id},
+			rel_id = #{relId},
+			product_id = #{product.id},
+			parent_id = #{parent.id}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		UPDATE df_form_tpl SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<delete id="deleteWL" >
+		DELETE FROM df_form_tpl
+		WHERE id = #{id}
+	</delete>
+
+	<delete id="deleteWLByRelId" >
+		DELETE FROM df_form_tpl
+		WHERE rel_id = #{relId}
+	</delete>
+
+	<delete id="deleteWLByProduct" >
+		DELETE FROM df_form_tpl
+		WHERE product_id = #{product.id}
+	</delete>
+
+	<delete id="deleteWLByProductId" >
+		DELETE FROM df_form_tpl
+		WHERE product_id = #{productId}
+	</delete>
+	
+	<update id="deleteByRelId">
+		UPDATE df_form_tpl SET 
+			del_flag = '1'
+		WHERE rel_id = #{relId}
+	</update>
+	
+	<update id="deleteByProductId">
+		UPDATE df_form_tpl SET 
+			del_flag = '1'
+		WHERE product_id = #{product.id}
+	</update>
+	
+	<update id="updateByInit">
+		UPDATE df_form_tpl SET 	
+			type = #{dfFormTpl.type},
+			model = #{dfFormTpl.model},
+			modsub = #{dfFormTpl.modsub},
+			json = #{dfFormTpl.json},
+			originalhtml = #{dfFormTpl.originalhtml},
+			parsehtml = #{dfFormTpl.parsehtml},
+			update_date = #{dfFormTpl.updateDate},
+			remarks = #{dfFormTpl.remarks} 
+		WHERE model = #{dfFormTpl.model}
+		and (rel_id = '' or rel_id IS NULL)
+		and (product_id = '' or product_id IS NULL)
+		and modsub = 'tpl' 
+		and organ_id IN 
+		<foreach collection="officeIds" index="index" item="officeId" separator="," open="(" close=")">
+			#{officeId}
+		</foreach>
+	</update>
+	
+	<select id="getFormTplId" resultType="DfFormTpl">
+		SELECT 
+		a.id AS "id",
+		a.name AS "name",
+		a.sname AS "sname",
+		a.type AS "type",
+		a.model AS "model",
+		a.modsub AS "modsub",
+		a.json AS "json",
+		a.originalhtml AS "originalhtml",
+		a.parsehtml AS "parsehtml",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.office_id AS "office.id",
+		a.rel_id AS "relId",
+		a.product_id AS "product.id",
+		a.parent_id AS "parent.id"
+		FROM df_form_tpl a
+		where a.model = #{model}
+		and (a.parent_id = '' or a.parent_id IS NULL)
+		and a.create_by = '1'
+		and a.modsub = 'tpl' 
+		and a.organ_id = #{organId} 
+		and a.del_flag = #{delFlag}
+	</select>
+		
+	<select id="getRelateDfFormTpl" resultType="DfFormTpl">
+		SELECT 
+		a.id AS "id",
+		a.name AS "name",
+		a.sname AS "sname",
+		a.type AS "type",
+		a.model AS "model",
+		a.modsub AS "modsub",
+		a.json AS "json",
+		a.originalhtml AS "originalhtml",
+		a.parsehtml AS "parsehtml",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.office_id AS "office.id",
+		a.rel_id AS "relId",
+		a.product_id AS "product.id",
+		a.parent_id AS "parent.id"
+		FROM df_form_tpl a
+		where a.del_flag = 0 and a.parent_id = #{relateId}
+	</select>
+	
+	<update id="updateRelateDfFormTpl">
+		UPDATE df_form_tpl SET 	
+			json = #{dfFormTpl.json},
+			originalhtml = #{dfFormTpl.originalhtml},
+			parsehtml = #{dfFormTpl.parsehtml},
+			update_date = #{dfFormTpl.updateDate},
+			remarks = #{dfFormTpl.remarks} 
+		WHERE  id IN 
+		<foreach collection="relateIds" index="index" item="relateId" separator="," open="(" close=")">
+			#{relateId}
+		</foreach>
+	</update>
+</mapper>

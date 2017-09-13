@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.guarantee.dao.TGuaranteeContractDao">
+    
+	<sql id="tGuaranteeContractColumns">
+		a.id AS "id",
+		a.address AS "address",
+		a.amount AS "amount",
+		a.card_num AS "cardNum",
+		a.card_type AS "cardType",
+		a.contract_date AS "contractDate",
+		a.guarantee_number AS "guaranteeNumber",
+		a.guarantee_type AS "guaranteeType",
+		a.period AS "period",
+		a.period_type AS "periodType",
+		a.rate AS "rate",
+		a.rate_type AS "rateType",
+		a.telephone AS "telephone",
+		a.business_table AS "businessTable",
+		a.business_id AS "businessId",
+		a.type AS "type",
+		a.assets_worth AS "assetsWorth",
+		a.guarantor_name AS "guarantorName",
+		a.guarantor_type AS "guarantorType",
+		a.main_assets AS "mainAssets",
+		a.post AS "post",
+		a.relation AS "relation",
+		a.surety AS "surety",
+		a.turnover AS "turnover",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.marital_status AS "maritalStatus",
+		a.other_guarantor AS "otherGuarantor",
+		a.debt_amount AS "debtAmount",
+		a.product_id AS "product.id",
+		b.contract_number AS "contractNumber",
+		b.customer_name as "customerName",
+		a.scan_flag AS "scanFlag",
+		o.name AS "companyName",
+		a.push_status AS "pushStatus"
+	</sql>
+	
+	<sql id="tGuaranteeContractJoins">
+	    LEFT JOIN t_loan_contract b ON b.id = a.business_id
+	    LEFT JOIN sys_office o ON o.id = a.organ_id
+		LEFT JOIN sys_user u ON u.id = a.create_by
+	</sql>
+    
+	<select id="get" resultType="TGuaranteeContract">
+		SELECT 
+			<include refid="tGuaranteeContractColumns"/>
+		FROM t_guarantee_contract a
+		<include refid="tGuaranteeContractJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TGuaranteeContract">
+		SELECT 
+			<include refid="tGuaranteeContractColumns"/>
+		FROM t_guarantee_contract a
+		<include refid="tGuaranteeContractJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="cardNum != null and cardNum != ''">
+				AND a.card_num = #{cardNum}
+			</if>
+			<if test="guarantorName != null and guarantorName != ''">
+				AND a.guarantor_name = #{guarantorName}
+			</if>
+			<if test="businessId != null and businessId != ''">
+				<!-- 为'null'表示选择为null的数据 -->
+				<if test="businessId == 'null'">
+				AND (a.business_id is null or a.business_id = '')
+				</if>
+				<if test="businessId != 'null'">
+				AND a.business_id = #{businessId}
+				</if>
+			</if>
+			<if test="businessTable != null and businessTable != ''">
+				AND a.business_table = #{businessTable}
+			</if>
+			<if test="product != null and product.id != null and product.id != ''">
+				AND a.product_id = #{product.id}
+			</if>
+			<if test="currentUser.company.id != ''">
+			   and a.organ_id = #{currentUser.company.id}
+			</if>
+			<if test="customerName != null and customerName != ''">
+				AND b.customer_name = #{customerName}
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	<select id="findListBybusinessId" resultType="TGuaranteeContract">
+		SELECT 
+			<include refid="tGuaranteeContractColumns"/>
+		FROM t_guarantee_contract a
+		<include refid="tGuaranteeContractJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="cardNum != null and cardNum != ''">
+				AND a.card_num = #{cardNum}
+			</if>
+			<if test="guarantorName != null and guarantorName != ''">
+				AND a.guarantor_name = #{guarantorName}
+			</if>
+			<if test="businessId != null and businessId != ''">
+				<!-- 为'null'表示选择为null的数据 -->
+				<if test="businessId == 'null'">
+				AND (a.business_id is null or a.business_id = '')
+				</if>
+				<if test="businessId != 'null'">
+				AND a.business_id = #{businessId}
+				</if>
+			</if>					
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	
+	
+	<select id="findAllList" resultType="TGuaranteeContract">
+		SELECT 
+			<include refid="tGuaranteeContractColumns"/>
+		FROM t_guarantee_contract a
+		<include refid="tGuaranteeContractJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findListByscanFlag" resultType="TGuaranteeContract">
+		SELECT 
+			<include refid="tGuaranteeContractColumns"/>
+		FROM t_guarantee_contract a
+		<include refid="tGuaranteeContractJoins"/>
+		<where>			
+			1=1
+			<if test="scanFlag != null and scanFlag != ''">
+			  and  a.scan_flag = #{scanFlag}
+			</if>		
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.organ_id DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_guarantee_contract(
+			id,
+			address,
+			amount,
+			card_num,
+			card_type,
+			contract_date,
+			guarantee_number,
+			guarantee_type,
+			period,
+			period_type,
+			rate,
+			rate_type,
+			telephone,
+			business_table,
+			business_id,
+			type,
+			assets_worth,
+			guarantor_name,
+			guarantor_type,
+			main_assets,
+			post,
+			relation,
+			surety,
+			turnover,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id,
+			product_id,
+			marital_status,
+		    other_guarantor,
+		    debt_amount,
+		    scan_flag,
+			push_status
+		) VALUES (
+			#{id},
+			#{address},
+			#{amount},
+			#{cardNum},
+			#{cardType},
+			#{contractDate},
+			#{guaranteeNumber},
+			#{guaranteeType},
+			#{period},
+			#{periodType},
+			#{rate},
+			#{rateType},
+			#{telephone},
+			#{businessTable},
+			#{businessId},
+			#{type},
+			#{assetsWorth},
+			#{guarantorName},
+			#{guarantorType},
+			#{mainAssets},
+			#{post},
+			#{relation},
+			#{surety},
+			#{turnover},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId},
+			#{product.id},
+			#{maritalStatus},
+		    #{otherGuarantor},
+		    #{debtAmount},
+		    #{scanFlag},
+			'0'
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_guarantee_contract SET 	
+			address = #{address},
+			amount = #{amount},
+			card_num = #{cardNum},
+			card_type = #{cardType},
+			contract_date = #{contractDate},
+			guarantee_number = #{guaranteeNumber},
+			guarantee_type = #{guaranteeType},
+			period = #{period},
+			period_type = #{periodType},
+			rate = #{rate},
+			rate_type = #{rateType},
+			telephone = #{telephone},
+			business_table = #{businessTable},
+			business_id = #{businessId},
+			type = #{type},
+			assets_worth = #{assetsWorth},
+			guarantor_name = #{guarantorName},
+			guarantor_type = #{guarantorType},
+			main_assets = #{mainAssets},
+			post = #{post},
+			relation = #{relation},
+			surety = #{surety},
+			turnover = #{turnover},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId},
+			marital_status = #{maritalStatus},
+		    other_guarantor = #{otherGuarantor},
+		    debt_amount = #{debtAmount},
+		    scan_flag = '0'
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_guarantee_contract SET 
+			del_flag = #{DEL_FLAG_DELETE},
+			scan_flag ='0'
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateByPushStatus">
+		UPDATE t_guarantee_contract SET 
+			scan_flag = #{scanFlag},	
+			push_status = #{pushStatus},	
+			update_date = #{updateDate}	
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

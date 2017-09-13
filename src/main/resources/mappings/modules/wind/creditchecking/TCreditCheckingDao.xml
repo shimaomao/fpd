@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.wind.dao.creditchecking.TCreditCheckingDao">
+	<sql id="tCreditCheckingRelIdColumns">
+		a.id AS "id",
+		a.db AS "db",
+		a.type AS "type",
+		a.type_id AS "typeId",
+		a.type_sub AS "typeSub",
+		a.data AS "data",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		
+		
+		c.id AS "company.id",
+		c.proc_ins_id AS "company.act.procInsId",
+		c.name AS "company.name",
+		c.address AS "company.address",
+		c.phone AS "company.phone",
+		c.card_num AS "company.cardNum",
+		c.card_type AS "company.cardType",
+		c.properties AS "company.properties",
+		c.setup_time AS "company.setupTime",
+		c.turnover AS "company.turnover",
+		c.capital AS "company.capital",
+		c.main_business AS "company.mainBusiness",
+		c.surety AS "company.surety",
+		c.surety_sex AS "company.suretySex",
+		c.surety_email AS "company.suretyEmail",
+		c.gathering_bank AS "company.gatheringBank",
+		c.gathering_name AS "company.gatheringName",
+		c.gathering_number AS "company.gatheringNumber",
+		c.surety_cardnum AS "company.suretyCardnum",
+		c.surety_mobile AS "company.suretyMobile",
+		c.surety_telephone AS "company.suretyTelephone",
+		c.surety_regaddr AS "company.suretyRegaddr",
+		c.surety_address AS "company.suretyAddress",
+		c.status AS "company.status",
+		c.reason AS "company.reason",
+		c.customer_source AS "company.customerSource",
+		c.create_by AS "company.createBy.id",
+		c.create_date AS "company.createDate",
+		c.update_by AS "company.updateBy.id",
+		c.update_date AS "company.updateDate",
+		c.remarks AS "company.remarks",
+		c.del_flag AS "company.delFlag",
+		c.organ_id AS "company.organId",
+		c.product_id AS "company.product.id",
+		
+		
+		e.id AS "employee.id",
+		e.proc_ins_id AS "employee.act.procInsId",
+		e.name AS "employee.name",
+		e.sex AS "employee.sex",
+		e.card_num AS "employee.cardNum",
+		e.email AS "employee.email",
+		e.gathering_bank AS "employee.gatheringBank",
+		e.gathering_name AS "employee.gatheringName",
+		e.household_reg_addr AS "employee.householdRegAddr",
+		e.current_live_address AS "employee.currentLiveAddress",
+		e.gathering_number AS "employee.gatheringNumber",
+		e.mobile AS "employee.mobile",
+		e.telephone AS "employee.telephone",
+		e.education AS "employee.education",
+		e.is_local_household AS "employee.isLocalHousehold",
+		e.live_age_limit AS "employee.liveAgeLimit",
+		e.married_info AS "employee.marriedInfo",
+		e.work_unit AS "employee.workUnit",
+		e.nature_of_unit AS "employee.natureOfUnit",
+		e.post AS "employee.post",
+		e.unit_address AS "employee.unitAddress",
+		e.work_telephone AS "employee.workTelephone",
+		e.month_income AS "employee.monthIncome",
+		e.status AS "employee.status",
+		e.reason AS "employee.reason",
+		e.customer_source AS "employee.customerSource",
+		e.years_of_working AS "employee.yearsOfWorking",
+		e.create_by AS "employee.createBy.id",
+		e.create_date AS "employee.createDate",
+		e.update_by AS "employee.updateBy.id",
+		e.update_date AS "employee.updateDate",
+		e.remarks AS "employee.remarks",
+		e.del_flag AS "employee.delFlag",
+		e.organ_id AS "employee.organId",
+		e.product_id AS "employee.product.id"
+	</sql>
+	
+	<sql id="tCreditCheckingRelIdJoins">
+		LEFT JOIN t_company c ON c.card_num = a.type_id
+		LEFT JOIN t_employee e ON e.card_num = a.type_id
+	</sql>
+    
+	<select id="get" resultType="TCreditChecking">
+		SELECT 
+			<include refid="tCreditCheckingRelIdColumns"/>
+		FROM t_credit_checking a
+		<include refid="tCreditCheckingRelIdJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TCreditChecking">
+		SELECT 
+			<include refid="tCreditCheckingRelIdColumns"/>
+		FROM t_credit_checking a
+		<include refid="tCreditCheckingRelIdJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="db != null and db != ''">
+				AND a.db = #{db}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="typeId != null and typeId != ''">
+				AND a.type_id = #{typeId}
+			</if>
+			<if test="typeSub != null and typeSub != ''">
+				AND a.type_sub = #{typeSub}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.type_id DESC, a.type DESC, a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findListByRelId" resultType="TCreditChecking">
+		SELECT 
+			<include refid="tCreditCheckingRelIdColumns"/>
+		FROM t_credit_checking a
+		<include refid="tCreditCheckingRelIdJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="db != null and db != ''">
+				AND a.db = #{db}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="typeId != null and typeId != ''">
+				AND a.type_id = #{typeId}
+			</if>
+			<if test="typeSub != null and typeSub != ''">
+				AND a.type_sub = #{typeSub}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.type_id DESC, a.type DESC, a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TCreditChecking">
+		SELECT 
+			<include refid="tCreditCheckingRelIdColumns"/>
+		FROM t_credit_checking a
+		<include refid="tCreditCheckingRelIdJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.type_id DESC, a.type DESC, a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_credit_checking(
+			id,
+			db,
+			type,
+			type_id,
+			type_sub,
+			data,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{db},
+			#{type},
+			#{typeId},
+			#{typeSub},
+			#{data},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<insert id="savePL">  
+	    INSERT INTO t_credit_checking(
+			id,
+			db,
+			type,
+			type_id,
+			type_sub,
+			data,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES 
+	    <foreach collection="entitys" item="item" index="idx" separator="," >  
+	        ( UUID(),
+			#{item.db},
+			#{item.type},
+			#{item.typeId},
+			#{item.typeSub},
+			#{item.data},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag}
+			)
+	    </foreach>  
+	</insert> 
+	
+	<update id="update">
+		UPDATE t_credit_checking SET 	
+			db = #{db},
+			type = #{type},
+			type_id = #{typeId},
+			type_sub = #{typeSub},
+			data = #{data},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_credit_checking SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<delete id = "deletePLWL">
+	    DELETE FROM t_credit_checking WHERE 1=1 
+	    <if test="entitys != null and entitys.size() > 0">
+	    	AND id in <foreach collection="entitys" item = "item" open="(" separator="," close=")">#{item.id}</foreach>
+	    </if>
+    </delete>
+	
+	<delete id = "deletePLWLByIds">
+	    DELETE FROM t_credit_checking WHERE 1=1 
+	    <if test="entitys != null and entitys.size() > 0">
+	    	AND id in <foreach collection="entitys" item = "item" open="(" separator="," close=")">#{item.id}</foreach>
+	    </if>
+    </delete>
+    
+	<select id="findListByTypeAndTypeIds" resultType="TCreditChecking">
+		SELECT 
+			<include refid="tCreditCheckingRelIdColumns"/>
+		FROM t_credit_checking a
+		<include refid="tCreditCheckingRelIdJoins"/>
+		<where>
+			a.del_flag = 0
+			<if test="dbs != null and dbs != ''">
+				AND a.db in <foreach collection="dbs" item = "item" open="(" separator="," close=")">#{item}</foreach>
+			</if>
+			<if test="types != null and types.size() > 0">
+				AND a.type in <foreach collection="types" item = "item" open="(" separator="," close=")">#{item}</foreach>
+			</if>
+			<if test="typeIds != null and typeIds.size() > 0">
+				AND a.type_id in <foreach collection="typeIds" item = "item" open="(" separator="," close=")">#{item}</foreach>
+			</if>
+			<if test="typeSubs != null and typeSubs.size() > 0">
+				AND a.type_sub in <foreach collection="typeSubs" item = "item" open="(" separator="," close=")">#{item}</foreach>
+			</if>
+		</where>
+		ORDER BY a.update_date DESC
+	</select>
+</mapper>

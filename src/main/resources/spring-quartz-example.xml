@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd" >
+	<!-- default-autowire="byName" default-lazy-init="false"此两个值可以不配置 -->
+	
+	<description>Quartz Job Setting</description>
+
+	<!-- QMethod -->
+	<!-- A.配置调度的任务对应bean的id和自定义class -->
+	<bean id="myQMethod" class="com.wanfin.fpd.common.quartz.example.QMethod" />
+	
+	<!-- B.配置调度任务对应的bean的id和执行的方法,作业不并发调度 -->
+	<bean id="myQMethodDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="myQMethod" />
+		<property name="targetMethod">
+			<value>execute</value>
+		</property>
+		<property name="concurrent" value="false" />
+	</bean>
+	<!-- C.配置调度任务执行的触发的时间 -->
+	<bean id="myQMethodTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="myQMethodDetail" />
+		<property name="cronExpression">
+			<!-- 每分钟的第3秒执行任务调度 -->
+			<value>0/30 * * * * ?</value>
+		</property>
+	</bean>
+	
+	
+	
+	
+	<!-- QJobBean -->
+	<!-- B.配置调度任务对应的bean的id和执行的方法,作业不并发调度 -->
+	<bean id="myQJobBeanDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+		<property name="jobClass" value="com.wanfin.fpd.common.quartz.example.QJobBean"></property>
+       	<!--  在这个例子中，jobDataAsMap没有用，此目标类中接受的参数 ,若参数为service，则可以在此进行参数配置，类似struts2 -->
+       	<!-- <property name="jobDataAsMap">  
+			<map>  
+		    	<entry key="service"><value>simple is the beat</value></entry>  
+			</map>  
+     	</property> -->
+	</bean>
+	
+	<!-- C.配置调度任务执行的触发的时间 -->
+	<bean id="myQJobBeanTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="myQJobBeanDetail" />
+		<property name="cronExpression">
+			<!-- 每30秒执行任务调度 -->
+			<value>0/30 * * * * ?</value>
+		</property>
+	</bean>
+	
+	
+    <!-- 定义simpleTrigger触发器 -->  
+	<!--<bean id="simpleTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">  
+        <property name="jobDetail" ref="myQJobDetail"></property>  
+        <property name="repeatCount">  
+            <value>8</value>  
+        </property>  
+        <property name="repeatInterval">  
+            <value>1000</value>  
+        </property>  
+        <property name="startDelay">  
+            <value>4</value>  
+        </property>  
+    </bean> --> 
+	
+	
+	<!-- D.Quartz的调度工厂，调度工厂只能有一个，多个调度任务在list中添加 -->
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<!-- 所有的调度列表 -->
+				<!-- <ref bean="myQJobTrigger" /> -->
+				<ref bean="myQMethodTrigger" />
+				<!-- <ref bean="myQJobBeanTrigger" /> -->
+				<!-- 对应的bean配置：id="myQJobDetail" 和 id="myQMethodTrigger" 可以对应的并行多配置-对应执行JavaBean和执行时间(各自触发time) -->
+			</list>
+		</property>
+	</bean>
+</beans>

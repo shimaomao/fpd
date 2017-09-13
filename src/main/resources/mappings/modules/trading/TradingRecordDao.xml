@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.trading.dao.TradingRecordDao">
+    
+	<sql id="tradingRecordColumns">
+		a.id AS "id",
+		a.seq_no AS "seqNo",
+		a.trading_type AS "tradingType",
+		a.trading_way AS "tradingWay",
+		a.amount AS "amount",
+		a.login_name AS "loginName",
+		a.trader AS "trader",
+		a.trading_time AS "tradingTime",
+		a.business_id AS "businessId",
+		a.business_name AS "businessName"
+	</sql>
+	
+	<sql id="tradingRecordJoins">
+	</sql>
+    
+	<select id="get" resultType="TradingRecord">
+		SELECT 
+			<include refid="tradingRecordColumns"/>
+		FROM t_trading_record a
+		<include refid="tradingRecordJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TradingRecord">
+		SELECT 
+			<include refid="tradingRecordColumns"/>
+		FROM t_trading_record a
+		<include refid="tradingRecordJoins"/>
+		<where>
+			1=1
+			<if test="seqNo != null and seqNo != ''">
+				AND a.seq_no = #{seqNo}
+			</if>
+			<if test="tradingType != null and tradingType != ''">
+				AND a.trading_type = #{tradingType}
+			</if>
+			<if test="loginName != null and loginName != ''">
+				AND a.login_name = #{loginName}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TradingRecord">
+		SELECT 
+			<include refid="tradingRecordColumns"/>
+		FROM t_trading_record a
+		<include refid="tradingRecordJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_trading_record(
+			id,
+			seq_no,
+			trading_type,
+			trading_way,
+			amount,
+			login_name,
+			trader,
+			trading_time,
+			business_id,
+			business_name
+		) VALUES (
+			#{id},
+			#{seqNo},
+			#{tradingType},
+			#{tradingWay},
+			#{amount},
+			#{loginName},
+			#{trader},
+			#{tradingTime},
+			#{businessId},
+			#{businessName}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_trading_record SET 	
+			seq_no = #{seqNo},
+			trading_type = #{tradingType},
+			trading_way = #{tradingWay},
+			amount = #{amount},
+			login_name = #{loginName},
+			trader = #{trader},
+			trading_time = #{tradingTime},
+			business_id = #{businessId},
+			business_name = #{businessName}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM t_trading_record
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

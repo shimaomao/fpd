@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.api.wiss.dao.YlExchangeRatesDao">
+    
+	<sql id="ylExchangeRatesColumns">
+		a.id AS "id",
+		a.orig_currency AS "origCurrency",
+		a.exch_currency AS "exchCurrency",
+		a.rate AS "rate",
+		<!-- a.valid_date AS "date", -->
+		a.valid_date AS "validDate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="ylExchangeRatesJoins">
+	</sql>
+    
+	<select id="get" resultType="YlExchangeRates">
+		SELECT 
+			<include refid="ylExchangeRatesColumns"/>
+		FROM yl_exchange_rates a
+		<include refid="ylExchangeRatesJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getRate" resultType="YlExchangeRates">
+		SELECT 
+			<include refid="ylExchangeRatesColumns"/>
+		FROM yl_exchange_rates a
+		<include refid="ylExchangeRatesJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="origCurrency != null and origCurrency != ''">
+				AND a.orig_currency = #{origCurrency}
+			</if>
+			<if test="exchCurrency != null and exchCurrency != ''">
+				AND a.exch_currency = #{exchCurrency}
+			</if>
+			<if test="date != null and date != ''">
+				AND a.valid_date = DATE(#{date})
+			</if>
+		</where>
+		limit 1
+	</select>
+	
+	<select id="findList" resultType="YlExchangeRates">
+		SELECT 
+			<include refid="ylExchangeRatesColumns"/>
+		FROM yl_exchange_rates a
+		<include refid="ylExchangeRatesJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="origCurrency != null and origCurrency != ''">
+				AND a.orig_currency = #{origCurrency}
+			</if>
+			<if test="exchCurrency != null and exchCurrency != ''">
+				AND a.exch_currency = #{exchCurrency}
+			</if>
+			<if test="rate != null and rate != ''">
+				AND a.rate = #{rate}
+			</if>
+			<if test="date != null and date != ''">
+				AND a.valid_date = #{date}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="YlExchangeRates">
+		SELECT 
+			<include refid="ylExchangeRatesColumns"/>
+		FROM yl_exchange_rates a
+		<include refid="ylExchangeRatesJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO yl_exchange_rates(
+			id,
+			orig_currency,
+			exch_currency,
+			rate,
+			valid_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{origCurrency},
+			#{exchCurrency},
+			#{rate},
+			<!-- #{date}, -->
+			#{validDate},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE yl_exchange_rates SET 	
+			orig_currency = #{origCurrency},
+			exch_currency = #{exchCurrency},
+			rate = #{rate},
+			<!-- valid_date = #{date}, -->
+			valid_date = #{validDate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE yl_exchange_rates SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

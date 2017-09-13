@@ -1,0 +1,370 @@
+body{
+	line-height: 1;
+	font-size: 12px;
+    background:white;
+}
+body, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", STHeiti, "Microsoft YaHei";
+}
+html{
+    background: white;
+}
+/* 头部 */
+#header {
+    margin: 0 0 8px!important;
+    position: relative;
+}
+#header .brand {
+    font-size: 26px;
+    padding-left: 33px;
+}
+
+.navbar-inner{
+	height:50px;
+	background-image: -webkit-linear-gradient(#0099cb, #009cc7);
+    background-image: -o-linear-gradient(#0099cb, #009cc7);
+    background-image: linear-gradient(#0099cb, #009cc7);
+}
+.navbar .nav>li>a {
+    padding: 16px 10px 14px;
+    font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", STHeiti, "Microsoft YaHei"!important;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+}
+.navbar .nav>.active>a, .navbar .nav>.active>a:hover, .navbar .nav>.active>a:focus {
+    color: #fff;
+    text-decoration: none;
+    background-color: #008fbf;
+    -webkit-box-shadow: inset 0 3px 8px rgba(0,0,0,0.125);
+    -moz-box-shadow: inset 0 3px 8px rgba(0,0,0,0.125);
+    box-shadow: inset 0 3px 8px rgba(0,0,0,0.125);
+}
+.navbar .nav>li>a:focus, .navbar .nav>li>a:hover {
+    color: #fff;
+    text-decoration: none;
+    background-color: #008fbf;
+}
+.navbar .nav li{
+	border-right: 1px solid #008fbf;
+}
+.navbar .nav li:last-child{
+	border-right:0;
+}
+.accordion{
+	background:#394555;
+}
+.accordion-heading {
+    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#fefefe', endColorstr='#f5f5f5', GradientType=0);
+    float: inherit;
+    width: 100%;
+    -webkit-border-radius: 3px 3px 0 0;
+    -moz-border-radius: 3px 3px 0 0;
+    border-radius: 3px 3px 0 0;
+    background:#22282e; 
+    height:40px;
+    line-height: 40px;
+}
+/* 主体部分 */
+#main{
+    background: white;
+    // margin-bottom:40px!important;
+}
+/* 主体左边 */
+#main .container-fluid {
+    padding: 0!important;
+}
+#content #left .accordion{	
+	background:#394555;	
+}
+#content #left .accordion a{
+	color:white;
+	font-size: 12px;
+	font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", STHeiti, "Microsoft YaHei"!important;
+}
+#content #left .accordion .accordion-inner li a{
+	background:#394555; 
+	font-weight: normal;	
+}
+#content #left{
+	background:#394555; 
+    // height:667px!important;
+
+}
+
+#content #left .accordion .accordion-inner{
+	border-top: 0;
+	padding:0px 8px;
+}
+.nav-list>li {
+    display: block;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    position: relative;
+}
+#content #left .accordion .accordion-group {
+      margin-bottom: 0;
+    border: 0;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+#content #left .accordion .accordion-inner a{
+	font-size: 12px;
+}
+#main .container-fluid {
+    padding:0;
+    position: relative;
+    top:-8px;
+    left:-6px;
+}
+.nav-list li.active>a:after {
+    display: block;
+    content: "";
+    position: absolute !important;
+    right: 0;
+    top: 4px;
+    border: 8px solid transparent;
+    border-width: 14px 10px;
+    border-right-color: #2b7dbc;
+}
+#content #left .accordion .accordion-group .accordion-heading:hover{
+	background: #37424f;
+}
+#content #left .accordion .accordion-inner li a:hover{
+	background: #37424f;
+}
+.accordion-heading .accordion-toggle {
+    display: block;
+    padding: 0px 15px;
+}
+.accordion-inner .nav-list li a {
+    padding:0;
+}
+#content{
+	background: white;
+}
+/* 主体右边 */
+#right{
+	background:white;
+    margin-left: 3px;
+}
+#jerichotabiframe_0{
+		background:white;
+}
+.nav-list li.active>a:after {
+    display: block;
+    content: "";
+    position: absolute !important;
+    right: 0;
+    top: 4px;
+    border: 8px solid transparent;
+    border-width: 14px 10px;
+     border-right-color: #394555; 
+}
+
+
+#jerichotab #jerichotab_contentholder .curholder #jerichotabiframe_0 html {
+	background:red!important;
+    border:1px solid red;
+	// background:red;
+}
+
+/* 右侧通知列表导航 */
+ul.nav-tabs {
+	padding-top:5px;
+    // border-color: white!important;
+    margin-bottom: 0;
+    margin-left: 0;
+    position: relative;
+    top: 1px;
+    border-bottom:1px solid #c5d0dc;
+}
+.jericho_tab .tab_pages {
+    width: 100%;
+    float: left;
+    clear: both;
+    // background: url(../images/tabline.gif) left bottom repeat-x;
+    background:none!important;
+    // padding: 0 0px 20px 0;
+}
+
+.tab_pages .tabs ul .jericho_tabs{
+    background:white!important;
+    margin-left: 4px;
+}
+
+.tab_pages .tabs ul .tab_selected div{
+    background: white!important;
+    color: black;
+    height: 28px;
+    line-height: 28px;
+    // position:relative;
+    // top:0;
+    // border-top:1px solid #4c8fbd;
+}
+.tab_pages .tabs ul .tab_selected .tab_left{
+    //  position:relative;
+    // top:0;
+    border-top:2px solid #4c8fbd;
+}
+.tab_pages .tabs ul .tab_selected .tab_right{
+    border-top:2px solid #4c8fbd;
+}
+
+.jericho_tab .tab_pages .tab_selected .tab_left .tab_close a {
+    background: url(../images/jerichoclose.gif) center -11px no-repeat;
+    margin-top: 10px!important;
+}
+
+.jericho_tab .tab_pages .tab_unselect div {
+    height: 26px!important;
+    line-height: 26px;
+    background:white;
+    
+}
+.jericho_tab .tab_pages .tab_unselect .tab_left {
+    margin-top: 2px;
+    background: white!important;
+     border-top:2px solid white;
+}
+.jericho_tab .tab_pages .tab_unselect .tab_right {
+    margin-top: 2px;
+    background: white!important;
+     border-top:2px solid white;
+}
+
+.tab_pages .tabs ul .tab_selected{
+    background: white!important;
+    color:white;
+    // border:1px solid #ccc;
+}
+.tab_pages .tabs ul .tab_unselect{
+    background:white!important;
+    // border:1px solid #ccc;
+}
+.tab_pages .tabs ul{
+    background:red;
+}
+
+.jericho_tab .tab_pages .tabs ul li{
+    background:white;
+    border:1px solid #c5d0dc;
+}
+.jerichotabiframe_1{
+    margin-bottom: 40px;
+}
+
+/* 尾部 */
+#footer {
+    margin: 0 0 0 0!important;
+    font-size: 11px;
+    text-align: center;
+    border-top: 2px solid #0663A2;
+    position: relative;
+    bottom: 0;
+    color:white!important;
+    height:20px;
+    line-height: 13px;
+    padding:0;
+    background-image: -webkit-linear-gradient(#0099cb, #009cc7);
+    background-image: -o-linear-gradient(#0099cb, #009cc7);
+    background-image: linear-gradient(#0099cb, #009cc7);
+
+}
+
+.pagination{
+    padding:12px 0;
+    border-top:1px solid #e1e6eb;
+    border-bottom:1px solid #e1e6eb;
+    margin-bottom: 30px;
+}
+.pagination ul li a:hover{
+    background:rgba(200,199,198,0.8);  
+    color:white;
+}
+.pagination ul .disabled a:hover{
+    background:rgba(200,199,198,0.8);  
+    color:white;
+}
+.pagination ul .disabled:last-child a:hover{
+    background: white;
+    color:#999;
+}
+
+.breadcrumb {
+    background-color: transparent;
+    display: inline-block;
+    line-height: 24px;
+    margin: 0 22px 0 12px;
+    padding: 14px 0;
+    font-size: 13px;
+    color: #333;
+    border-radius: 0;
+}
+.form-horizontal .form-actions {
+    margin-bottom: 20px;
+}
+.icon-refresh:before {
+    content: "\f021";
+    position: relative;
+    top: 13px;
+}
+
+.ztree {
+    overflow: auto;
+    margin: 0;
+    _margin-top: 10px;
+    padding: 10px 0 0 10px;
+    background: white;
+}
+
+.accordion-heading a{
+        color:white;
+}
+.jericho_tab .tab_pages .tabs {
+       height: 32px!important;
+        // background:red;  
+}
+/* 右侧列表导航 */
+.jericho_tab .tab_pages {
+    width: 100%;
+    float: left;
+    clear: both;
+    background: url(../images/tabline.gif) left bottom repeat-x;
+    margin-top: 16px;
+    margin-bottom: 10px;
+}
+/* ace */
+.btn{  
+        display: inline-block;
+        color: #FFF !important;
+        text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25) !important;
+        background-image: none !important;
+        border:0;
+        border-radius: 0;
+        box-shadow: none !important;
+        -webkit-transition: all ease .15s;
+        transition: all ease .15s;
+        cursor: pointer;
+        vertical-align: middle;
+        margin: 1px 0px 0px 0px;
+        position: relative;    
+}
+.btn, .btn-default, .btn:focus, .btn-default:focus {
+    background-color: #abbac3 !important;
+    border-color: #abbac3;
+}
+.select2-search:after {
+    font-family: FontAwesome;
+    font-size: 14px;
+    display: inline;
+    content: "\f002";
+    color: #777;
+    position: relative;
+    top: 4px;
+    left: -20px;
+    z-index: 0;
+}
+.control-group{
+	border-bottom: 0px;
+}

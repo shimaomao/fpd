@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.postlending.dao.fivelevel.FiveLevelDao">
+    
+	<sql id="fiveLevelColumns">
+		a.id AS "id",
+		a.five_level AS "fiveLevel",
+		a.status AS "status",
+		a.loan_contract_id AS "loanContractId",
+		a.old_five_level AS "oldFiveLevel",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="fiveLevelJoins">
+		LEFT JOIN sys_office o ON o.id = a.organ_id
+		LEFT JOIN sys_user u ON u.id = a.create_by
+	
+	</sql>
+    
+	<select id="get" resultType="FiveLevel">
+		SELECT 
+			<include refid="fiveLevelColumns"/>
+		FROM t_five_level a
+		<include refid="fiveLevelJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getByProcInsId" resultType="FiveLevel">
+		SELECT 
+			<include refid="fiveLevelColumns"/>
+		FROM t_five_level a
+		<include refid="fiveLevelJoins"/>
+		WHERE a.proc_ins_id = #{procInsId}
+	</select>
+	
+	<select id="findList" resultType="FiveLevel">
+		SELECT 
+			<include refid="fiveLevelColumns"/>
+		FROM t_five_level a
+		<include refid="fiveLevelJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	<select id="findSizeByStatus" resultType="Integer">
+		SELECT 
+			COUNT(*)
+		FROM t_five_level a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="loanContractId != null and loanContractId != ''">
+				AND a.loan_contract_id = #{loanContractId}
+			</if>
+			AND a.status=0
+		</where>		
+	</select>
+	<select id="findAllList" resultType="FiveLevel">
+		SELECT 
+			<include refid="fiveLevelColumns"/>
+		FROM t_five_level a
+		<include refid="fiveLevelJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_five_level(
+			id,
+			five_level,
+			status,
+			loan_contract_id,
+			old_five_level,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{fiveLevel},
+			#{status},
+			#{loanContractId},
+			#{oldFiveLevel},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_five_level SET 	
+			five_level = #{fiveLevel},
+			status = #{status},
+			loan_contract_id = #{loanContractId},
+			old_five_level = #{oldFiveLevel},
+			update_by = #{updateBy.id},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_five_level SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

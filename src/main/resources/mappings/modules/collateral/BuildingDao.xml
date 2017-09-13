@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.collateral.dao.BuildingDao">
+    
+	<sql id="buildingColumns">
+		a.id AS "id",
+		a.address AS "address",
+		a.area AS "area",
+		a.balance AS "balance",
+		a.chan_man AS "chanMan",
+		a.chan_quality AS "chanQuality",
+		a.dengji AS "dengji",
+		a.framework AS "framework",
+		a.gao AS "gao",
+		a.gong_man AS "gongMan",
+		a.gu_money AS "guMoney",
+		a.jiegou AS "jiegou",
+		a.jyear AS "jyear",
+		a.mo_money AS "moMoney",
+		a.money1 AS "money1",
+		a.new_money AS "newMoney",
+		a.quan_num AS "quanNum",
+		a.remark AS "remark",
+		a.yangshi AS "yangshi",
+		a.year_limit AS "yearLimit",
+		a.zumoney1 AS "zumoney1",
+		a.dizhi_contract_id AS "dizhiContractId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="buildingJoins">
+	</sql>
+    
+	<select id="get" resultType="Building">
+		SELECT 
+			<include refid="buildingColumns"/>
+		FROM t_building a
+		<include refid="buildingJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<!--add by shirf-->
+	<select id="getByPledge" resultType="Building">
+		SELECT 
+			<include refid="buildingColumns"/>
+		FROM t_building a
+		<include refid="buildingJoins"/>
+		WHERE a.dizhi_contract_id = #{dizhi_contract_id}
+	</select>
+	
+	<select id="findList" resultType="Building">
+		SELECT 
+			<include refid="buildingColumns"/>
+		FROM t_building a
+		<include refid="buildingJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="address != null and address != ''">
+				AND a.address = #{address}
+			</if>
+			<if test="balance != null and balance != ''">
+				AND a.balance = #{balance}
+			</if>
+			<if test="chanMan != null and chanMan != ''">
+				AND a.chan_man = #{chanMan}
+			</if>
+			<if test="chanQuality != null and chanQuality != ''">
+				AND a.chan_quality = #{chanQuality}
+			</if>
+			<if test="jyear != null and jyear != ''">
+				AND a.jyear = #{jyear}
+			</if>
+			<if test="quanNum != null and quanNum != ''">
+				AND a.quan_num = #{quanNum}
+			</if>
+			<if test="yearLimit != null and yearLimit != ''">
+				AND a.year_limit = #{yearLimit}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Building">
+		SELECT 
+			<include refid="buildingColumns"/>
+		FROM t_building a
+		<include refid="buildingJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_building(
+			id,
+			address,
+			area,
+			balance,
+			chan_man,
+			chan_quality,
+			dengji,
+			framework,
+			gao,
+			gong_man,
+			gu_money,
+			jiegou,
+			jyear,
+			mo_money,
+			money1,
+			new_money,
+			quan_num,
+			remark,
+			yangshi,
+			year_limit,
+			zumoney1,
+			dizhi_contract_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{address},
+			#{area},
+			#{balance},
+			#{chanMan},
+			#{chanQuality},
+			#{dengji},
+			#{framework},
+			#{gao},
+			#{gongMan},
+			#{guMoney},
+			#{jiegou},
+			#{jyear},
+			#{moMoney},
+			#{money1},
+			#{newMoney},
+			#{quanNum},
+			#{remark},
+			#{yangshi},
+			#{yearLimit},
+			#{zumoney1},
+			#{dizhiContractId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_building SET 	
+			address = #{address},
+			area = #{area},
+			balance = #{balance},
+			chan_man = #{chanMan},
+			chan_quality = #{chanQuality},
+			dengji = #{dengji},
+			framework = #{framework},
+			gao = #{gao},
+			gong_man = #{gongMan},
+			gu_money = #{guMoney},
+			jiegou = #{jiegou},
+			jyear = #{jyear},
+			mo_money = #{moMoney},
+			money1 = #{money1},
+			new_money = #{newMoney},
+			quan_num = #{quanNum},
+			remark = #{remark},
+			yangshi = #{yangshi},
+			year_limit = #{yearLimit},
+			zumoney1 = #{zumoney1},
+			dizhi_contract_id = #{dizhiContractId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_building SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,74 @@
+[
+            {
+                "id": "34d613b29547468fa983d66b1e41c395",
+                "remarks": "禁止删除：系统管理员（系统功能操作）",
+                "name": "系统管理员",
+                "enname": "admin",
+                "roleType": "security-role",
+                "dataScope": "1"
+            },
+            {
+                "id": "c2d0a3ed353f4be9ac912761b3b1e252",
+                "remarks": "禁止删除",
+                "name": "租户管理员",
+                "enname": "zadmin",
+                "roleType": "security-role",
+                "dataScope": "1"
+            },
+            {
+                "id": "khjl",
+                "remarks": "",
+                "name": "客户经理",
+                "enname": "khjl",
+                "roleType": "user",
+                "dataScope": "8"
+            },
+            {
+                "id": "zjl",
+                "remarks": "",
+                "name": "总经理",
+                "enname": "zjl",
+                "roleType": "security-role",
+                "dataScope": "2"
+            },
+            {
+                "id": "cwjl",
+                "remarks": "",
+                "name": "财务经理",
+                "enname": "cwjl",
+                "roleType": "user",
+                "dataScope": "2"
+            },
+            {
+                "id": "khzj",
+                "remarks": "",
+                "name": "客户总监",
+                "enname": "khzj",
+                "roleType": "assignment",
+                "dataScope": "2"
+            },
+            {
+                "id": "fkzj",
+                "remarks": "",
+                "name": "风控总监",
+                "enname": "fkzj",
+                "roleType": "assignment",
+                "dataScope": "2"
+            },
+            {
+                "id": "fkjl",
+                "remarks": "",
+                "name": "风控经理",
+                "enname": "fkjl",
+                "roleType": "user",
+                "dataScope": "2"
+            },
+            {
+                "id": "cwzj",
+                "remarks": "",
+                "name": "财务总监",
+                "enname": "cwzj",
+                "roleType": "assignment",
+                "dataScope": "2"
+            }
+        ]

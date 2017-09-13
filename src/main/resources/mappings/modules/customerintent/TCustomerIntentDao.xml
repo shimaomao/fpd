@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.customerintent.dao.TCustomerIntentDao">
+    
+	<sql id="tCustomerIntentColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.tel AS "tel",
+		a.product_id AS "productId",
+		a.repayment_mode AS "repaymentMode",
+		a.loan_limit AS "loanLimit",
+		a.repayment_period AS "repaymentPeriod",
+		a.annual_rate AS "annualRate",
+		a.overdue_annual_rate AS "overdueAnnualRate",
+		a.application AS "application",
+		a.guarantee_mode AS "guaranteeMode",
+		a.start_time AS "startTime",
+		a.end_time AS "endTime",
+		a.company_id AS "companyId",
+		a.employee_id AS "employeeId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="tCustomerIntentJoins">
+	</sql>
+    
+	<select id="get" resultType="TCustomerIntent">
+		SELECT 
+			<include refid="tCustomerIntentColumns"/>
+		FROM t_customer_intent a
+		<include refid="tCustomerIntentJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TCustomerIntent">
+		SELECT 
+			<include refid="tCustomerIntentColumns"/>
+		FROM t_customer_intent a
+		<include refid="tCustomerIntentJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="tel != null and tel != ''">
+				AND a.tel = #{tel}
+			</if>
+			<if test="companyId != null and companyId != ''">
+				AND a.company_id = #{companyId}
+			</if>
+			<if test="employeeId != null and employeeId != ''">
+				AND a.employee_id = #{employeeId}
+			</if>
+			<if test="repaymentMode != null and repaymentMode != ''">
+				AND a.repayment_mode = #{repaymentMode}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TCustomerIntent">
+		SELECT 
+			<include refid="tCustomerIntentColumns"/>
+		FROM t_customer_intent a
+		<include refid="tCustomerIntentJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_customer_intent(
+			id,
+			name,
+			tel,
+			product_id,
+			repayment_mode,
+			loan_limit,
+			repayment_period,
+			annual_rate,
+			overdue_annual_rate,
+			application,
+			guarantee_mode,
+			start_time,
+			end_time,
+			company_id,
+			employee_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{name},
+			#{tel},
+			#{productId},
+			#{repaymentMode},
+			#{loanLimit},
+			#{repaymentPeriod},
+			#{annualRate},
+			#{overdueAnnualRate},
+			#{application},
+			#{guaranteeMode},
+			#{startTime},
+			#{endTime},
+			#{companyId},
+			#{employeeId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_customer_intent SET 	
+			name = #{name},
+			tel = #{tel},
+			product_id = #{productId},
+			repayment_mode = #{repaymentMode},
+			loan_limit = #{loanLimit},
+			repayment_period = #{repaymentPeriod},
+			annual_rate = #{annualRate},
+			overdue_annual_rate = #{overdueAnnualRate},
+			application = #{application},
+			guarantee_mode = #{guaranteeMode},
+			start_time = #{startTime},
+			end_time = #{endTime},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_customer_intent SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

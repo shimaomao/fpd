@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.accountdetail.dao.TAccountDetailDao">
+    
+	<sql id="tAccountDetailColumns">
+		a.id AS "id",
+		a.content AS "content",
+		a.income AS "income",
+		a.defray AS "defray",
+		a.balance AS "balance",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.publish_time AS "publishTime"
+	</sql>
+	
+	<sql id="tAccountDetailJoins">
+	</sql>
+    
+	<select id="get" resultType="TAccountDetail">
+		SELECT 
+			<include refid="tAccountDetailColumns"/>
+		FROM t_account_detail a
+		<include refid="tAccountDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TAccountDetail">
+		SELECT 
+			<include refid="tAccountDetailColumns"/>
+		FROM t_account_detail a
+		<include refid="tAccountDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="publishTime != null and publishTime != ''">
+				AND a.publish_time = #{publishTime}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.publish_time DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TAccountDetail">
+		SELECT 
+			<include refid="tAccountDetailColumns"/>
+		FROM t_account_detail a
+		<include refid="tAccountDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_account_detail(
+			id,
+			content,
+			income,
+			defray,
+			balance,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id,
+			publish_time
+		) VALUES (
+			#{id},
+			#{content},
+			#{income},
+			#{defray},
+			#{balance},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId},
+			#{publishTime}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_account_detail SET 	
+			content = #{content},
+			income = #{income},
+			defray = #{defray},
+			balance = #{balance},
+			create_date = #{createDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_account_detail SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

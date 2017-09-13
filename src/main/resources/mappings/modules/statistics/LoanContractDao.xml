@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.statistics.dao.LoanContractDao">
+    
+	<sql id="loanContractColumns">
+		a.id AS "id",
+		a.apply_date AS "applyDate",
+		a.contract_number AS "contractNumber",
+		a.customer_id AS "customerId",
+		a.customer_name AS "customerName",
+		a.customer_type AS "customerType",
+		a.five_level AS "fiveLevel",
+		a.is_extend AS "isExtend",
+		a.loan_amount AS "loanAmount",
+		p.name AS "productNname",
+		a.loan_date AS "loanDate",
+		a.loan_period AS "loanPeriod",
+		a.loan_rate AS "loanRate",
+		a.loan_rate_type AS "loanRateType",
+		a.pay_principal_date AS "payPrincipalDate",
+		a.loan_type AS "loanType",
+		a.max_number AS "maxNumber",
+		a.pay_day AS "payDay",
+		a.pay_type AS "payType",
+		a.period_type AS "periodType",
+		a.sign_date AS "signDate",
+		a.status AS "status",
+		a.product_id AS "productId",
+		a.purpose_id AS "purposeId",
+		a.area_id AS "area.id",
+		a.industry_id AS "industryId",
+		<!-- a.borrower AS "borrower", -->
+		<!-- a.agriculture AS "agriculture", -->
+		a.gathering_bank AS "gatheringBank",
+		a.gathering_name AS "gatheringName",
+		a.gathering_number AS "gatheringNumber",
+		a.guarant_number AS "guarantNumber",
+		a.pay_options AS "payOptions",
+		a.pay_day_type AS "payDayType",
+		a.create_by AS "createId",
+		u36.name AS "createName",
+		o.name AS "createOfficeName",
+		a.create_date AS "createDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.proc_ins_id AS "procInsId",
+		a.server_fee AS "serverFee",
+		a.mange_fee AS "mangeFee",
+		a.if_advance AS "ifAdvance",
+		a.advance_damages AS "advanceDamages",
+		a.late_fee AS "lateFee",
+		a.rate_discont AS "rateDiscont",
+		a.if_interest_relief AS "ifInterestRelief",
+		a.grace_period AS "gracePeriod",
+		a.grace_period_penalty AS "gracePeriodPenalty",
+		a.late_penalty AS "latePenalty",
+		a.late_penalty_fee AS "latePenaltyFee",
+		a.parent_id AS "parentID",
+		a.is_deal AS "isDeal",
+		a.scan_flag AS "scanFlag",
+		a.push_status AS "pushStatus",
+		a.isdirect_loan AS "isdirectLoan",
+		a.if_reality_day AS "ifRealityDay",
+		a24.name AS "areaName",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="countRepayPlanInfo">
+		rep.lastRepayDate,
+		adc.adviceBackPrincipalMoney,
+		inc.repInterestPenalties,
+		inc.repPunishAmount,
+		IFNULL(le.lendAmount,0) AS "lendAmount",
+		IFNULL(backInterestTotal,0) AS "backInterestTotal",
+		IFNULL(backPrincipaTotal,0) AS "backPrincipaTotal",
+		IFNULL(backInterestMoney,0) AS "backInterestMoney",
+		IFNULL(backPrincipalMoney,0) AS "backPrincipalMoney",
+		
+		IFNULL(currentInterestMoney,0) AS "currentInterestMoney",
+		IFNULL(currentPrincipalMoney,0) AS "currentPrincipalMoney",
+		IFNULL(currentBackInterestMoney,0) AS "currentBackInterestMoney",
+		IFNULL(currentBackPrincipalMoney,0) AS "currentBackPrincipalMoney"
+	</sql>
+	
+	<sql id="loanContractJoins">
+		LEFT JOIN sys_area a24 ON a24.id = a.area_id
+		LEFT JOIN sys_user u36 ON u36.id = a.create_by
+		LEFT JOIN sys_office o ON o.id = u36.office_id
+	</sql>
+    
+    <sql id="countRepayPlanJoins">
+    	LEFT JOIN sys_area a24 ON a24.id = a.area_id
+		LEFT JOIN sys_user u36 ON u36.id = a.create_by
+		LEFT JOIN sys_office o ON o.id = u36.office_id
+		LEFT JOIN t_product p ON p.id = a.product_id
+		
+		LEFT JOIN (
+			SELECT loan_contract_id,
+				SUM(r1.interest) AS backInterestTotal,
+				round(SUM(r1.principal)) AS backPrincipaTotal,
+				SUM(IFNULL(r1.interest_real,0)) AS backInterestMoney,
+				SUM(IFNULL(r1.principal_real,0)) AS backPrincipalMoney
+			FROM t_repay_plan r1 WHERE r1.del_flag = #{DEL_FLAG_NORMAL} GROUP BY loan_contract_id
+			) AS r1 ON r1.loan_contract_id = a.id
+		
+		INNER JOIN (
+			SELECT loan_contract_id,			
+				round(SUM(rp.interest)) AS currentInterestMoney,
+				round(SUM(rp.principal)) AS currentPrincipalMoney,
+				round(SUM(IFNULL(rp.interest_real,0))) AS currentBackInterestMoney,
+				round(SUM(IFNULL(rp.principal_real,0))) AS currentBackPrincipalMoney
+			FROM t_repay_plan rp WHERE rp.del_flag = #{DEL_FLAG_NORMAL} 
+			<if test="beginLastPayDate != null and beginLastPayDate !=''">
+				<![CDATA[
+				AND date_format(account_date,'%Y-%m') >= date_format(#{beginLastPayDate},'%Y-%m') 
+				]]>
+			</if>
+			<if test="endLastPayDate != null and endLastPayDate != ''">
+				<![CDATA[
+				AND date_format(account_date,'%Y-%m') <= date_format(#{endLastPayDate},'%Y-%m')
+				]]>
+			</if> 
+
+			GROUP BY loan_contract_id
+			) AS rp ON rp.loan_contract_id = a.id
+			
+		
+		LEFT JOIN (
+			SELECT 
+				contract_id AS loan_contract_id, 
+				SUM(amount) AS lendAmount
+			FROM t_lending WHERE del_flag = #{DEL_FLAG_NORMAL} 
+			) AS le ON le.loan_contract_id = a.id
+			
+		
+		LEFT JOIN (
+			SELECT 
+				loan_contract_id, MAX(LEFT(repay_date,10)) AS lastRepayDate
+			FROM t_repay_real WHERE del_flag = #{DEL_FLAG_NORMAL} GROUP BY loan_contract_id
+			) AS rep ON rep.loan_contract_id = a.id
+		
+		
+			
+		LEFT JOIN (
+			SELECT 
+				loan_contract_id, 
+				sum(interest_penalties) AS repInterestPenalties,
+				sum(punish_amount) AS repPunishAmount
+			FROM t_real_income WHERE del_flag = #{DEL_FLAG_NORMAL}
+			<if test="beginLastPayDate != null and beginLastPayDate !=''">
+				<![CDATA[
+				AND date_format(pay_real_date,'%Y-%m') >= date_format(#{beginLastPayDate},'%Y-%m') 
+				]]>
+			</if>
+			<if test="endLastPayDate != null and endLastPayDate != ''">
+				<![CDATA[
+				AND date_format(pay_real_date,'%Y-%m') <= date_format(#{endLastPayDate},'%Y-%m')
+				]]>
+			</if> 
+			GROUP BY loan_contract_id
+			) AS inc ON inc.loan_contract_id = a.id
+		
+		
+		
+		LEFT JOIN(
+			SELECT
+			loan_contract_id,
+			advanceamount AS adviceBackPrincipalMoney
+		FROM
+			t_advance	
+		WHERE
+		del_flag = #{DEL_FLAG_NORMAL} 
+		and status = 2
+		<if test="beginLastPayDate !=null and beginLastPayDate !=''">
+			<![CDATA[
+				AND date_format(apply_date, '%Y-%m') >= date_format(#{beginLastPayDate},'%Y-%m') 
+			]]>
+		</if>
+		<if test="endLastPayDate !=null and endLastPayDate !=''">
+			<![CDATA[
+				AND date_format(apply_date, '%Y-%m') <= date_format(#{endLastPayDate},'%Y-%m')
+			]]>
+		</if>
+		
+		) AS adc  ON adc.loan_contract_id = a.id
+    </sql>
+    
+	<select id="get" resultType="LoanContractVo">
+		SELECT 
+			<include refid="loanContractColumns"/>
+		FROM t_loan_contract a
+		<include refid="loanContractJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LoanContractVo">
+		SELECT 
+			<include refid="loanContractColumns"/>
+		FROM t_loan_contract a
+		<include refid="loanContractJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="contractNumber != null and contractNumber != ''">
+				AND a.contract_number = #{contractNumber}
+			</if>
+			<if test="customerName != null and customerName != ''">
+				AND a.customer_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{customerName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{customerName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{customerName},'%')</if>
+			</if>
+			<if test="beginLoanDate != null and endLoanDate != null and beginLoanDate != '' and endLoanDate != ''">
+				AND a.loan_date BETWEEN #{beginLoanDate} AND #{endLoanDate}
+			</if>
+			<if test="loanPeriod != null and loanPeriod != ''">
+				AND a.loan_period = #{loanPeriod}
+			</if>
+			<if test="payPrincipalDate != null and payPrincipalDate != ''">
+				AND a.pay_principal_date = #{payPrincipalDate}
+			</if>
+			<if test="createBy != null and createBy.id != null and createBy.id != ''">
+				AND a.create_by = #{createBy.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	
+	
+	
+	
+
+		<!-- 业务统计-贷款明细 -->
+	<select id="findLoanDetailList" resultType="LoanContractVo">
+		SELECT 
+			<include refid="loanContractColumns"/>,
+			<include refid="countRepayPlanInfo"/>
+		FROM t_loan_contract a
+		<include refid="countRepayPlanJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="contractNumber != null and contractNumber != ''">
+				AND a.contract_number = #{contractNumber}
+			</if>
+			<if test="customerName != null and customerName != ''">
+				AND a.customer_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{customerName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{customerName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{customerName},'%')</if>
+			</if>
+			<!-- 放款日期 -->
+			<!-- <if test="beginLoanDate != null and beginLoanDate != ''">
+				<![CDATA[
+				AND date_format(a.loan_date,'%Y-%m') >= date_format(#{beginLoanDate},'%Y-%m') 
+				]]>
+			</if>
+			<if test="endLoanDate != null and endLoanDate != ''">
+				<![CDATA[
+				AND date_format(a.loan_date,'%Y-%m') <= date_format(#{endLoanDate},'%Y-%m')
+				]]>
+			</if> -->
+			<!-- 贷款期限 -->
+			<if test="loanPeriod != null and loanPeriod != ''">
+				AND a.loan_period = #{loanPeriod}
+			</if>
+			<!-- <if test="currentMonth != null and currentMonth != ''">
+				AND date_format(a.pay_principal_date,'%Y-%m') = date_format(#{currentMonth},'%Y-%m')
+			</if> -->
+			<!-- <if test="beginLastPayDate != null and beginLastPayDate != ''">
+				<![CDATA[
+				AND date_format(a.pay_principal_date,'%Y-%m') >= date_format(#{beginLastPayDate},'%Y-%m')
+				]]>
+			</if>
+			<if test="endLastPayDate != null and endLastPayDate != ''">
+				<![CDATA[
+				AND date_format(a.pay_principal_date,'%Y-%m') <= date_format(#{endLastPayDate},'%Y-%m')
+				]]>
+			</if> -->
+		</where>
+		ORDER BY a.update_date DESC
+	<!-- 	<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose> -->
+	</select>
+	
+
+	
+	<select id="findAllList" resultType="LoanContractVo">
+		SELECT 
+			<include refid="loanContractColumns"/>
+		FROM t_loan_contract a
+		<include refid="loanContractJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+</mapper>

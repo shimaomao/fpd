@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.collateral.dao.HouseDao">
+    
+	<sql id="houseColumns">
+		a.id AS "id",
+		a.address AS "address",
+		a.area AS "area",
+		a.balance AS "balance",
+		a.chan_quality AS "chanQuality",
+		a.dengji AS "dengji",
+		a.framework AS "framework",
+		a.jiegou AS "jiegou",
+		a.jyear AS "jyear",
+		a.man AS "man",
+		a.mo_money AS "moMoney",
+		a.money1 AS "money1",
+		a.money2 AS "money2",
+		a.money3 AS "money3",
+		a.new_money AS "newMoney",
+		a.quan_num AS "quanNum",
+		a.remark AS "remark",
+		a.yangshi AS "yangshi",
+		a.year_limit AS "yearLimit",
+		a.dizhi_contract_id AS "dizhiContractId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="houseJoins">
+	</sql>
+    
+	<select id="get" resultType="House">
+		SELECT 
+			<include refid="houseColumns"/>
+		FROM t_house a
+		<include refid="houseJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<!--add by shirf-->
+	<select id="getByPledge" resultType="House">
+		SELECT 
+			<include refid="houseColumns"/>
+		FROM t_house a
+		<include refid="houseJoins"/>
+		WHERE a.dizhi_contract_id = #{id}
+	</select>
+	
+	<select id="findList" resultType="House">
+		SELECT 
+			<include refid="houseColumns"/>
+		FROM t_house a
+		<include refid="houseJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="address != null and address != ''">
+				AND a.address = #{address}
+			</if>
+			<if test="beginArea != null and endArea != null and beginArea != '' and endArea != ''">
+				AND a.area BETWEEN #{beginArea} AND #{endArea}
+			</if>
+			<if test="chanQuality != null and chanQuality != ''">
+				AND a.chan_quality = #{chanQuality}
+			</if>
+			<if test="jiegou != null and jiegou != ''">
+				AND a.jiegou = #{jiegou}
+			</if>
+			<if test="beginJyear != null and endJyear != null and beginJyear != '' and endJyear != ''">
+				AND a.jyear BETWEEN #{beginJyear} AND #{endJyear}
+			</if>
+			<if test="quanNum != null and quanNum != ''">
+				AND a.quan_num = #{quanNum}
+			</if>
+			<if test="yangshi != null and yangshi != ''">
+				AND a.yangshi = #{yangshi}
+			</if>
+			<if test="beginYearLimit != null and endYearLimit != null and beginYearLimit != '' and endYearLimit != ''">
+				AND a.year_limit BETWEEN #{beginYearLimit} AND #{endYearLimit}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="House">
+		SELECT 
+			<include refid="houseColumns"/>
+		FROM t_house a
+		<include refid="houseJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_house(
+			id,
+			address,
+			area,
+			balance,
+			chan_quality,
+			dengji,
+			framework,
+			jiegou,
+			jyear,
+			man,
+			mo_money,
+			money1,
+			money2,
+			money3,
+			new_money,
+			quan_num,
+			remark,
+			yangshi,
+			year_limit,
+			dizhi_contract_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{address},
+			#{area},
+			#{balance},
+			#{chanQuality},
+			#{dengji},
+			#{framework},
+			#{jiegou},
+			#{jyear},
+			#{man},
+			#{moMoney},
+			#{money1},
+			#{money2},
+			#{money3},
+			#{newMoney},
+			#{quanNum},
+			#{remark},
+			#{yangshi},
+			#{yearLimit},
+			#{dizhiContractId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_house SET 	
+			address = #{address},
+			area = #{area},
+			balance = #{balance},
+			chan_quality = #{chanQuality},
+			dengji = #{dengji},
+			framework = #{framework},
+			jiegou = #{jiegou},
+			jyear = #{jyear},
+			man = #{man},
+			mo_money = #{moMoney},
+			money1 = #{money1},
+			money2 = #{money2},
+			money3 = #{money3},
+			new_money = #{newMoney},
+			quan_num = #{quanNum},
+			remark = #{remark},
+			yangshi = #{yangshi},
+			year_limit = #{yearLimit},
+			dizhi_contract_id = #{dizhiContractId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_house SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.product.dao.ProductBizCfgDao">
+    
+	<sql id="productBizCfgColumns">
+		a.id AS "id",
+		p.id AS "product.id",
+		p.name AS "product.name",
+		p.type AS "product.type",
+		b.id AS "biz.id",
+		b.category AS "biz.category",
+		b.biz_code AS "biz.bizCode",
+		b.biz_name AS "biz.bizName",
+		b.biz_url AS "biz.bizUrl",
+		b.biz_param AS "biz.bizParam",
+		b.type AS "biz.type",
+		a.proc_def_id AS "procDefId",
+		re.NAME_ AS "procDefName",
+		a.risk_id AS "riskId",
+		a.update_by AS "updateBy.id",
+		a.create_by AS "createBy.id",
+		a.update_date AS "updateDate",
+		a.create_date AS "createDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="productBizCfgJoins">
+		JOIN t_product p on p.id = a.product_id
+		JOIN t_product_biz b on b.id = a.biz_id
+		LEFT JOIN ACT_RE_PROCDEF re on re.ID_ = a.proc_def_id
+	</sql>
+    
+	<select id="get" resultType="ProductBizCfg">
+		SELECT 
+			<include refid="productBizCfgColumns"/>
+		FROM t_product_biz_cfg a
+		<include refid="productBizCfgJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ProductBizCfg">
+		SELECT 
+			<include refid="productBizCfgColumns"/>
+		FROM t_product_biz_cfg a
+		<include refid="productBizCfgJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="product != null and product.id != null and product.id != ''">
+				AND a.product_id = #{product.id}
+			</if>
+			<if test="biz != null and biz.id != null and biz.id != ''">
+				AND a.biz_id = #{biz.id}
+			</if>
+			<if test="procDefId != null and procDefId != ''">
+				AND a.proc_def_id = #{procDefId}
+			</if>
+			<if test="riskId != null and riskId != ''">
+				AND a.risk_id = #{riskId}
+			</if>
+			<if test="biz != null and biz.bizCode != null and biz.bizCode != ''">
+				AND b.biz_code = #{biz.bizCode}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ProductBizCfg">
+		SELECT 
+			<include refid="productBizCfgColumns"/>
+		FROM t_product_biz_cfg a
+		<include refid="productBizCfgJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_product_biz_cfg(
+			id,
+			product_id,
+			biz_id,
+			proc_def_id,
+			risk_id,
+			update_by,
+			create_by,
+			update_date,
+			create_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{product.id},
+			#{biz.id},
+			#{procDefId},
+			#{riskId},
+			#{updateBy.id},
+			#{createBy.id},
+			#{updateDate},
+			#{createDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_product_biz_cfg SET 	
+			product_id = #{product.id},
+			biz_id = #{biz.id},
+			proc_def_id = #{procDefId},
+			risk_id = #{riskId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_product_biz_cfg SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<delete id="deletePLByIds">
+		<if test="id != null and id != '' ">
+			DELETE FROM t_product_biz_cfg WHERE id in (${id});
+		</if>
+	</delete>
+	<delete id="deletePLByBizIds">
+		<if test="biz != null and biz.id != null and biz.id != '' ">
+			DELETE FROM t_product_biz_cfg WHERE biz_id in (${biz.id})
+		</if>
+	</delete>
+	<delete id="deletePLByOrgAndProduct">
+		<if test="product != null and product.id != null and product.id != '' and organId != null and organId != '' ">
+			DELETE FROM t_product_biz_cfg WHERE organ_id = #{organId} AND product_id = #{product.id}
+		</if>
+	</delete>
+	<delete id="deletePLByOrgAndProductBizIds">
+		<if test="product != null and product.id != null and product.id != '' and organId != null and organId != '' and biz != null and biz.id != null and biz.id != '' ">
+			DELETE FROM t_product_biz_cfg WHERE organ_id = #{organId} AND product_id = #{product.id} and biz_id in (${biz.id})
+		</if>
+	</delete>
+</mapper>

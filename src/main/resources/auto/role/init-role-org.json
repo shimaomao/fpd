@@ -1,0 +1,51 @@
+[
+            {
+                "remarks": "",
+                "name": "客户经理",
+                "enname": "khjl",
+                "roleType": "user",
+                "dataScope": "8"
+            },
+            {
+                "remarks": "",
+                "name": "总经理",
+                "enname": "zjl",
+                "roleType": "security-role",
+                "dataScope": "2"
+            },
+            {
+                "remarks": "",
+                "name": "财务经理",
+                "enname": "cwjl",
+                "roleType": "user",
+                "dataScope": "2"
+            },
+            {
+                "remarks": "",
+                "name": "客户总监",
+                "enname": "khzj",
+                "roleType": "assignment",
+                "dataScope": "2"
+            },
+            {
+                "remarks": "",
+                "name": "风控总监",
+                "enname": "fkzj",
+                "roleType": "assignment",
+                "dataScope": "2"
+            },
+            {
+                "remarks": "",
+                "name": "风控经理",
+                "enname": "fkjl",
+                "roleType": "user",
+                "dataScope": "2"
+            },
+            {
+                "remarks": "",
+                "name": "财务总监",
+                "enname": "cwzj",
+                "roleType": "assignment",
+                "dataScope": "2"
+            }
+        ]

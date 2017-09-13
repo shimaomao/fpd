@@ -1,0 +1,875 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.jrj.dao.JrjBusinessSituationTwoDao">
+    
+	<sql id="tSituationColumns">
+		a.id AS "id",
+		a.company_name AS "companyName",
+		a.company_id AS "companyId",
+		a.report_name AS "reportName",		
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		
+		a.row_one AS "rowOne",
+		a.row_two AS "rowTwo",
+		a.row_three AS "rowThree",
+		a.row_four AS "rowFour",
+		
+		a.row1_one AS "row1One",
+		a.row1_two AS "row1Two",
+		a.row1_three AS "row1Three",
+		a.row1_four AS "row1Four",
+		
+		a.row2_one AS "row2One",
+		a.row2_two AS "row2Two",
+		a.row2_three AS "row2Three",
+		a.row2_four AS "row2Four",
+		
+		a.row3_one AS "row3One",
+		a.row3_two AS "row3Two",
+		a.row3_three AS "row3Three",
+		a.row3_four AS "row3Four",
+		
+		a.row4_one AS "row4One",
+		a.row4_two AS "row4Two",
+		a.row4_three AS "row4Three",
+		a.row4_four AS "row4Four",
+		
+		a.row5_one AS "row5One",
+		a.row5_two AS "row5Two",
+		a.row5_three AS "row5Three",
+		a.row5_four AS "row5Four",
+		
+		a.row6_one AS "row6One",
+		a.row6_two AS "row6Two",
+		a.row6_three AS "row6Three",
+		a.row6_four AS "row6Four",
+		
+		a.row7_one AS "row7One",
+		a.row7_two AS "row7Two",
+		a.row7_three AS "row7Three",
+		a.row7_four AS "row7Four",
+		
+		a.row8_one AS "row8One",
+		a.row8_two AS "row8Two",
+		a.row8_three AS "row8Three",
+		a.row8_four AS "row8Four",
+		
+		a.row9_one AS "row9One",
+		a.row9_two AS "row9Two",
+		a.row9_three AS "row9Three",
+		a.row9_four AS "row9Four",
+		
+		a.row10_one AS "row10One",
+		a.row10_two AS "row10Two",
+		a.row10_three AS "row10Three",
+		a.row10_four AS "row10Four",
+		
+		a.row11_one AS "row11One",
+		a.row11_two AS "row11Two",
+		a.row11_three AS "row11Three",
+		a.row11_four AS "row11Four",
+		
+		a.row12_one AS "row12One",
+		a.row12_two AS "row12Two",
+		a.row12_three AS "row12Three",
+		a.row12_four AS "row12Four",
+		
+		a.row13_one AS "row13One",
+		a.row13_two AS "row13Two",
+		a.row13_three AS "row13Three",
+		a.row13_four AS "row13Four",
+		
+		a.row14_one AS "row14One",
+		a.row14_two AS "row14Two",
+		a.row14_three AS "row14Three",
+		a.row14_four AS "row14Four",
+		
+		a.row15_one AS "row15One",
+		a.row15_two AS "row15Two",
+		a.row15_three AS "row15Three",
+		a.row15_four AS "row15Four",
+		
+		a.row16_one AS "row16One",
+		a.row16_two AS "row16Two",
+		a.row16_three AS "row16Three",
+		a.row16_four AS "row16Four",
+		
+		a.row17_one AS "row17One",
+		a.row17_two AS "row17Two",
+		a.row17_three AS "row17Three",
+		a.row17_four AS "row17Four",
+		
+		a.row18_one AS "row18One",
+		a.row18_two AS "row18Two",
+		a.row18_three AS "row18Three",
+		a.row18_four AS "row18Four",
+		
+		a.row19_one AS "row19One",
+		a.row19_two AS "row19Two",
+		a.row19_three AS "row19Three",
+		a.row19_four AS "row19Four",
+		
+		a.row20_one AS "row20One",
+		a.row20_two AS "row20Two",
+		a.row20_three AS "row20Three",
+		a.row20_four AS "row20Four",
+		
+		a.row21_one AS "row21One",
+		a.row21_two AS "row21Two",
+		a.row21_three AS "row21Three",
+		a.row21_four AS "row21Four",
+		
+		a.row22_one AS "row22One",
+		a.row22_two AS "row22Two",
+		a.row22_three AS "row22Three",
+		a.row22_four AS "row22Four",
+		
+		a.row23_one AS "row23One",
+		a.row23_two AS "row23Two",
+		a.row23_three AS "row23Three",
+		a.row23_four AS "row23Four",
+		
+		a.row24_one AS "row24One",
+		a.row24_two AS "row24Two",
+		a.row24_three AS "row24Three",
+		a.row24_four AS "row24Four",
+		
+		a.row25_one AS "row25One",
+		a.row25_two AS "row25Two",
+		a.row25_three AS "row25Three",
+		a.row25_four AS "row25Four",
+		
+		a.row26_one AS "row26One",
+		a.row26_two AS "row26Two",
+		a.row26_three AS "row26Three",
+		a.row26_four AS "row26Four",
+		
+		a.row27_one AS "row27One",
+		a.row27_two AS "row27Two",
+		a.row27_three AS "row27Three",
+		a.row27_four AS "row27Four",
+		
+		a.row28_one AS "row28One",
+		a.row28_two AS "row28Two",
+		a.row28_three AS "row28Three",
+		a.row28_four AS "row28Four",
+		
+		a.row29_one AS "row29One",
+		a.row29_two AS "row29Two",
+		a.row29_three AS "row29Three",
+		a.row29_four AS "row29Four",
+		
+		a.row30_one AS "row30One",
+		a.row30_two AS "row30Two",
+		a.row30_three AS "row30Three",
+		a.row30_four AS "row30Four",
+		
+		a.row31_one AS "row31One",
+		a.row31_two AS "row31Two",
+		a.row31_three AS "row31Three",
+		a.row31_four AS "row31Four",
+		
+		a.row32_one AS "row32One",
+		a.row32_two AS "row32Two",
+		a.row32_three AS "row32Three",
+		a.row32_four AS "row32Four",
+		
+		a.row33_one AS "row33One",
+		a.row33_two AS "row33Two",
+		a.row33_three AS "row33Three",
+		a.row33_four AS "row33Four",
+		
+		a.row34_one AS "row34One",
+		a.row34_two AS "row34Two",
+		a.row34_three AS "row34Three",
+		a.row34_four AS "row34Four",
+		
+		a.principal AS 'principal',
+		a.statistics AS 'statistics',
+		a.fit_out AS 'fitOut',
+		a.submit_date AS 'submitDate',
+		a.scan_flag AS 'scanFlag',
+		a.push_status AS 'pushStatus'	
+	</sql>
+	
+	<sql id="tSituationJoins">
+	</sql>
+    
+	<select id="get" resultType="JrjBusinessSituationTwo">
+		SELECT 
+			<include refid="tSituationColumns"/>
+		FROM jrj_business_situation_two a
+		<include refid="tSituationJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="JrjBusinessSituationTwo">
+		SELECT 
+			<include refid="tSituationColumns"/>
+		FROM jrj_business_situation_two a
+		<include refid="tSituationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}			
+			<if test="submitDate != null and submitDate != ''">
+				AND a.submit_date = #{submitDate}
+			</if>
+			<if test="currentUser.company.id != ''">
+			   and a.organ_id = #{currentUser.company.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	<select id="findListByScanFlag" resultType="JrjBusinessSituationTwo">
+		SELECT 
+			<include refid="tSituationColumns"/>
+		FROM jrj_business_situation_two a
+		<include refid="tSituationJoins"/>
+		<where>			
+			<if test="scanFlag != null and scanFlag != ''">
+			   a.scan_flag = #{scanFlag}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="JrjBusinessSituationTwo">
+		SELECT 
+			<include refid="tSituationColumns"/>
+		FROM jrj_business_situation_two a
+		<include refid="tSituationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="currentUser.company.id != ''">
+			   and a.organ_id = #{currentUser.company.id}
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO jrj_business_situation_two(
+			id,
+			company_name,
+			company_id,
+			report_name,		
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id,
+			
+			row_one,
+		    row_two,
+		    row_three,
+		    row_four,
+		    
+		    row1_one,
+		    row1_two,
+		    row1_three,
+		    row1_four,
+			
+			row2_one,
+		    row2_two,
+		    row2_three,
+		    row2_four,
+		    
+		    row3_one,
+		    row3_two,
+		    row3_three,
+		    row3_four,
+		    
+		    row4_one,
+		    row4_two,
+		    row4_three,
+		    row4_four,
+		    
+		    row5_one,
+		    row5_two,
+		    row5_three,
+		    row5_four,
+		    
+		    row6_one,
+		    row6_two,
+		    row6_three,
+		    row6_four,
+		    
+		    row7_one,
+		    row7_two,
+		    row7_three,
+		    row7_four,
+		    
+		    row8_one,
+		    row8_two,
+		    row8_three,
+		    row8_four,
+		    
+		    row9_one,
+		    row9_two,
+		    row9_three,
+		    row9_four,
+		    
+		    row10_one,
+		    row10_two,
+		    row10_three,
+		    row10_four,
+		    
+		    row11_one,
+		    row11_two,
+		    row11_three,
+		    row11_four,
+		    
+		    row12_one,
+		    row12_two,
+		    row12_three,
+		    row12_four,
+		    
+		    row13_one,
+		    row13_two,
+		    row13_three,
+		    row13_four,
+		    
+		    row14_one,
+		    row14_two,
+		    row14_three,
+		    row14_four,
+		    
+		    row15_one,
+		    row15_two,
+		    row15_three,
+		    row15_four,
+			
+			row16_one,
+		    row16_two,
+		    row16_three,
+		    row16_four,
+		    
+		    row17_one,
+		    row17_two,
+		    row17_three,
+		    row17_four,
+		
+		    row18_one,
+		    row18_two,
+		    row18_three,
+		    row18_four,
+		    
+		    row19_one,
+		    row19_two,
+		    row19_three,
+		    row19_four,
+		    
+		    row20_one,
+		    row20_two,
+		    row20_three,
+		    row20_four,
+		    
+		    row21_one,
+		    row21_two,
+		    row21_three,
+		    row21_four,
+		    
+		    row22_one,
+		    row22_two,
+		    row22_three,
+		    row22_four,
+		    
+		    row23_one,
+		    row23_two,
+		    row23_three,
+		    row23_four,
+		    
+		    row24_one,
+		    row24_two,
+		    row24_three,
+		    row24_four,
+		    
+		    row25_one,
+		    row25_two,
+		    row25_three,
+		    row25_four,
+		    
+		    row26_one,
+		    row26_two,
+		    row26_three,
+		    row26_four,
+		    
+		    row27_one,
+		    row27_two,
+		    row27_three,
+		    row27_four,
+		    
+		    row28_one,
+		    row28_two,
+		    row28_three,
+		    row28_four,
+		    
+		    row29_one,
+		    row29_two,
+		    row29_three,
+		    row29_four,
+		    
+		    row30_one,
+		    row30_two,
+		    row30_three,
+		    row30_four,
+		    
+		    row31_one,
+		    row31_two,
+		    row31_three,
+		    row31_four,
+		    
+		    row32_one,
+		    row32_two,
+		    row32_three,
+		    row32_four,
+		    
+		     row33_one,
+		    row33_two,
+		    row33_three,
+		    row33_four,
+		    
+		    row34_one,
+		    row34_two,
+		    row34_three,
+		    row34_four,
+			
+			principal,
+			statistics,
+			fit_out,
+			submit_date,
+			scan_flag,
+			push_status			
+		) VALUES (
+			#{id},
+			#{companyName},
+			#{companyId},
+			#{reportName},			
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId},
+			
+			#{rowOne},
+			#{rowTwo},
+			#{rowThree},
+			#{rowFour},
+			
+			#{row1One},
+			#{row1Two},
+			#{row1Three},
+			#{row1Four},
+			
+			#{row2One},
+			#{row2Two},
+			#{row2Three},
+			#{row2Four},
+			
+			#{row3One},
+			#{row3Two},
+			#{row3Three},
+			#{row3Four},
+			
+			#{row4One},
+			#{row4Two},
+			#{row4Three},
+			#{row4Four},
+			
+			#{row5One},
+			#{row5Two},
+			#{row5Three},
+			#{row5Four},
+			
+			#{row6One},
+			#{row6Two},
+			#{row6Three},
+			#{row6Four},
+			
+			#{row7One},
+			#{row7Two},
+			#{row7Three},
+			#{row7Four},
+			
+			#{row8One},
+			#{row8Two},
+			#{row8Three},
+			#{row8Four},
+			
+			#{row9One},
+			#{row9Two},
+			#{row9Three},
+			#{row9Four},
+			
+			#{row10One},
+			#{row10Two},
+			#{row10Three},
+			#{row10Four},
+			
+			#{row11One},
+			#{row11Two},
+			#{row11Three},
+			#{row11Four},
+			
+			#{row12One},
+			#{row12Two},
+			#{row12Three},
+			#{row12Four},
+			
+			#{row13One},
+			#{row13Two},
+			#{row13Three},
+			#{row13Four},
+			
+			#{row14One},
+			#{row14Two},
+			#{row14Three},
+			#{row14Four},
+			
+			#{row15One},
+			#{row15Two},
+			#{row15Three},
+			#{row15Four},
+			
+			#{row16One},
+			#{row16Two},
+			#{row16Three},
+			#{row16Four},
+			
+			#{row17One},
+			#{row17Two},
+			#{row17Three},
+			#{row17Four},
+			
+			#{row18One},
+			#{row18Two},
+			#{row18Three},
+			#{row18Four},
+			
+			#{row19One},
+			#{row19Two},
+			#{row19Three},
+			#{row19Four},
+			
+			#{row20One},
+			#{row20Two},
+			#{row20Three},
+			#{row20Four},
+			
+			#{row21One},
+			#{row21Two},
+			#{row21Three},
+			#{row21Four},
+			
+			#{row22One},
+			#{row22Two},
+			#{row22Three},
+			#{row22Four},
+			
+			#{row23One},
+			#{row23Two},
+			#{row23Three},
+			#{row23Four},
+			
+			#{row24One},
+			#{row24Two},
+			#{row24Three},
+			#{row24Four},
+			
+			#{row25One},
+			#{row25Two},
+			#{row25Three},
+			#{row25Four},
+			
+			#{row26One},
+			#{row26Two},
+			#{row26Three},
+			#{row26Four},
+			
+			#{row27One},
+			#{row27Two},
+			#{row27Three},
+			#{row27Four},
+			
+			#{row28One},
+			#{row28Two},
+			#{row28Three},
+			#{row28Four},
+			
+			#{row29One},
+			#{row29Two},
+			#{row29Three},
+			#{row29Four},
+			
+			#{row30One},
+			#{row30Two},
+			#{row30Three},
+			#{row30Four},			
+						
+			#{row31One},
+			#{row31Two},
+			#{row31Three},
+			#{row31Four},
+			
+			#{row32One},
+			#{row32Two},
+			#{row32Three},
+			#{row32Four},
+			
+			#{row33One},
+			#{row33Two},
+			#{row33Three},
+			#{row33Four},
+			
+			#{row34One},
+			#{row34Two},
+			#{row34Three},
+			#{row34Four},			
+						
+			#{principal},
+			#{statistics},
+			#{fitOut},
+			#{submitDate},
+			#{scanFlag},
+			'0'		
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE jrj_business_situation_two SET 	
+		    company_name = #{companyName},
+		    company_id = #{companyId},
+			report_name = #{reportName},
+			
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId},
+			
+			row_one = #{rowOne},
+			row_two = #{rowTwo},
+			row_three = #{rowThree},
+			row_four = #{rowFour},	
+			
+			row1_one = #{row1One},
+			row1_two = #{row1Two},
+			row1_three = #{row1Three},
+			row1_four = #{row1Four},	
+			
+			row2_one = #{row2One},
+			row2_two = #{row2Two},
+			row2_three = #{row2Three},
+			row2_four = #{row2Four},	
+			
+			row3_one = #{row3One},
+			row3_two = #{row3Two},
+			row3_three = #{row3Three},
+			row3_four = #{row3Four},
+			
+			row4_one = #{row4One},
+			row4_two = #{row4Two},
+			row4_three = #{row4Three},
+			row4_four = #{row4Four},
+			
+			row5_one = #{row5One},
+			row5_two = #{row5Two},
+			row5_three = #{row5Three},
+			row5_four = #{row5Four},
+			
+			row6_one = #{row6One},
+			row6_two = #{row6Two},
+			row6_three = #{row6Three},
+			row6_four = #{row6Four},
+			
+			row7_one = #{row7One},
+			row7_two = #{row7Two},
+			row7_three = #{row7Three},
+			row7_four = #{row7Four},
+			
+			row8_one = #{row8One},
+			row8_two = #{row8Two},
+			row8_three = #{row8Three},
+			row8_four = #{row8Four},
+			
+			row9_one = #{row9One},
+			row9_two = #{row9Two},
+			row9_three = #{row9Three},
+			row9_four = #{row9Four},
+			
+			row10_one = #{row10One},
+			row10_two = #{row10Two},
+			row10_three = #{row10Three},
+			row10_four = #{row10Four},		
+			
+			row11_one = #{row11One},
+			row11_two = #{row11Two},
+			row11_three = #{row11Three},
+			row11_four = #{row11Four},
+			
+			row12_one = #{row12One},
+			row12_two = #{row12Two},
+			row12_three = #{row12Three},
+			row12_four = #{row12Four},
+			
+			row13_one = #{row13One},
+			row13_two = #{row13Two},
+			row13_three = #{row13Three},
+			row13_four = #{row13Four},
+			
+			row14_one = #{row14One},
+			row14_two = #{row14Two},
+			row14_three = #{row14Three},
+			row14_four = #{row14Four},
+			
+			row15_one = #{row15One},
+			row15_two = #{row15Two},
+			row15_three = #{row15Three},
+			row15_four = #{row15Four},
+			
+			row16_one = #{row16One},
+			row16_two = #{row16Two},
+			row16_three = #{row16Three},
+			row16_four = #{row16Four},
+			
+			row17_one = #{row17One},
+			row17_two = #{row17Two},
+			row17_three = #{row17Three},
+			row17_four = #{row17Four},
+			
+			row18_one = #{row18One},
+			row18_two = #{row18Two},
+			row18_three = #{row18Three},
+			row18_four = #{row18Four},
+			
+			row19_one = #{row19One},
+			row19_two = #{row19Two},
+			row19_three = #{row19Three},
+			row19_four = #{row19Four},
+			
+			row20_one = #{row20One},
+			row20_two = #{row20Two},
+			row20_three = #{row20Three},
+			row20_four = #{row20Four},
+			
+			row21_one = #{row21One},
+			row21_two = #{row21Two},
+			row21_three = #{row21Three},
+			row21_four = #{row21Four},
+			
+			row22_one = #{row22One},
+			row22_two = #{row22Two},
+			row22_three = #{row22Three},
+			row22_four = #{row22Four},
+			
+			row23_one = #{row23One},
+			row23_two = #{row23Two},
+			row23_three = #{row23Three},
+			row23_four = #{row23Four},
+			
+			row24_one = #{row24One},
+			row24_two = #{row24Two},
+			row24_three = #{row24Three},
+			row24_four = #{row24Four},
+			
+			row25_one = #{row25One},
+			row25_two = #{row25Two},
+			row25_three = #{row25Three},
+			row25_four = #{row25Four},
+			
+			row26_one = #{row26One},
+			row26_two = #{row26Two},
+			row26_three = #{row26Three},
+			row26_four = #{row26Four},
+			
+			row27_one = #{row27One},
+			row27_two = #{row27Two},
+			row27_three = #{row27Three},
+			row27_four = #{row27Four},
+			
+			row28_one = #{row28One},
+			row28_two = #{row28Two},
+			row28_three = #{row28Three},
+			row28_four = #{row28Four},
+			
+			row29_one = #{row29One},
+			row29_two = #{row29Two},
+			row29_three = #{row29Three},
+			row29_four = #{row29Four},
+			
+			row30_one = #{row30One},
+			row30_two = #{row30Two},
+			row30_three = #{row30Three},
+			row30_four = #{row30Four},
+			
+				row31_one = #{row31One},
+			row31_two = #{row31Two},
+			row31_three = #{row31Three},
+			row31_four = #{row31Four},
+			
+				row32_one = #{row32One},
+			row32_two = #{row32Two},
+			row32_three = #{row32Three},
+			row32_four = #{row32Four},
+			
+				row33_one = #{row33One},
+			row33_two = #{row33Two},
+			row33_three = #{row33Three},
+			row33_four = #{row33Four},
+			
+				row34_one = #{row3One},
+			row34_two = #{row34Two},
+			row34_three = #{row34Three},
+			row34_four = #{row34Four},
+			
+			principal = #{principal},
+			statistics = #{statistics},
+			fit_out = #{fitOut},
+			submit_date = #{submitDate},
+			scan_flag = #{scanFlag}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE jrj_business_situation_two SET 
+			del_flag = #{DEL_FLAG_DELETE},			
+		    scan_flag = #{scanFlag}	
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateByPushStatus">
+		UPDATE jrj_business_situation_two SET 
+			push_status = #{pushStatus},			
+		    scan_flag = #{scanFlag}	
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

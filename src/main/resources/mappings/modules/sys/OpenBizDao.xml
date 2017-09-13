@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.sys.dao.OpenBizDao">
+    
+	<sql id="openBizColumns">
+		a.id AS "id",
+		a.fee_biz_id AS "feeBiz.id",
+		b.category AS "feeBiz.category",
+		b.biz_name AS "feeBiz.bizName",
+		b.biz_code AS "feeBiz.bizCode",
+		b.unit_price AS "feeBiz.unitPrice",
+		a.organ_id AS "organId",
+		a.count AS "count",
+		a.amount AS "amount",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="openBizJoins">
+		LEFT JOIN t_fee_biz b on b.id = a.fee_biz_id
+	</sql>
+    
+	<select id="get" resultType="OpenBiz">
+		SELECT 
+			<include refid="openBizColumns"/>
+		FROM t_open_biz a
+		<include refid="openBizJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OpenBiz">
+		SELECT 
+			<include refid="openBizColumns"/>
+		FROM t_open_biz a
+		<include refid="openBizJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="feeBiz != null and feeBiz.id != null and feeBiz.id != ''">
+				and a.fee_biz_id = #{feeBiz.id}
+			</if>
+			<if test="organId != null and organId != ''">
+				and a.organ_id = #{organId}
+			</if>
+			<if test="status != null and status != ''">
+				and
+				<if test="dbName == 'oracle'">','||#{status}||',' like '%,'||a.status||',%'</if>
+				<if test="dbName == 'mssql'"> ','+#{status}+',' like '%,'+a.status+',%'</if>
+				<if test="dbName == 'mysql'">concat(',',#{status},',') like  concat('%,',a.status,',%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OpenBiz">
+		SELECT 
+			<include refid="openBizColumns"/>
+		FROM t_open_biz a
+		<include refid="openBizJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_open_biz(
+			id,
+			fee_biz_id,
+			organ_id,
+			count,
+			amount,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{feeBiz.id},
+			#{organId},
+			#{count},
+			#{amount},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_open_biz SET 	
+			fee_biz_id = #{feeBiz.id},
+			organ_id = #{organId},
+			count = #{count},
+			amount = #{amount},
+			status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_open_biz SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 付费业务 -->
+	<sql id="feeBizColumns">
+		a.id AS "id",
+		a.category AS "category",
+		a.biz_name AS "bizName",
+		a.biz_code AS "bizCode",
+		a.unit_price AS "unitPrice",
+		a.remarks AS "remarks",
+		a.status AS "status"
+	</sql>
+	
+	<select id="getFeeBiz" resultType="com.wanfin.fpd.modules.sys.entity.FeeBiz">
+		SELECT 
+			<include refid="feeBizColumns"/>
+		FROM t_fee_biz a
+		WHERE a.id = #{id}
+	</select>
+	<select id="findFeeBizList" resultType="com.wanfin.fpd.modules.sys.entity.FeeBiz">
+		SELECT 
+			if(b.fee_biz_id is null, 0, 1) AS "isSelect",
+			<include refid="feeBizColumns"/>
+		FROM t_fee_biz a
+		LEFT JOIN t_fee_biz_organ_link b on b.fee_biz_id = a.id
+			<if test="organId == null or organId == ''">
+				and b.organ_id is null
+			</if>
+			<if test="organId != null and organId != ''">
+				and b.organ_id = #{organId}
+			</if>
+		<where>
+			<if test="category != null and category != ''">
+				a.category = #{category}
+			</if>
+			<if test="bizName != null and bizName != ''">
+				a.biz_name like concat('%',#{bizName},'%')
+			</if>
+			<if test="bizCode != null and bizCode != ''">
+				a.biz_code = #{bizCode}
+			</if>
+			<if test="unitPrice != null and unitPrice != ''">
+				a.unit_price = #{unitPrice}
+			</if>
+			<if test="status != null and status != ''">
+				a.status = #{status}
+			</if>
+			<if test="organId != null and organId != ''">
+				and b.organ_id = #{organId}
+			</if>
+		</where>
+		ORDER BY a.id
+	</select>
+	
+	<insert id="insertFeeBiz">
+		INSERT INTO t_fee_biz(
+			id,
+			category,
+			biz_name,
+			biz_code,
+			unit_price,
+			remarks,
+			status
+		) VALUES (
+			#{id},
+			#{category},
+			#{bizName},
+			#{bizCode},
+			#{unitPrice},
+			#{remarks},
+			#{status}
+		)
+	</insert>
+	
+	<update id="updateFeeBiz">
+		UPDATE t_fee_biz SET 	
+			unit_price = #{unitPrice},
+			biz_name = #{bizName},
+			remarks = #{remarks},
+			status = #{status}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 租户与付费业务的关联 -->
+	<insert id="saveFeeBizOrganLink">
+		INSERT INTO t_fee_biz_organ_link(
+			fee_biz_id,
+			organ_id,
+			count
+		) VALUES (
+			#{feeBizId},
+			#{organId},
+			#{count}
+		)
+	</insert>
+	
+	<select id="getFeeBizOrganLink" resultType="java.util.HashMap">
+		SELECT 
+			a.fee_biz_id AS "feeBizId",
+			a.organ_id AS "organId",
+			a.count AS "count"
+		FROM t_fee_biz_organ_link a
+		WHERE a.fee_biz_id = #{feeBizId} and a.organ_id = #{organId}
+	</select>
+	
+</mapper>

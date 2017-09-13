@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.billing.dao.price.BiPriceDao">
+    
+	<sql id="biPriceColumns">
+		a.id AS "id",
+		a.element_id AS "element.id",
+		a.price AS "price",
+		a.unit AS "unit",
+		a.unit_val AS "unitVal",
+		a.type AS "type",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		
+		b.name AS "element.name",
+		b.pid AS "element.element.id",
+		b.type AS "element.type",
+		b.type_id AS "element.typeId",
+		b.create_by AS "element.createBy.id",
+		b.create_date AS "element.createDate",
+		b.update_by AS "element.updateBy.id",
+		b.update_date AS "element.updateDate",
+		b.remarks AS "element.remarks",
+		b.del_flag AS "element.delFlag",
+		b.organ_id AS "element.organId"
+	</sql>
+	
+	<sql id="biPriceJoins">
+		LEFT JOIN bi_element b ON b.id = a.element_id
+	</sql>
+    
+	<select id="get" resultType="BiPrice">
+		SELECT 
+			<include refid="biPriceColumns"/>
+		FROM bi_price a
+		<include refid="biPriceJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BiPrice">
+		SELECT 
+			<include refid="biPriceColumns"/>
+		FROM bi_price a
+		<include refid="biPriceJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="element != null">
+				<if test="element.name != null and element.name != ''">
+					AND b.name LIKE 
+						<if test="dbName == 'oracle'">'%'||#{element.name}||'%'</if>
+						<if test="dbName == 'mssql'">'%'+#{element.name}+'%'</if>
+						<if test="dbName == 'mysql'">concat('%',#{element.name},'%')</if>
+				</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.element_id DESC, a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BiPrice">
+		SELECT 
+			<include refid="biPriceColumns"/>
+		FROM bi_price a
+		<include refid="biPriceJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO bi_price(
+			id,
+			element_id,
+			price,
+			unit,
+			unit_val,
+			type,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{element.id},
+			#{price},
+			#{unit},
+			#{unitVal},
+			#{type},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE bi_price SET 	
+			element_id = #{element.id},
+			price = #{price},
+			unit = #{unit},
+			unit_val = #{unitVal},
+			type = #{type},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE bi_price SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

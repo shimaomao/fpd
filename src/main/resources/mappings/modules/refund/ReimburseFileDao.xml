@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.refund.dao.ReimburseFileDao">
+    
+	<sql id="reimburseFileColumns">
+		a.id AS "id",
+		a.file_name AS "fileName",
+		a.source_name AS "sourceName",
+		a.title AS "title",
+		a.file_path AS "filePath",
+		a.file_type AS "fileType",
+		a.reimburse_id AS "reimburseId",
+		a.upload_date AS "uploadDate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="reimburseFileJoins">
+	</sql>
+    
+	<select id="get" resultType="ReimburseFile">
+		SELECT 
+			<include refid="reimburseFileColumns"/>
+		FROM t_reimburse_file a
+		<include refid="reimburseFileJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ReimburseFile">
+		SELECT 
+			<include refid="reimburseFileColumns"/>
+		FROM t_reimburse_file a
+		<include refid="reimburseFileJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="title != null and title != ''">
+				AND a.title LIKE 
+					<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<!-- add by shirf 20160406 -->
+	<select id="findListCondition" resultType="ReimburseFile">
+		SELECT 
+			<include refid="reimburseFileColumns"/>
+		FROM t_reimburse_file a
+		<include refid="reimburseFileJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="reimburseId ！= null and reimburseId != ''">
+			 	AND a.reimburse_id = #{reimburseId}
+			</if>
+			<if test="title != null and title != ''">
+				AND a.title LIKE 
+					<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ReimburseFile">
+		SELECT 
+			<include refid="reimburseFileColumns"/>
+		FROM t_reimburse_file a
+		<include refid="reimburseFileJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_reimburse_file(
+			id,
+			file_name,
+			source_name,
+			title,
+			file_path,
+			file_type,
+			reimburse_id,
+			upload_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{fileName},
+			#{sourceName},
+			#{title},
+			#{filePath},
+			#{fileType},
+			#{reimburseId},
+			#{uploadDate},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_reimburse_file SET 	
+			file_name = #{fileName},
+			source_name = #{sourceName},
+			title = #{title},
+			file_path = #{filePath},
+			file_type = #{fileType},
+			reimburse_id = #{reimburseId},
+			upload_date = #{uploadDate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_reimburse_file SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

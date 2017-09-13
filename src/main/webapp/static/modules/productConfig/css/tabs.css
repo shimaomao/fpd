@@ -1,0 +1,30 @@
+/**
+ * tabs
+ */
+ .tabsGroup{
+	width: 96%;
+	margin: 20px auto;
+	border-radius: 20px;
+	background-color: #fff;
+}
+.tabsGroup .tbox{
+	height: 60px;
+	line-height: 60px;
+	border-bottom: 2px #cdcfd2 solid;
+	width: 100%;
+}
+.tabsGroup .tbox label{
+	line-height: 60px;
+	display: inline-block;
+	padding-left: 20px;
+	padding-right: 20px;
+}
+.tabsGroup .tbox:first-child{
+	text-align: center;
+}
+/*// 当前被选TAB样式*/
+.active{
+	border-bottom: 2px #3692e7 solid;
+	font-weight: bold;
+	color: #3692e7;
+}

@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.company.dao.TCompanyDao">
+    
+	<sql id="tCompanyColumns">
+		a.id AS "id",
+		a.proc_ins_id AS "act.procInsId",		
+		a.name AS "name",
+		a.wtypeId AS "wtypeId",
+		a.address AS "address",
+		a.phone AS "phone",
+		a.card_num AS "cardNum",
+		a.card_type AS "cardType",
+		a.properties AS "properties",
+		a.setup_time AS "setupTime",
+		a.turnover AS "turnover",	
+		a.captial AS "captial",
+		a.main_business AS "mainBusiness",
+		a.surety AS "surety",
+		a.surety_sex AS "suretySex",
+		a.surety_age AS "suretyAge",
+		a.surety_birthday AS "suretyBirthday",
+		a.surety_email AS "suretyEmail",
+		a.gathering_bank AS "gatheringBank",
+		a.gathering_name AS "gatheringName",
+		a.gathering_number AS "gatheringNumber",
+		a.surety_cardnum AS "suretyCardnum",
+		a.surety_mobile AS "suretyMobile",
+		a.surety_telephone AS "suretyTelephone",
+		a.surety_regaddr AS "suretyRegaddr",
+		a.surety_address AS "suretyAddress",
+		a.status AS "status",
+		a.reason AS "reason",
+		a.customer_source AS "customerSource",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		o.name AS "companyName",
+		a.push_status AS "pushStatus"
+	</sql>
+	
+	<sql id="tCompanyJoins">
+	    LEFT JOIN sys_office o ON o.id = a.organ_id
+		LEFT JOIN sys_user u ON u.id = a.create_by
+	</sql>
+	
+    <!--历史excel对于企业信息操作 -->
+	<select id="byCompanyAndContract" resultType="TCompany">
+		select *
+		from t_company
+		where del_flag = #{DEL_FLAG_NORMAL} and card_num = #{cardNum}
+	</select>
+    
+	<select id="get" resultType="TCompany">
+		SELECT 
+			<include refid="tCompanyColumns"/>
+		FROM t_company a
+		<include refid="tCompanyJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getByWtypeId" resultType="TCompany">
+		SELECT 
+			<include refid="tCompanyColumns"/>
+		FROM t_company a
+		<include refid="tCompanyJoins"/>
+		WHERE a.wtypeId = #{wtypeId}
+	</select>
+	
+	<select id="getByCondition" resultType="TCompany">
+		SELECT 
+			<include refid="tCompanyColumns"/>
+		FROM t_company a
+		<include refid="tCompanyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="surety != null and surety != ''">
+				AND a.surety LIKE 
+					<if test="dbName == 'oracle'">'%'||#{surety}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{surety}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{surety},'%')</if>
+			</if>
+			<if test="cardNum != null and cardNum != ''">
+			   and a.card_num = #{cardNum}
+			</if>
+			<if test="status != null and status != ''">
+			   and a.status = #{status}
+			</if>
+			<if test="organId != ''">
+			   and a.organ_id = #{organId}
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findList" resultType="TCompany">
+		SELECT 
+			<include refid="tCompanyColumns"/>
+		FROM t_company a
+		<include refid="tCompanyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="surety != null and surety != ''">
+				AND a.surety LIKE 
+					<if test="dbName == 'oracle'">'%'||#{surety}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{surety}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{surety},'%')</if>
+			</if>
+			<if test="status != null and status != ''">
+			   and a.status = #{status}
+			</if>
+			<if test="currentUser.company.id != ''">
+			   and a.organ_id = #{currentUser.company.id}
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findListByScanTime" resultType="TCompany">
+		SELECT 
+			<include refid="tCompanyColumns"/>
+		FROM t_company a
+		<include refid="tCompanyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}		
+			<if test="scanFlag != '' and scanFlag!= null" >
+			   and a.scan_flag = #{scanFlag}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	<select id="findListByScanTimeAndPushStatus" resultType="TCompany">
+		SELECT 
+			<include refid="tCompanyColumns"/>
+		FROM t_company a
+		<include refid="tCompanyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}		
+			<if test="scanFlag != '' and scanFlag!= null" >
+			   and a.scan_flag = #{scanFlag}
+			</if>
+			<if test="pushStatus != '' and pushStatus null" >
+			   and a.push_status = #{pushStatus}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	
+	<select id="findAllList" resultType="TCompany">
+		SELECT 
+			<include refid="tCompanyColumns"/>
+		FROM t_company a
+		<include refid="tCompanyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="currentUser.company.id != ''">
+			   and a.organ_id = #{currentUser.company.id}
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllCardNumList" resultType="java.lang.String">
+		SELECT DISTINCT(a.card_num) FROM t_company a WHERE a.del_flag = 0
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_company(
+			id,
+			name,
+			wtypeId,
+			address,
+			phone,
+			card_num,
+			card_type,
+			properties,
+			setup_time,
+			turnover,
+			captial,
+			main_business,
+			surety,
+			surety_sex,
+			surety_age,
+			surety_birthday,
+			surety_email,
+			gathering_bank,
+			gathering_name,
+			gathering_number,
+			surety_cardnum,
+			surety_mobile,
+			surety_telephone,
+			surety_regaddr,
+			surety_address,
+			status,
+			reason,
+			customer_source,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id,
+			scan_flag,
+			push_status 
+		) VALUES (
+			#{id},
+			#{name},
+			#{wtypeId},
+			#{address},
+			#{phone},
+			#{cardNum},
+			#{cardType},
+			#{properties},
+			#{setupTime},
+			#{turnover},
+			#{captial},
+			#{mainBusiness},
+			#{surety},
+			#{suretySex},
+			#{suretyAge},
+			#{suretyBirthday},
+			#{suretyEmail},
+			#{gatheringBank},
+			#{gatheringName},
+			#{gatheringNumber},
+			#{suretyCardnum},
+			#{suretyMobile},
+			#{suretyTelephone},
+			#{suretyRegaddr},
+			#{suretyAddress},
+			#{status},
+			#{reason},
+			#{customerSource},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId},
+			#{scanFlag},
+			'0'
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_company SET 	
+			name = #{name},
+			wtypeId = #{wtypeId},
+			address = #{address},
+			phone = #{phone},
+			card_num = #{cardNum},
+			card_type = #{cardType},
+			properties = #{properties},
+			setup_time = #{setupTime},
+			turnover = #{turnover},
+			captial = #{captial},
+			main_business = #{mainBusiness},
+			surety = #{surety},
+			surety_sex = #{suretySex},
+			surety_age = #{suretyAge},
+			surety_birthday = #{suretyBirthday},
+			surety_email = #{suretyEmail},
+			gathering_bank = #{gatheringBank},
+			gathering_name = #{gatheringName},
+			gathering_number = #{gatheringNumber},
+			surety_cardnum = #{suretyCardnum},
+			surety_mobile = #{suretyMobile},
+			surety_telephone = #{suretyTelephone},
+			surety_regaddr = #{suretyRegaddr},
+			surety_address = #{suretyAddress},
+			status = #{status},
+			reason = #{reason},
+			customer_source = #{customerSource},
+			create_by = #{createBy.id},
+			create_date = #{createDate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			del_flag = #{delFlag},
+			organ_id = #{organId},
+			scan_flag = #{scanFlag}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_company SET 
+			del_flag = #{DEL_FLAG_DELETE},		
+			scan_flag = #{scanFlag}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 客户  包含企业和跟人 -->
+	<sql id="tCustomerColumns">
+		v.id AS "id",
+		v.proc_ins_id AS "act.procInsId",
+		v.customerType AS "customerType",
+		v.name AS "name",
+		v.wtypeId AS "wtypeId",
+		v.phone AS "phone",
+		v.cardNum AS "cardNum",
+		v.cardType AS "cardType",
+		v.gatheringBank AS "gatheringBank",
+		v.gatheringName AS "gatheringName",
+		v.gatheringNumber AS "gatheringNumber",
+		v.email AS "email",
+		v.status AS "status",
+		v.reason AS "reason",
+		v.create_by AS "createBy.id",
+		v.create_date AS "createDate",
+		v.update_by AS "updateBy.id",
+		v.update_date AS "updateDate",
+		v.del_flag AS "delFlag",
+		v.organ_id AS "organId"
+	</sql>
+	
+	<select id="findCustomerList" resultType="com.wanfin.fpd.modules.company.entity.Customer">
+		SELECT 
+			<include refid="tCustomerColumns"/>
+		FROM v_customer v
+		<where>
+			v.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND v.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="status != null and status != ''">
+				AND  
+				<if test="dbName == 'oracle'">','||#{status}||',' like '%,'||v.status||',%'</if>
+				<if test="dbName == 'mssql'"> ','+#{status}+',' like '%,'+v.status+',%'</if>
+				<if test="dbName == 'mysql'">(concat(',',#{status},',') like  concat('%,',v.status,',%') OR status LIKE '%black%')</if>
+			</if>
+			<if test="currentUser.company.id != ''">
+			   and v.organ_id = #{currentUser.company.id}
+			</if>
+			<if test="id != null and id != ''">
+				AND v.id = #{id}
+			</if>
+		</where>
+		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	<select id="getCustomer" resultType="com.wanfin.fpd.modules.company.entity.Customer">
+		SELECT 
+			<include refid="tCustomerColumns"/>
+		FROM v_customer v
+		WHERE v.id = #{id}
+	</select>
+	
+	<!-- 客户与产品的关联 -->
+	<insert id="insertCustomerProductLink">
+		INSERT INTO t_customer_pruduct_link(
+			product_id,
+			customer_id,
+			customer_type
+		) VALUES (
+			#{productId},
+			#{customerId},
+			#{customerType}
+		)
+	</insert>
+	
+	<select id="getCustomerProductLink" resultType="java.util.HashMap">
+		SELECT 
+			product_id AS "productId",
+			customer_id AS "customerId",
+			customer_type AS "customerType"
+		FROM t_customer_pruduct_link a
+		WHERE a.product_id = #{productId} and a.customer_id = #{customerId}
+	</select>
+	
+	<delete id="deleteCustomerProductLink">
+		DELETE FROM t_customer_pruduct_link 
+		WHERE customer_id = #{customerId} and product_id = #{productId} 
+	</delete>
+	
+	
+	
+	<select id="findCustomerSexAmount" resultType="java.lang.Integer">
+		select COUNT(${filedName}) from ${tableName} c 
+		 where 
+		     ${filedName} = #{sex} and c.id in 
+             (
+               select k.customer_id from t_customer_pruduct_link k 
+                   where 
+                   k.customer_type = #{tableType} 
+                   and k.product_id = #{productId}
+              )
+	</select>
+	
+	
+	<update id="updateByPushStatus">
+		UPDATE t_company SET 	
+			push_status = #{pushStatus},
+			scan_flag = #{scanFlag}	,	
+			update_date = #{updateDate}	
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.balanceprofit.dao.TBalanceProfitDao">
+    
+	<sql id="tBalanceProfitColumns">
+		a.id AS "id",
+		a.report_name AS "reportName",
+		a.row_one AS "rowOne",
+		a.row_two AS "rowTwo",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.row1_one AS "row1One",
+		a.row1_two AS "row1Two",
+		a.row2_one AS "row2One",
+		a.row2_two AS "row2Two",
+		a.row3_one AS "row3One",
+		a.row3_two AS "row3Two",
+		a.row4_one AS "row4One",
+		a.row4_two AS "row4Two",
+		a.row5_one AS "row5One",
+		a.row5_two AS "row5Two",
+		a.row6_one AS "row6One",
+		a.row6_two AS "row6Two",
+		a.row7_one AS "row7One",
+		a.row7_two AS "row7Two",
+		a.row8_one AS "row8One",
+		a.row8_two AS "row8Two",
+		a.row9_one AS "row9One",
+		a.row9_two AS "row9Two",
+		a.row10_one AS "row10One",
+		a.row10_two AS "row10Two",
+		a.row11_one AS "row11One",
+		a.row11_two AS "row11Two",
+		a.row12_one AS "row12One",
+		a.row12_two AS "row12Two",
+		a.row13_one AS "row13One",
+		a.row13_two AS "row13Two",
+		a.row14_one AS "row14One",
+		a.row14_two AS "row14Two",
+		a.row15_one AS "row15One",
+		a.row15_two AS "row15Two",
+		a.row16_one AS "row16One",
+		a.row16_two AS "row16Two",
+		a.row17_one AS "row17One",
+		a.row17_two AS "row17Two",
+		a.row18_one AS "row18One",
+		a.row18_two AS "row18Two",
+		a.row19_one AS "row19One",
+		a.row19_two AS "row19Two",
+		a.row20_one AS "row20One",
+		a.row20_two AS "row20Two",
+		a.row21_one AS "row21One",
+		a.row21_two AS "row21Two",
+		a.row22_one AS "row22One",
+		a.row22_two AS "row22Two",
+		a.row23_one AS "row23One",
+		a.row23_two AS "row23Two",
+		a.row24_one AS "row24One",
+		a.row24_two AS "row24Two"
+	</sql>
+	
+	<sql id="tBalanceProfitJoins">
+	</sql>
+    
+	<select id="get" resultType="TBalanceProfit">
+		SELECT 
+			<include refid="tBalanceProfitColumns"/>
+		FROM t_balance_profit a
+		<include refid="tBalanceProfitJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TBalanceProfit">
+		SELECT 
+			<include refid="tBalanceProfitColumns"/>
+		FROM t_balance_profit a
+		<include refid="tBalanceProfitJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="reportName != null and reportName != ''">
+				AND a.report_name = #{reportName}
+			</if>
+			<if test="createTime != null and createTime != ''">
+				AND a.create_date like #{createTime}
+			</if>
+			<if test="currentUser.company.id != ''">
+			   and a.organ_id = #{currentUser.company.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TBalanceProfit">
+		SELECT 
+			<include refid="tBalanceProfitColumns"/>
+		FROM t_balance_profit a
+		<include refid="tBalanceProfitJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="currentUser.company.id != ''">
+			   and a.organ_id = #{currentUser.company.id}
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_balance_profit(
+			id,
+			report_name,
+			row_one,
+			row_two,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id,
+			row1_one,
+			row1_two,
+			row2_one,
+			row2_two,
+			row3_one,
+			row3_two,
+			row4_one,
+			row4_two,
+			row5_one,
+			row5_two,
+			row6_one,
+			row6_two,
+			row7_one,
+			row7_two,
+			row8_one,
+			row8_two,
+			row9_one,
+			row9_two,
+			row10_one,
+			row10_two,
+			row11_one,
+			row11_two,
+			row12_one,
+			row12_two,
+			row13_one,
+			row13_two,
+			row14_one,
+			row14_two,
+			row15_one,
+			row15_two,
+			row16_one,
+			row16_two,
+			row17_one,
+			row17_two,
+			row18_one,
+			row18_two,
+			row19_one,
+			row19_two,
+			row20_one,
+			row20_two,
+			row21_one,
+			row21_two,
+			row22_one,
+			row22_two,
+			row23_one,
+			row23_two,
+			row24_one,
+			row24_two
+		) VALUES (
+			#{id},
+			#{reportName},
+			#{rowOne},
+			#{rowTwo},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId},
+			#{row1One},
+			#{row1Two},
+			#{row2One},
+			#{row2Two},
+			#{row3One},
+			#{row3Two},
+			#{row4One},
+			#{row4Two},
+			#{row5One},
+			#{row5Two},
+			#{row6One},
+			#{row6Two},
+			#{row7One},
+			#{row7Two},
+			#{row8One},
+			#{row8Two},
+			#{row9One},
+			#{row9Two},
+			#{row10One},
+			#{row10Two},
+			#{row11One},
+			#{row11Two},
+			#{row12One},
+			#{row12Two},
+			#{row13One},
+			#{row13Two},
+			#{row14One},
+			#{row14Two},
+			#{row15One},
+			#{row15Two},
+			#{row16One},
+			#{row16Two},
+			#{row17One},
+			#{row17Two},
+			#{row18One},
+			#{row18Two},
+			#{row19One},
+			#{row19Two},
+			#{row20One},
+			#{row20Two},
+			#{row21One},
+			#{row21Two},
+			#{row22One},
+			#{row22Two},
+			#{row23One},
+			#{row23Two},
+			#{row24One},
+			#{row24Two}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_balance_profit SET 	
+			report_name = #{reportName},
+			row_one = #{rowOne},
+			row_two = #{rowTwo},
+			create_date = #{createDate},
+			remarks = #{remarks},
+			row1_one = #{row1One},
+			row1_two = #{row1Two},
+			row2_one = #{row2One},
+			row2_two = #{row2Two},
+			row3_one = #{row3One},
+			row3_two = #{row3Two},
+			row4_one = #{row4One},
+			row4_two = #{row4Two},
+			row5_one = #{row5One},
+			row5_two = #{row5Two},
+			row6_one = #{row6One},
+			row6_two = #{row6Two},
+			row7_one = #{row7One},
+			row7_two = #{row7Two},
+			row8_one = #{row8One},
+			row8_two = #{row8Two},
+			row9_one = #{row9One},
+			row9_two = #{row9Two},
+			row10_one = #{row10One},
+			row10_two = #{row10Two},
+			row11_one = #{row11One},
+			row11_two = #{row11Two},
+			row12_one = #{row12One},
+			row12_two = #{row12Two},
+			row13_one = #{row13One},
+			row13_two = #{row13Two},
+			row14_one = #{row14One},
+			row14_two = #{row14Two},
+			row15_one = #{row15One},
+			row15_two = #{row15Two},
+			row16_one = #{row16One},
+			row16_two = #{row16Two},
+			row17_one = #{row17One},
+			row17_two = #{row17Two},
+			row18_one = #{row18One},
+			row18_two = #{row18Two},
+			row19_one = #{row19One},
+			row19_two = #{row19Two},
+			row20_one = #{row20One},
+			row20_two = #{row20Two},
+			row21_one = #{row21One},
+			row21_two = #{row21Two},
+			row22_one = #{row22One},
+			row22_two = #{row22Two},
+			row23_one = #{row23One},
+			row23_two = #{row23Two},
+			row24_one = #{row24One},
+			row24_two = #{row24Two}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_balance_profit SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

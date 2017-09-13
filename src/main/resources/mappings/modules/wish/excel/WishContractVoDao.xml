@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.wish.excel.dao.WishContractVoDao">
+    
+		<sql id="tLoanContractColumns">
+		a.id AS "id",
+		a.scan_flag AS "scanFlag",
+		a.parent_id AS "parent.id",
+		a.apply_date AS "applyDate",
+		a.contract_number AS "contractNumber",
+		a.customer_id AS "customerId",
+		a.customer_name AS "customerName",
+		a.customer_type AS "customerType",
+		a.five_level AS "fiveLevel",
+		a.is_extend AS "isExtend",
+		a.loan_amount AS "loanAmount",
+		a.loan_date AS "loanDate",
+		a.loan_period AS "loanPeriod",
+		a.loan_rate AS "loanRate",
+		a.loan_rate_type AS "loanRateType",
+		a.pay_principal_date AS "payPrincipalDate",
+		a.loan_type AS "loanType",
+		a.max_number AS "maxNumber",
+		a.pay_day AS "payDay",
+		a.pay_type AS "payType",
+		a.period_type AS "periodType",
+		a.sign_date AS "signDate",
+		a.status AS "status",
+		a.product_id AS "productId",
+		a.purpose_id AS "purposeId",
+		<!-- a.area_id AS "area.id", -->
+		a.industry_id AS "industryId",
+		a.gathering_bank AS "gatheringBank",
+		a.gathering_name AS "gatheringName",
+		a.gathering_number AS "gatheringNumber",
+		a.guarant_number AS "guarantNumber",
+		a.pay_options AS "payOptions",
+		a.pay_day_type AS "payDayType",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.server_fee AS "serverFee",	 
+		a.mange_fee AS "mangeFee",	 	 
+		a.if_advance AS "ifAdvance",		
+		a.advance_damages AS "advanceDamages",	
+		a.late_fee AS "lateFee",			
+		a.rate_discont AS "rateDiscont",		 
+		a.if_interest_relief AS "ifInterestRelief",  
+		a.grace_period AS "gracePeriod",		
+		a.grace_period_penalty AS "gracePeriodPenalty",
+		a.late_penalty AS "latePenalty",		 
+		a.late_penalty_fee AS "latePenaltyFee",	
+		a.is_deal AS "isDeal",	
+		a.type AS "type",	
+		a.wtypeId AS "wtypeId",	
+		a.proc_ins_id AS "act.procInsId",
+		a.transfer_id AS "TransferId",
+		a.is_transfered AS "isTransfered",
+		a.push_status AS "pushStatus",
+		a.isdirect_loan AS "isdirectLoan",
+		a.if_reality_day AS "ifRealityDay",
+		a.auth_user_id AS "authUserId",
+		a.buy_auth_id AS "buyAuthId",
+		a.extend_days AS "extendDays",
+		a.move_status AS "moveStatus",
+		a.account_status AS "accountStatus",
+		a.cash_back_status AS "cashBackStatus",
+		a.wish_charge AS "wishCharge"
+	</sql>
+	
+	
+
+    
+	<select id="get" resultType="WishContractVo">
+		SELECT 
+			<include refid="tLoanContractColumns"/>
+		FROM t_loan_contract a
+		
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WishContractVo">
+		SELECT 
+			<include refid="tLoanContractColumns"/>
+		FROM t_loan_contract a
+		
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="contractNumber != null and contractNumber != ''">
+				AND a.contract_number = #{contractNumber}
+			</if>
+			<if test="customerName != null and customerName != ''">
+				AND a.customer_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{customerName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{customerName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{customerName},'%')</if>
+			</if>
+			<if test="beginLoanDate != null and endLoanDate != null and beginLoanDate != '' and endLoanDate != ''">
+				AND a.loan_date BETWEEN #{beginLoanDate} AND #{endLoanDate}
+			</if>
+			<if test="loanPeriod != null and loanPeriod != ''">
+				AND a.loan_period = #{loanPeriod}
+			</if>
+			<if test="payPrincipalDate != null and payPrincipalDate != ''">
+				AND a.pay_principal_date = #{payPrincipalDate}
+			</if>
+			<if test="createBy != null and createBy.id != null and createBy.id != ''">
+				AND a.create_by = #{createBy.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	
+	
+	
+	
+
+		<!-- 业务统计-贷款明细 -->
+	<select id="findLoanDetailList" resultType="WishContractVo">
+		SELECT 
+			<include refid="tLoanContractColumns"/>
+		FROM t_loan_contract a
+		<where>
+		   	a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.type='2'
+			<if test="status != null and status != ''"> 
+				AND a.status = #{status}
+			</if>
+			
+			<if test="customerName != null and customerName != ''">
+				AND a.customer_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{customerName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{customerName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{customerName},'%')</if>
+			</if>
+			
+			<if test="starttime !=null and starttime !=''">
+			<![CDATA[
+				AND date_format(apply_date, '%Y-%m-%d') >= date_format(#{starttime},'%Y-%m-%d') 
+			   ]]>
+		   </if>
+		   <if test="endtime !=null and endtime !=''">
+			 <![CDATA[
+				AND date_format(apply_date, '%Y-%m-%d') <= date_format(#{endtime},'%Y-%m-%d')
+			 ]]>
+		    </if> 
+			<if test="customerId != null and customerId != ''"> 
+				AND a.customer_id = #{customerId}
+			</if>
+		</where>
+		ORDER BY a.update_date DESC
+	
+	</select>
+	
+
+	
+	<select id="findAllList" resultType="WishContractVo">
+		SELECT 
+			<include refid="tLoanContractColumns"/>
+		FROM t_loan_contract a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+</mapper>

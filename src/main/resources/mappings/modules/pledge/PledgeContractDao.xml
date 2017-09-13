@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.pledge.dao.PledgeContractDao">
+    
+	<sql id="pledgeContractColumns">
+		a.id AS "id",
+		a.scan_flag AS "scanFlag",
+		a.address AS "address",
+		a.name AS "name",
+		a.pledge_type AS "pledgeType",
+		a.struts AS "struts",
+		a.unit AS "unit",
+		a.worth AS "worth",
+		a.apply_time AS "apply_time",
+		a.abort_time AS "abort_time",
+		a.pledge_amount AS "pledge_amount",
+		a.username AS "username",
+		a.business_table AS "businessTable",
+		a.business_id AS "businessId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.product_id AS "product.id",
+		b.contract_number AS "contractNumber",
+		b.customer_name AS "customerName",
+		o.name AS "companyName",
+		a.push_status AS "pushStatus"
+	</sql>
+	
+	<sql id="pledgeContractJoins">
+	    LEFT JOIN t_loan_contract b ON b.id = a.business_id
+	    LEFT JOIN sys_office o ON o.id = a.organ_id
+		LEFT JOIN sys_user u ON u.id = a.create_by
+	</sql>
+    
+	<select id="get" resultType="PledgeContract">
+		SELECT 
+			<include refid="pledgeContractColumns"/>
+		FROM t_pledge_contract a
+		<include refid="pledgeContractJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="PledgeContract">
+		SELECT 
+			<include refid="pledgeContractColumns"/>
+		FROM t_pledge_contract a
+		<include refid="pledgeContractJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="address != null and address != ''">
+				AND a.address LIKE 
+					<if test="dbName == 'oracle'">'%'||#{address}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{address}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{address},'%')</if>
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="struts != null and struts != ''">
+				AND a.struts = #{struts}
+			</if>
+			<if test="businessTable != null and businessTable != ''">
+				AND a.business_table = #{businessTable}
+			</if>
+			<if test="product != null and product.id != null and product.id != ''">
+				AND a.product_id = #{product.id}
+			</if>
+			<if test="businessId != null and businessId != ''">
+				<!-- 为'null'表示选择为null的数据 -->
+				<if test="businessId == 'null'">
+				AND (a.business_id is null or a.business_id = '')
+				</if>
+				<if test="businessId != 'null'">
+				AND a.business_id = #{businessId}
+				</if>
+			</if>
+			<if test="currentUser.company.id != ''">
+			   and a.organ_id = #{currentUser.company.id}
+			</if>
+			<if test="customerName != null and customerName != ''">
+				AND b.customer_name = #{customerName}
+			</if>
+		</where>		
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="PledgeContract">
+		SELECT 
+			<include refid="pledgeContractColumns"/>
+		FROM t_pledge_contract a
+		<include refid="pledgeContractJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	<select id="findListByScanFlag" resultType="PledgeContract">
+		SELECT 
+			<include refid="pledgeContractColumns"/>
+		FROM t_pledge_contract a
+		<include refid="pledgeContractJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="scanFlag != null and scanFlag != ''">
+				AND a.scan_flag = #{scanFlag}
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	<select id="findListByScanFlagByPushStatus" resultType="PledgeContract">
+		SELECT 
+			<include refid="pledgeContractColumns"/>
+		FROM t_pledge_contract a
+		<include refid="pledgeContractJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="scanFlag != null and scanFlag != ''">
+				AND a.scan_flag = #{scanFlag}
+			</if>
+			<if test="pushStatus != null and pushStatus != ''">
+				AND a.push_status = #{pushStatus}
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	<insert id="insert">
+		INSERT INTO t_pledge_contract(
+			id,
+			address,
+			name,
+			pledge_type,
+			struts,
+			unit,
+			worth,
+			apply_time,
+			abort_time,
+			pledge_amount,
+			username,
+			business_table,
+			business_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id,
+			product_id,
+			scan_flag,
+			push_status
+		) VALUES (
+			#{id},
+			#{address},
+			#{name},
+			#{pledgeType},
+			#{struts},
+			#{unit},
+			#{worth},
+			#{apply_time},
+			#{abort_time},
+			#{pledge_amount},
+			#{username},
+			#{businessTable},
+			#{businessId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId},
+			#{product.id},
+			#{scanFlag},
+			'0'
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_pledge_contract SET 	
+			address = #{address},
+			name = #{name},
+			pledge_type = #{pledgeType},
+			struts = #{struts},
+			unit = #{unit},
+			worth = #{worth},
+			apply_time = #{apply_time},
+			abort_time  = #{abort_time},
+			pledge_amount  = #{pledge_amount},
+			username   = #{username},
+			business_table = #{businessTable},
+			business_id = #{businessId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId},
+			scan_flag = #{scanFlag}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_pledge_contract SET 
+			del_flag = #{DEL_FLAG_DELETE},			
+			scan_flag = #{scanFlag}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateByPushStatus">
+		UPDATE t_pledge_contract SET 
+			push_status = #{pushStatus},			
+			scan_flag = #{scanFlag}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateScanFlag">
+		UPDATE t_pledge_contract SET 			
+			scan_flag = #{scanFlag}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

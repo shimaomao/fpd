@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.productbiz.dao.TProductBizDao">
+	<sql id="tProductBizColumns">
+		a.id AS "id",
+		a.biz_code AS "bizCode",
+		a.category AS "category",
+		a.biz_name AS "bizName",
+		a.biz_url AS "bizUrl",
+		a.biz_param AS "bizParam",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.type AS "type",
+		a.parent_id AS "parent.id",
+		a.parent_ids AS "parentIds",
+		a.status AS "status",
+		a.sort AS "sort",
+		a.is_show AS "isShow",
+		a.is_flow AS "isFlow",
+		a.formtpl AS "formtpl",
+		a.is_ywtype AS "isYwtype",
+		p.category AS "parent.category",
+		p.biz_code AS "parent.bizCode",
+		p.biz_name AS "parent.bizName",
+		p.biz_url AS "parent.bizUrl",
+		p.biz_param AS "parent.bizParam",
+		p.create_by AS "parent.createBy.id",
+		p.create_date AS "parent.createDate",
+		p.update_by AS "parent.updateBy.id",
+		p.update_date AS "parent.updateDate",
+		p.del_flag AS "parent.delFlag",
+		p.organ_id AS "parent.organId",
+		p.type AS "parent.type",
+		p.parent_id AS "parent.parent.id",
+		p.parent_ids AS "parent.parentIds",
+		p.status AS "parent.status",
+		p.sort AS "parent.sort",
+		p.is_show AS "parent.isShow",
+		p.is_flow AS "parent.isFlow",
+		p.formtpl AS "parent.formtpl"
+	</sql>
+	
+	<sql id="tProductBizVoColumns">
+		a.id AS "id",
+		a.category AS "category",
+		a.biz_code AS "bizCode",
+		a.biz_name AS "bizName",
+		a.biz_url AS "bizUrl",
+		a.biz_param AS "bizParam",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.type AS "type",
+		a.parent_id AS "parent.id",
+		a.parent_ids AS "parentIds",
+		a.status AS "status",
+		a.sort AS "sort",
+		a.is_show AS "isShow",
+		a.is_flow AS "isFlow",
+		a.formtpl AS "formtpl",
+		a.is_ywtype AS "isYwtype",
+		p.category AS "parent.category",
+		p.biz_code AS "parent.bizCode",
+		p.biz_name AS "parent.bizName",
+		p.biz_url AS "parent.bizUrl",
+		p.biz_param AS "parent.bizParam",
+		p.create_by AS "parent.createBy.id",
+		p.create_date AS "parent.createDate",
+		p.update_by AS "parent.updateBy.id",
+		p.update_date AS "parent.updateDate",
+		p.del_flag AS "parent.delFlag",
+		p.organ_id AS "parent.organId",
+		p.type AS "parent.type",
+		p.parent_id AS "parent.parent.id",
+		p.parent_ids AS "parent.parentIds",
+		p.status AS "parent.status",
+		p.sort AS "parent.sort",
+		p.is_show AS "parent.isShow",
+		p.is_flow AS "parent.isFlow",
+		p.formtpl AS "parent.formtpl",
+		
+		c.id AS "cfgId",
+		c.product_id AS "productId",
+		c.proc_def_id AS "procDefId",
+		c.risk_id AS "riskId",
+		
+		re.NAME_ AS "procDefName"
+	</sql>
+	
+	<sql id="tProductBizJoins">
+		LEFT JOIN t_product_biz p ON p.id = a.parent_id
+		LEFT JOIN sys_office o12 ON o12.id = a.organ_id
+	</sql>
+	<sql id="tProductBizVoJoins">
+		LEFT JOIN t_product_biz p ON p.id = a.parent_id
+		LEFT JOIN sys_office o12 ON o12.id = a.organ_id
+		LEFT JOIN t_product_biz_cfg c ON c.biz_id = a.id
+		LEFT JOIN ACT_RE_PROCDEF re on re.ID_ = c.proc_def_id
+	</sql>
+    
+	<select id="get" resultType="TProductBiz">
+		SELECT 
+			<include refid="tProductBizColumns"/>
+		FROM t_product_biz a
+		<include refid="tProductBizJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TProductBiz">
+		SELECT 
+			<include refid="tProductBizColumns"/>
+		FROM t_product_biz a
+		<include refid="tProductBizJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="bizCode != null and bizCode != ''">
+				AND a.biz_code = #{bizCode}
+			</if>
+			<if test="bizName != null and bizName != ''">
+				AND a.biz_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{bizName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{bizName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{bizName},'%')</if>
+			</if>
+			<if test="parentIds != null and parentIds != ''">
+				 AND a.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%'||#{parentIds}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{parentIds}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{parentIds},'%')</if>
+			</if>
+			<if test="isShow != null and isShow != ''">
+				AND a.is_show = #{isShow}
+			</if>
+			<if test="isFlow != null and isFlow != ''">
+				AND a.is_flow = #{isFlow}
+			</if>
+			<if test="formtpl != null and formtpl != ''">
+				AND a.formtpl = #{formtpl}
+			</if>
+			
+			<if test="parent != null">
+				<if test="parent.type != null and parent.type != ''">
+					AND p.type = #{parent.type}
+				</if>
+				<if test="parent.bizCode != null and parent.bizCode != ''">
+					AND p.biz_code = #{parent.bizCode}
+				</if>
+				<if test="parent.bizName != null and parent.bizName != ''">
+					AND p.biz_name LIKE 
+						<if test="dbName == 'oracle'">'%'||#{parent.bizName}||'%'</if>
+						<if test="dbName == 'mssql'">'%'+#{parent.bizName}+'%'</if>
+						<if test="dbName == 'mysql'">concat('%',#{parent.bizName},'%')</if>
+				</if>
+				<if test="parent.parentIds != null and parent.parentIds != ''">
+					 AND p.parent_ids LIKE 
+						<if test="dbName == 'oracle'">'%'||#{parent.parentIds}||'%'</if>
+						<if test="dbName == 'mssql'">'%'+#{parent.parentIds}+'%'</if>
+						<if test="dbName == 'mysql'">concat('%',#{parent.parentIds},'%')</if>
+				</if>
+				<if test="parent.isShow != null and parent.isShow != ''">
+					AND p.is_show = #{parent.isShow}
+				</if>
+				<if test="parent.isFlow != null and parent.isFlow != ''">
+					AND p.is_flow = #{parent.isFlow}
+				</if>
+				<if test="parent.formtpl != null and parent.formtpl != ''">
+					AND p.formtpl = #{parent.formtpl}
+				</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.parent_id ASC, a.sort ASC, a.is_show
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findListByCompany" resultType="TProductBiz">
+		SELECT 
+			<include refid="tProductBizColumns"/>
+		FROM t_product_biz a
+		<include refid="tProductBizJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="bizCode != null and bizCode != ''">
+				AND a.biz_code = #{bizCode}
+			</if>
+			<if test="bizName != null and bizName != ''">
+				AND a.biz_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{bizName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{bizName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{bizName},'%')</if>
+			</if>
+			<if test="currentUser.company.id != ''">
+			   and a.organ_id = #{currentUser.company.id}
+			</if>
+			
+			<if test="parentIds != null and parentIds != ''">
+				 AND a.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%'||#{parentIds}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{parentIds}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{parentIds},'%')</if>
+			</if>
+			
+			<if test="parent != null">
+				<if test="parent.type != null and parent.type != ''">
+					AND p.type = #{parent.type}
+				</if>
+				<if test="parent.bizCode != null and parent.bizCode != ''">
+					AND p.biz_code = #{parent.bizCode}
+				</if>
+				<if test="parent.bizName != null and parent.bizName != ''">
+					AND p.biz_name LIKE 
+						<if test="dbName == 'oracle'">'%'||#{parent.bizName}||'%'</if>
+						<if test="dbName == 'mssql'">'%'+#{parent.bizName}+'%'</if>
+						<if test="dbName == 'mysql'">concat('%',#{parent.bizName},'%')</if>
+				</if>
+				<if test="parent.parentIds != null and parent.parentIds != ''">
+					 AND p.parent_ids LIKE 
+						<if test="dbName == 'oracle'">'%'||#{parent.parentIds}||'%'</if>
+						<if test="dbName == 'mssql'">'%'+#{parent.parentIds}+'%'</if>
+						<if test="dbName == 'mysql'">concat('%',#{parent.parentIds},'%')</if>
+				</if>
+				<if test="parent.isShow != null and parent.isShow != ''">
+					AND p.is_show = #{parent.isShow}
+				</if>
+				<if test="parent.isFlow != null and parent.isFlow != ''">
+					AND p.is_flow = #{parent.isFlow}
+				</if>
+				<if test="parent.formtpl != null and parent.formtpl != ''">
+					AND p.formtpl = #{parent.formtpl}
+				</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.parent_id ASC, a.sort ASC, a.is_show
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TProductBiz">
+		SELECT 
+			<include refid="tProductBizColumns"/>
+		FROM t_product_biz a
+		<include refid="tProductBizJoins"/>
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		ORDER BY a.parent_id ASC, a.sort ASC, a.is_show
+	</select>
+	
+	<select id="findAllListByTProductBiz" resultType="TProductBiz">
+		SELECT 
+			<include refid="tProductBizColumns"/>
+		FROM t_product_biz a
+		<include refid="tProductBizJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="bizCode != null and bizCode != ''">
+				AND a.biz_code = #{bizCode}
+			</if>
+			<if test="bizName != null and bizName != ''">
+				AND a.biz_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{bizName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{bizName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{bizName},'%')</if>
+			</if>
+			<if test="currentUser.company.id != ''">
+			   and a.organ_id = #{currentUser.company.id}
+			</if>
+			
+			<if test="parentIds != null and parentIds != ''">
+				 AND a.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%'||#{parentIds}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{parentIds}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{parentIds},'%')</if>
+			</if>
+			
+			<if test="parent != null">
+				<if test="parent.type != null and parent.type != ''">
+					AND p.type = #{parent.type}
+				</if>
+				<if test="parent.bizCode != null and parent.bizCode != ''">
+					AND p.biz_code = #{parent.bizCode}
+				</if>
+				<if test="parent.bizName != null and parent.bizName != ''">
+					AND p.biz_name LIKE 
+						<if test="dbName == 'oracle'">'%'||#{parent.bizName}||'%'</if>
+						<if test="dbName == 'mssql'">'%'+#{parent.bizName}+'%'</if>
+						<if test="dbName == 'mysql'">concat('%',#{parent.bizName},'%')</if>
+				</if>
+				<if test="parent.parentIds != null and parent.parentIds != ''">
+					 AND p.parent_ids LIKE 
+						<if test="dbName == 'oracle'">'%'||#{parent.parentIds}||'%'</if>
+						<if test="dbName == 'mssql'">'%'+#{parent.parentIds}+'%'</if>
+						<if test="dbName == 'mysql'">concat('%',#{parent.parentIds},'%')</if>
+				</if>
+				<if test="parent.isShow != null and parent.isShow != ''">
+					AND p.is_show = #{parent.isShow}
+				</if>
+				<if test="parent.isFlow != null and parent.isFlow != ''">
+					AND p.is_flow = #{parent.isFlow}
+				</if>
+				<if test="parent.formtpl != null and parent.formtpl != ''">
+					AND p.formtpl = #{parent.formtpl}
+				</if>
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.parent_id ASC, a.sort ASC, a.is_show
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findByParentIdsLike" resultType="TProductBiz">
+		SELECT
+			a.id,
+			a.parent_id AS "parent.id",
+			a.parent_ids
+		FROM t_product_biz a
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND a.parent_ids LIKE #{parentIds}
+		ORDER BY a.sort
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_product_biz(
+			id,
+			category,
+			biz_code,
+			biz_name,
+			biz_url,
+			biz_param,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			organ_id,
+			type,
+			parent_id,
+			parent_ids,
+			status,
+			sort,
+			is_show,
+			is_flow,
+			formtpl,
+			is_ywtype
+		) VALUES (
+			#{id},
+			#{category},
+			#{bizCode},
+			#{bizName},
+			#{bizUrl},
+			#{bizParam},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{organId},
+			#{type},
+			#{parent.id},
+			#{parentIds},
+			#{status},
+			#{sort},
+			#{isShow},
+			#{isFlow},
+			#{isYwtype}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_product_biz SET 	
+			category = #{category},
+			biz_code = #{bizCode},
+			biz_name = #{bizName},
+			biz_url = #{bizUrl},
+			biz_param = #{bizParam},
+			type = #{type},
+			parent_id = #{parent.id},
+			parent_ids = #{parentIds},
+			status = #{status},
+			sort = #{sort},
+			is_show = #{isShow},
+			is_flow = #{isFlow},
+			formtpl = #{formtpl},
+			is_ywtype = #{isYwtype}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM t_product_biz
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateSort">
+		UPDATE t_product_biz SET 
+			sort = #{sort}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateParentIds">
+		UPDATE sys_menu SET 
+			parent_id = #{parent.id}, 
+			parent_ids = #{parentIds}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="findByBizCfg" resultType="ProductBizVo">
+		SELECT 
+			<include refid="tProductBizVoColumns"/>
+		FROM t_product_biz a
+		<include refid="tProductBizVoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND c.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="bizCode != null and bizCode != ''">
+				AND a.biz_code = #{bizCode}
+			</if>
+			<if test="bizName != null and bizName != ''">
+				AND a.biz_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{bizName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{bizName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{bizName},'%')</if>
+			</if>
+			
+			<if test="parentIds != null and parentIds != ''">
+				 AND a.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%'||#{parentIds}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{parentIds}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{parentIds},'%')</if>
+			</if>
+			
+			<if test="parent != null">
+				<if test="parent.type != null and parent.type != ''">
+					AND p.type = #{parent.type}
+				</if>
+				<if test="parent.bizCode != null and parent.bizCode != ''">
+					AND p.biz_code = #{parent.bizCode}
+				</if>
+				<if test="parent.bizName != null and parent.bizName != ''">
+					AND p.biz_name LIKE 
+						<if test="dbName == 'oracle'">'%'||#{parent.bizName}||'%'</if>
+						<if test="dbName == 'mssql'">'%'+#{parent.bizName}+'%'</if>
+						<if test="dbName == 'mysql'">concat('%',#{parent.bizName},'%')</if>
+				</if>
+				<if test="parent.parentIds != null and parent.parentIds != ''">
+					 AND p.parent_ids LIKE 
+						<if test="dbName == 'oracle'">'%'||#{parent.parentIds}||'%'</if>
+						<if test="dbName == 'mssql'">'%'+#{parent.parentIds}+'%'</if>
+						<if test="dbName == 'mysql'">concat('%',#{parent.parentIds},'%')</if>
+				</if>
+				<if test="parent.isShow != null and parent.isShow != ''">
+					AND p.is_show = #{parent.isShow}
+				</if>
+				<if test="parent.isFlow != null and parent.isFlow != ''">
+					AND p.is_flow = #{parent.isFlow}
+				</if>
+				<if test="parent.formtpl != null and parent.formtpl != ''">
+					AND p.formtpl = #{parent.formtpl}
+				</if>
+			</if>
+			
+			<if test="cfgId != null and cfgId != ''">
+				AND c.id = #{cfgId}
+			</if>
+			<if test="productId != null and productId != ''">
+				AND c.product_id = #{productId}
+			</if>
+			<if test="procDefId != null and procDefId != ''">
+				AND c.proc_def_id = #{procDefId}
+			</if>
+			<if test="riskId != null and riskId != ''">
+				AND c.risk_id = #{riskId}
+			</if>
+			<if test="currentUser.company.id != ''">
+			   and c.organ_id = #{currentUser.company.id}
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<delete id="deleteBizMenu">
+		DELETE FROM t_biz_menu WHERE biz_id = #{id}
+	</delete>
+	
+	<insert id="insertBizMenu">
+		INSERT INTO t_biz_menu(biz_id, menu_id)
+		<foreach collection="menuList" item="menu" separator=" union all ">
+			SELECT #{id}, #{menu.id}
+			<if test="dbName != 'mssql'">
+			FROM dual
+			</if>
+		</foreach>
+	</insert>
+	
+	<select id="getMenuIdsListByBizId" resultType="java.lang.String">
+		SELECT
+			a.menu_id
+		FROM t_biz_menu a
+		WHERE a.biz_id = #{id}
+	</select>
+	
+	<select id="getMenuIdsListByBizIds" resultType="java.util.List" parameterType = "java.lang.String">
+		SELECT
+			DISTINCT a.menu_id
+		FROM t_biz_menu a
+		WHERE a.biz_id in (#{bizIds})
+	</select>
+	
+	<select id="getMenuIdsListByBizListIds" resultType="java.util.List" parameterType = "java.util.List">
+		SELECT
+			DISTINCT a.menu_id
+		FROM t_biz_menu a
+		WHERE a.biz_id in <foreach collection="list" item = "bizId" open="(" separator="," close=")">#{bizId}</foreach>
+	</select>
+	
+	
+	<select id="findAllByMenuSysCode" resultType="java.lang.String" parameterType = "java.util.List">
+		SELECT * FROM sys_menu a WHERE a.del_flag = '0' AND a.sys_code = #{sysCode}  ORDER BY a.sort
+	</select>
+	
+</mapper>

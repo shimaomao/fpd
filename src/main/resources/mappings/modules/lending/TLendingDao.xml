@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.lending.dao.TLendingDao">
+    
+	<sql id="tLendingColumns">
+		a.id AS "id",
+		a.amount AS "amount",
+		a.time AS "time",
+		a.contract_id AS "contract.id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="tLendingJoins">
+	</sql>
+    
+	<select id="get" resultType="TLending">
+		SELECT 
+			<include refid="tLendingColumns"/>
+		FROM t_lending a
+		<include refid="tLendingJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+		<select id="getTLending" resultType="TLending">
+		SELECT 
+			<include refid="tLendingColumns"/>
+		FROM t_lending a
+		<include refid="tLendingJoins"/>
+		WHERE
+		<if test="id !=null and id !=''">
+			 a.id = #{id}
+		</if>
+		<if test="amount !=null and amount !=''">
+			 a.amount = #{amount}
+		</if>
+		<if test="time !=null and time !=''">
+			<![CDATA[
+			AND date_format(a.time,'%Y-%m-%d') = date_format(#{time},'%Y-%m-%d') 
+			]]>
+		</if>
+		<if test="contract.id !=null and contract.id !=''">
+			 AND a.contract_id = #{contract.id}
+		</if>
+		
+	</select>
+	
+	<select id="findList" resultType="TLending">
+		SELECT 
+			<include refid="tLendingColumns"/>
+		FROM t_lending a
+		<include refid="tLendingJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="time != null and time != ''">
+				AND a.time = #{time}
+			</if>
+			<if test="contract != null and contract.id != null and contract.id != ''">
+				AND a.contract_id = #{contract.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findTLendingVoPage" resultType="com.wanfin.fpd.modules.wish.contract.vo.TLendingVo">
+    		SELECT
+                t.id AS "loanContractId",
+			    t.customer_id AS "customerId",
+			    t.customer_name AS "customerName",
+			    t.gathering_number AS "gatheringNumber",
+			    t.loan_amount AS "sumLoanAmount",
+			    t.wish_charge AS "sumCharge",
+                t.pay_principal_date AS "payPrincipalDate",
+				r.amount AS "repayMoney",
+				r.contract_id,
+				t.customer_id,
+				t.customer_name,       
+				r.time AS "lendTime"
+			FROM  t_lending r LEFT JOIN t_loan_contract t ON t.id=r.contract_id
+         <where>
+		     t.type = '2' 
+             AND t.del_flag = '0'
+             AND r.time is not NULL 
+             	<if test="starttime !=null and starttime !=''">
+			       <![CDATA[
+						and r.TIME < #{starttime}
+			       ]]>
+		        </if>
+		        <if test="endtime !=null and endtime !=''">
+			       <![CDATA[
+		        		and r.TIME < #{endtime}
+			      ]]>
+		         </if> 
+		         <if test="customerName != null and customerName != ''">
+				     AND t.customer_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{customerName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{customerName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{customerName},'%')</if>
+			     </if>
+			     <if test="customerId != null and customerId != ''"> 
+				       AND t.customer_id = #{customerId}
+			     </if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''"> 
+				ORDER BY ${page.orderBy} 
+			</when> 
+			<otherwise>
+				ORDER BY lendTime desc
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TLending">
+		SELECT 
+			<include refid="tLendingColumns"/>
+		FROM t_lending a
+		<include refid="tLendingJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_lending(
+			id,
+			amount,
+			time,
+			contract_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id,
+			if_online
+		) VALUES (
+			#{id},
+			#{amount},
+			#{time},
+			#{contract.id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId},
+			#{ifOnline}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_lending SET 	
+			amount = #{amount},
+			time = #{time},
+			contract_id = #{contract.id},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_lending SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	
+	
+	<sql id="tLendingColumnsByLoanContract">
+		<include refid="tLendingColumns"/>,
+		<!-- b.id AS "contract.id",
+		b.apply_date AS "contract.applyDate",
+		b.contract_number AS "contract.contractNumber",
+		b.customer_id AS "contract.customerId",
+		b.customer_name AS "contract.customerName",
+		b.customer_type AS "contract.customerType",
+		b.loan_amount AS "contract.loanAmount",
+		b.loan_date AS "contract.loanDate",
+		b.status AS "contract.status" -->
+		b.apply_date AS "contract.applyDate",
+		b.contract_number AS "contract.contractNumber",
+		b.customer_id AS "contract.customerId",
+		b.customer_name AS "contract.customerName",
+		b.customer_type AS "contract.customerType",
+		b.five_level AS "contract.fiveLevel",
+		b.is_extend AS "contract.isExtend",
+		b.loan_amount AS "contract.loanAmount",
+		b.loan_date AS "contract.loanDate",
+		b.loan_period AS "contract.loanPeriod",
+		b.loan_rate AS "contract.loanRate",
+		b.loan_rate_type AS "contract.loanRateType",
+		b.pay_principal_date AS "contract.payPrincipalDate",
+		b.loan_type AS "contract.loanType",
+		b.max_number AS "contract.maxNumber",
+		b.pay_day AS "contract.payDay",
+		b.pay_type AS "contract.payType",
+		b.period_type AS "contract.periodType",
+		b.sign_date AS "contract.signDate",
+		b.status AS "contract.status",
+		b.product_id AS "contract.productId",
+		b.purpose_id AS "contract.purposeId",
+		b.area_id AS "contract.area.id",
+		b.industry_id AS "contract.industryId",
+		b.gathering_bank AS "contract.gatheringBank",
+		b.gathering_name AS "contract.gatheringName",
+		b.gathering_number AS "contract.gatheringNumber",
+		b.punish_amount AS "contract.punishAmount",
+		b.punish_amount_rate AS "contract.punishAmountRate",
+		b.punish_interest AS "contract.punishInterest",
+		b.punish_interest_rate AS "contract.punishInterestRate",
+		b.guarant_number AS "contract.guarantNumber",
+		b.pay_options AS "contract.payOptions",
+		b.pay_day_type AS "contract.payDayType",
+		b.create_by AS "contract.createBy.id",
+		b.create_date AS "contract.createDate",
+		b.update_by AS "contract.updateBy.id",
+		b.update_date AS "contract.updateDate",
+		b.remarks AS "contract.remarks",
+		b.del_flag AS "contract.delFlag",
+		b.organ_id AS "contract.organId"
+	</sql>
+	
+	<sql id="tLendingJoinsByLoanContract">
+		LEFT JOIN t_lending a ON b.id = a.contract_id
+	</sql>
+	
+	<select id="findPageByLoanContract" resultType="TLending">
+		SELECT 
+			<include refid="tLendingColumnsByLoanContract"/>
+		FROM t_loan_contract b
+		<include refid="tLendingJoinsByLoanContract"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="time != null and time != ''">
+				AND a.time = #{time}
+			</if>
+			<if test="contract != null">
+				<if test="contract.id != null and contract.id != ''">
+					AND a.contract_id = #{contract.id}
+				</if>
+				
+				<if test="contract.applyDate != null and contract.applyDate != ''">
+					AND b.apply_date = #{contract.applyDate}
+				</if>
+				<if test="contract.contractNumber != null and contract.contractNumber != ''">
+					AND b.contract_number = #{contract.contractNumber}
+				</if>
+				<if test="contract.customerId != null and contract.customerId != ''">
+					AND b.customer_id = #{contract.customerId}
+				</if>
+				<if test="contract.customerName != null and contract.customerName != ''">
+					AND b.customer_name = #{contract.customerName}
+				</if>
+				<if test="contract.customerType != null and contract.customerType != ''">
+					AND b.customer_type = #{contract.customerType}
+				</if>
+				<if test="contract.loanAmount != null and contract.loanAmount != ''">
+					AND b.loan_amount = #{contract.loanAmount}
+				</if>
+				<if test="contract.loanDate != null and contract.loanDate != ''">
+					AND b.loan_date = #{contract.loanDate}
+				</if>
+				<if test="contract.loanPeriod != null and contract.loanPeriod != ''">
+					AND b.loan_period = #{contract.loanPeriod}
+				</if>
+				<if test="contract.loanType != null and contract.loanType != ''">
+					AND b.loan_type = #{contract.loanType}
+				</if>
+				<if test="contract.status != null and contract.status != ''">
+					AND b.status = #{contract.status}
+				</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+</mapper>

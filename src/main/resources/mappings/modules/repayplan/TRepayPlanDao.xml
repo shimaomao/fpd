@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.repayplan.dao.TRepayPlanDao">
+
+	<sql id="tRepayPlanColumns">
+		a.id AS "id",
+		a.scan_flag AS "scanFlag",
+		a.push_status AS "pushStatus",
+		o.name AS "reportName",		
+		a.lot_num AS "lotNum",
+		a.cs_num AS "csNum",
+		a.interest AS "interest",
+		a.interest_real AS "interestReal",
+		a.is_yu_qi AS "isYuQi",
+		a.num AS "num",
+		a.over_date AS "overDate",
+		a.pay_interest_date AS
+		"payInterestDate",
+		a.pay_interest_status AS "payInterestStatus",
+		a.principal AS "principal",
+		a.principal_real AS "principalReal",
+		a.status AS "status",
+		a.yu_qi AS "yuQi",
+		a.loan_contract_id AS
+		"loanContractId",
+		a.start_date AS "startDate",
+		a.account_date AS
+		"accountDate",
+		a.end_date AS "endDate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.is_valid AS "isValid",
+		a.repay_auth_id AS "repayAuthId",
+		a.wish_user_id AS  "wishUserId",
+		c.id AS "loanContract.id",
+		c.contract_number AS "loanContract.contractNumber",
+		c.customer_name AS "loanContract.customerName",
+		c.loan_amount AS "loanContract.loanAmount",
+		c.loan_period AS "loanContract.loanPeriod",
+		c.period_type AS "loanContract.periodType"
+	</sql>
+
+	<sql id="tRepayPlanJoins">
+		LEFT JOIN t_loan_contract c on c.id = a.loan_contract_id		
+		LEFT JOIN sys_office o ON o.id = a.organ_id
+		LEFT JOIN sys_user u ON u.id = a.create_by		
+	</sql>
+
+	<select id="get" resultType="TRepayPlan">
+		SELECT
+		<include refid="tRepayPlanColumns" />
+		FROM t_repay_plan a
+		<include refid="tRepayPlanJoins" />
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="TRepayPlan">
+		SELECT
+		<include refid="tRepayPlanColumns" />
+		FROM t_repay_plan a
+		<include refid="tRepayPlanJoins" />
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL} and a.is_valid = '1'
+			<!-- add by srf -->
+			<if test="loanContractId != null and loanContractId != ''">
+				AND a.loan_contract_id = #{loanContractId}
+			</if>
+			<if test="productid != null and productid != ''">
+				AND c.product_id = #{productid}
+			</if>
+			<if test="isYuQi != null and isYuQi != ''">
+				AND a.is_yu_qi = #{isYuQi}
+			</if>
+			<if test="isValid != null and isValid != ''">
+				AND a.is_valid = #{isValid}
+			</if>
+			<if test="status != null">
+				AND  
+				<if test="dbName == 'oracle'">','||#{status}||',' like '%,'||a.status||',%'</if>
+				<if test="dbName == 'mssql'"> ','+#{status}+',' like '%,'+a.status+',%'</if>
+				<if test="dbName == 'mysql'">concat(',',#{status},',') like  concat('%,',a.status,',%')</if>
+			</if>
+			<if test="beginAccountDate != null and endAccountDate != null and beginAccountDate != '' and endAccountDate != ''">
+				AND str_to_date(a.account_date,'%Y-%m-%d %H:%i:%s') BETWEEN #{beginAccountDate} AND #{endAccountDate}
+			</if>
+		</where>
+		
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.lot_num, a.num,a.principal asc
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- add by srf -->
+	<select id="findListCondition" resultType="TRepayPlan">
+		SELECT
+		<include refid="tRepayPlanColumns" />
+		FROM t_repay_plan a
+		<include refid="tRepayPlanJoins" />
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL} and a.is_valid = '1'
+			<!-- add by srf -->
+			<if test="loanContractId != null and loanContractId != ''">
+				AND a.loan_contract_id = #{loanContractId}
+			</if>
+			<if test="scanFlag != null and scanFlag != ''">
+				AND a.scan_flag = #{scanFlag}
+			</if>
+			<if test="status != null">
+				AND  
+				<if test="dbName == 'oracle'">','||#{status}||',' like '%,'||a.status||',%'</if>
+				<if test="dbName == 'mssql'"> ','+#{status}+',' like '%,'+a.status+',%'</if>
+				<if test="dbName == 'mysql'">concat(',',#{status},',') like  concat('%,',a.status,',%')</if>
+			</if>
+			<if test="loanContract != null and loanContract.contractNumber == '-ET'">
+				AND c.contract_number LIKE 
+					<if test="dbName == 'oracle'">'%'||#{loanContract.contractNumber}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{loanContract.contractNumber}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{loanContract.contractNumber},'%')</if>
+			</if>
+			<if test="loanContract != null and loanContract.contractNumber == 'NOT-ET'">
+				AND c.contract_number not LIKE 
+					<if test="dbName == 'oracle'">'%'||#{loanContract.contractNumber}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{loanContract.contractNumber}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{loanContract.contractNumber},'%')</if>
+			</if>
+			<if test="beginAccountDate != null and endAccountDate != null and beginAccountDate != '' and endAccountDate != ''">
+				AND str_to_date(a.account_date,'%Y-%m-%d %H:%i:%s') BETWEEN #{beginAccountDate} AND #{endAccountDate}
+			</if>
+			<if test="startDate != null and startDate != ''">
+				AND a.start_date = #{startDate}
+			</if>
+			<if test="endDate != null and endDate != ''">
+				AND a.end_date = #{endDate}
+			</if>
+			<if test="wishUserId != null and wishUserId != ''">
+				AND a.wish_user_id = #{wishUserId}
+			</if>
+		</where>
+		ORDER BY a.lot_num, a.num,a.principal ASC
+	</select>
+	
+	<select id="findListByNum" resultType="TRepayPlan">
+		SELECT
+		<include refid="tRepayPlanColumns" />
+		FROM t_repay_plan a
+		<include refid="tRepayPlanJoins" />
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL} and a.is_valid = '1'
+			<if test="loanContractId != null and loanContractId != ''">
+				AND a.loan_contract_id = #{loanContractId}
+			</if>
+			<if test="scanFlag != null and scanFlag != ''">
+				AND a.scan_flag = #{scanFlag}
+			</if>
+			<if test="status != null">
+				AND  
+				<if test="dbName == 'oracle'">','||#{status}||',' like '%,'||a.status||',%'</if>
+				<if test="dbName == 'mssql'"> ','+#{status}+',' like '%,'+a.status+',%'</if>
+				<if test="dbName == 'mysql'">concat(',',#{status},',') like  concat('%,',a.status,',%')</if>
+			</if>
+			 <if test="num != null and num != ''">
+				AND a.num = #{num}
+			</if>
+            <if test="startDate != null and startDate != ''">
+				AND a.start_date = #{startDate}
+			</if>
+			<if test="endDate != null and endDate != ''">
+				AND a.end_date = #{endDate}
+			</if>
+			<if test="wishUserId != null and wishUserId != ''">
+				AND a.wish_user_id = #{wishUserId}
+			</if>
+			<if test="isYuQi != null and isYuQi != ''">
+				AND a.is_yu_qi = #{isYuQi}
+			</if>
+		</where>
+		ORDER BY a.create_date,a.num ASC
+	</select>
+	
+	
+	<select id="getFirstTime" resultType="java.lang.String">
+		SELECT
+		   a.start_date as "startDate"
+		FROM t_repay_plan a
+		<where>
+			a.del_flag ='0' AND a.num = '1' AND a.wish_user_id is not null
+			<if test="tLoanContractId != null and tLoanContractId != ''">
+				AND a.loan_contract_id = #{tLoanContractId}
+			</if>
+		</where>
+		ORDER BY a.create_date,a.num DESC
+	</select>
+	
+	
+	
+	<select id="findAllListByWish" resultType="TRepayPlan">
+		SELECT
+		<include refid="tRepayPlanColumns" />
+		FROM t_repay_plan a
+		<include refid="tRepayPlanJoins" />
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL} AND a.is_valid = '1' AND a.wish_user_id is not null
+			<if test="loanContractId != null and loanContractId != ''">
+				AND a.loan_contract_id = #{loanContractId}
+			</if>
+			<if test="scanFlag != null and scanFlag != ''">
+				AND a.scan_flag = #{scanFlag}
+			</if>
+			<if test="status != null">
+				AND  
+				<if test="dbName == 'oracle'">','||#{status}||',' like '%,'||a.status||',%'</if>
+				<if test="dbName == 'mssql'"> ','+#{status}+',' like '%,'+a.status+',%'</if>
+				<if test="dbName == 'mysql'">concat(',',#{status},',') like  concat('%,',a.status,',%')</if>
+			</if>
+			 <if test="num != null and num != ''">
+				AND a.num = #{num}
+			</if>
+		</where>
+		ORDER BY a.create_date,a.num DESC
+	</select>
+	
+	
+	
+	<select id="findByGroup" resultType="TRepayPlan">
+	   SELECT sum(a.principal) as principal, sum(a.interest) as interest, sum(a.interest_real) as interestReal,sum(a.principal_real) as principalReal,num
+		FROM t_repay_plan a
+		WHERE a.del_flag = '0'
+			<if test="num != null ">
+				AND a.num = #{num}
+			</if>
+			<if test="loanContractId != null and loanContractId != ''">
+				AND a.loan_contract_id = #{loanContractId}
+			</if>
+			AND  a.status in('0','1')
+			GROUP BY num
+	</select>
+	
+	
+	<select id="findListByscanFlag" resultType="TRepayPlan">
+		SELECT
+		<include refid="tRepayPlanColumns" />
+		FROM t_repay_plan a
+		<include refid="tRepayPlanJoins" />
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL} and a.is_valid = '1'
+			<!-- add by srf -->
+			<if test="loanContractId != null and loanContractId != ''">
+				AND a.loan_contract_id = #{loanContractId}
+			</if>
+			<if test="scanFlag != null and scanFlag != ''">
+				AND a.scan_flag = #{scanFlag}
+			</if>
+			<if test="status != null">
+				AND  
+				<if test="dbName == 'oracle'">','||#{status}||',' like '%,'||a.status||',%'</if>
+				<if test="dbName == 'mssql'"> ','+#{status}+',' like '%,'+a.status+',%'</if>
+				<if test="dbName == 'mysql'">concat(',',#{status},',') like  concat('%,',a.status,',%')</if>
+			</if>
+			<if test="loanContract != null and loanContract.contractNumber == '-ET'">
+				AND c.contract_number LIKE 
+					<if test="dbName == 'oracle'">'%'||#{loanContract.contractNumber}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{loanContract.contractNumber}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{loanContract.contractNumber},'%')</if>
+			</if>
+			<if test="loanContract != null and loanContract.contractNumber == 'NOT-ET'">
+				AND c.contract_number not LIKE 
+					<if test="dbName == 'oracle'">'%'||#{loanContract.contractNumber}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{loanContract.contractNumber}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{loanContract.contractNumber},'%')</if>
+			</if>
+			<if test="beginAccountDate != null and endAccountDate != null and beginAccountDate != '' and endAccountDate != ''">
+				AND str_to_date(a.account_date,'%Y-%m-%d %H:%i:%s') BETWEEN #{beginAccountDate} AND #{endAccountDate}
+			</if>
+		</where>
+		ORDER BY  a.organ_id DESC
+	</select>
+
+	<select id="findAllList" resultType="TRepayPlan">
+		SELECT
+		<include refid="tRepayPlanColumns" />
+		FROM t_repay_plan a
+		<include refid="tRepayPlanJoins" />
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.lot_num, a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<!-- add by srf 2016-03-31 -->
+    <select id="allRepayment" resultType="java.util.Map">
+    	SELECT
+    		SUM(interest) as interest,
+    		SUM(principal) as principal,
+    		SUM(interest_real) as interest_real,
+    		SUM(principal_real) as principal_real
+    	FROM t_repay_plan a
+    	<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}  and a.is_valid = '1'
+			<!-- add by srf -->
+			<if test="loanContractId != null and loanContractId != ''">
+				AND a.loan_contract_id = #{loanContractId}
+			</if>
+		</where>
+    </select>
+
+	<insert id="insert">
+		INSERT INTO t_repay_plan(
+		id,
+		scan_flag,
+		push_status,
+		report_name,
+		lot_num,
+		cs_num,
+		interest,
+		interest_real,
+		is_yu_qi,
+		num,
+		over_date,
+		pay_interest_date,
+		pay_interest_status,
+		principal,
+		principal_real,
+		status,
+		yu_qi,
+		loan_contract_id,
+		start_date,
+		account_date,
+		end_date,
+		create_by,
+		create_date,
+		update_by,
+		update_date,
+		remarks,
+		del_flag,
+		organ_id,
+		is_valid,
+		repay_auth_id,
+		type,
+		wish_user_id
+		) VALUES (
+		#{id},
+		#{scanFlag},
+		'0',
+		#{reportName},
+		#{lotNum},
+		#{csNum},
+		#{interest},
+		#{interestReal},
+		#{isYuQi},
+		#{num},
+		#{overDate},
+		#{payInterestDate},
+		#{payInterestStatus},
+		#{principal},
+		#{principalReal},
+		#{status},
+		#{yuQi},
+		#{loanContractId},
+		#{startDate},
+		#{accountDate},
+		#{endDate},
+		#{createBy.id},
+		#{createDate},
+		#{updateBy.id},
+		#{updateDate},
+		#{remarks},
+		#{delFlag},
+		#{organId},
+		#{isValid},
+		#{repayAuthId},
+		#{type},
+		#{wishUserId}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE t_repay_plan SET
+		cs_num = #{csNum},
+		scan_flag = '0',
+		report_name = #{reportName},
+	
+		interest = #{interest},
+		interest_real = #{interestReal},
+		is_yu_qi = #{isYuQi},
+		num = #{num},
+		over_date = #{overDate},
+		pay_interest_date = #{payInterestDate},
+		pay_interest_status = #{payInterestStatus},
+		principal = #{principal},
+		principal_real = #{principalReal},
+		status = #{status},
+		yu_qi = #{yuQi},
+		loan_contract_id = #{loanContractId},
+		start_date = #{startDate},
+		account_date = #{accountDate},
+		end_date = #{endDate},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate},
+		remarks = #{remarks},
+		organ_id = #{organId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateByscanFlag">
+		UPDATE t_repay_plan SET		
+		scan_flag = #{scanFlag},	
+		push_status = #{pushStatus},			
+		update_date = #{updateDate}
+			
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		UPDATE t_repay_plan SET
+		del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 批量作废还款计划  add by zzm-->
+	<update id="inValidBatch">
+		UPDATE t_repay_plan SET
+		is_valid = '0'
+		WHERE loan_contract_id = #{loanContractId}
+		<if test="lotNum != null and lotNum != ''">
+		AND lot_num = #{lotNum}
+		</if>
+	</update>
+
+	<delete id="deletePLWL">
+		DELETE FROM t_repay_plan
+		WHERE 1=1
+		<if test="loanContractId != null and loanContractId != ''">
+			AND loan_contract_id = #{loanContractId}
+		</if>
+	</delete>
+
+</mapper>

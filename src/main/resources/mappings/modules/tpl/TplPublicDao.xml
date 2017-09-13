@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.common.dao.tpl.TplPublicDao">
+    
+	<sql id="tplPublicColumns">
+		a.id AS "id",
+		a.tpl_code AS "tplCode",
+		a.name AS "name",
+		a.ftl_content AS "ftlContent",
+		a.tpl_status AS "tplStatus",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="tplPublicJoins">
+	</sql>
+    
+	<select id="get" resultType="TplPublic">
+		SELECT 
+			<include refid="tplPublicColumns"/>
+		FROM tpl_public a
+		<include refid="tplPublicJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getByCode" resultType="TplPublic">
+		SELECT 
+			<include refid="tplPublicColumns"/>
+		FROM tpl_public a
+		<include refid="tplPublicJoins"/>
+		WHERE a.del_flag = 0 and a.tpl_code = #{tplCode}
+	</select>
+	
+	<select id="findList" resultType="TplPublic">
+		SELECT 
+			<include refid="tplPublicColumns"/>
+		FROM tpl_public a
+		<include refid="tplPublicJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="tplCode != null and tplCode != ''">
+				AND a.tpl_code = #{tplCode}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="tplStatus != null and tplStatus != ''">
+				AND a.tpl_status = #{tplStatus}
+			</if>
+			<if test="organId != null and organId != ''">
+				AND a.organ_id = #{organId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TplPublic">
+		SELECT 
+			<include refid="tplPublicColumns"/>
+		FROM tpl_public a
+		<include refid="tplPublicJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tpl_public(
+			id,
+			tpl_code,
+			name,
+			ftl_content,
+			tpl_status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{tplCode},
+			#{name},
+			#{ftlContent},
+			#{tplStatus},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE tpl_public SET 	
+			tpl_code = #{tplCode},
+			name = #{name},
+			ftl_content = #{ftlContent},
+			tpl_status = #{tplStatus},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="chageState">
+		UPDATE tpl_public SET 	
+			tpl_status = #{tplStatus}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE tpl_public SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

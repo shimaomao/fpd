@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.files.dao.TContractFilesDao">
+    
+	<sql id="tContractFilesColumns">
+		a.id AS "id",
+		a.file_name AS "fileName",
+		a.file_path AS "filePath",
+		a.source_name AS "sourceName",
+		a.title AS "title",
+		a.type AS "type",
+		a.task_id AS "taskId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.sys_file_id AS "sysFileId"
+	</sql>
+	
+	<sql id="tContractFilesJoins">
+	</sql>
+    
+	<select id="get" resultType="TContractFiles">
+		SELECT 
+			<include refid="tContractFilesColumns"/>
+		FROM t_contract_files a
+		<include refid="tContractFilesJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TContractFiles">
+		SELECT 
+			<include refid="tContractFilesColumns"/>
+		FROM t_contract_files a
+		<include refid="tContractFilesJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="fileName != null and fileName != ''">
+				AND a.file_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{fileName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{fileName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{fileName},'%')</if>
+			</if>
+			<if test="sourceName != null and sourceName != ''">
+				AND a.source_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{sourceName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{sourceName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{sourceName},'%')</if>
+			</if>
+			<if test="title != null and title != ''">
+				AND a.title LIKE 
+					<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+			</if>
+			<!-- <if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if> -->
+			<if test="taskId != null and taskId != ''">
+				AND a.task_id = #{taskId}
+			</if>
+			<if test="creditTaskId != null and creditTaskId != ''">
+				OR a.task_id = #{creditTaskId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TContractFiles">
+		SELECT 
+			<include refid="tContractFilesColumns"/>
+		FROM t_contract_files a
+		<include refid="tContractFilesJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_contract_files(
+			id,
+			file_name,
+			file_path,
+			source_name,
+			title,
+			type,
+			task_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id,
+			sys_file_id
+		) VALUES (
+			#{id},
+			#{fileName},
+			#{filePath},
+			#{sourceName},
+			#{title},
+			#{type},
+			#{taskId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId},
+			#{sysFileId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_contract_files SET 	
+			file_name = #{fileName},
+			file_path = #{filePath},
+			source_name = #{sourceName},
+			title = #{title},
+			type = #{type},
+			task_id = #{taskId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateFileTaskId" parameterType="java.util.Map">
+		UPDATE t_contract_files SET 	
+			task_id = #{taskId}
+		WHERE task_id = #{oldTaskId}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_contract_files SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getByTaskId" resultType="TContractFiles">
+		SELECT 
+			<include refid="tContractFilesColumns"/>
+		FROM t_contract_files a
+		<include refid="tContractFilesJoins"/>
+		<where>
+			a.del_flag = '0'
+			AND a.task_id = #{taskId}
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+		</where>
+		<!-- WHERE a.task_id = #{taskId} -->
+	</select>
+	
+	<select id="findListByTaskIds" resultType="TContractFiles">
+		SELECT 
+			<include refid="tContractFilesColumns"/>
+		FROM t_contract_files a
+		<include refid="tContractFilesJoins"/>
+		WHERE a.task_id in (${taskIds})
+	</select>
+	
+	
+	<select id="checkFile" resultType="TContractFiles">
+		SELECT 
+			<include refid="tContractFilesColumns"/>
+		FROM t_contract_files a
+		<include refid="tContractFilesJoins"/>
+		WHERE a.task_id = #{taskId} and a.file_path=#{filePath}
+	</select>
+</mapper>

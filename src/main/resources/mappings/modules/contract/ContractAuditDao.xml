@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.contract.dao.ContractAuditDao">
+    
+	<sql id="contractAuditColumns">
+		a.id AS "id",
+		a.proc_ins_id AS "procInsId",
+		<!-- a.loan_contract_id AS "loanContractId", -->
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="tLoanContractColumns">
+		l.id AS "loanContract.id",
+		l.scan_flag AS "loanContract.scanFlag",
+		l.parent_id AS "loanContract.parent.id",
+		l.apply_date AS "loanContract.applyDate",
+		l.contract_number AS "loanContract.contractNumber",
+		l.customer_id AS "loanContract.customerId",
+		l.customer_name AS "loanContract.customerName",
+		l.customer_type AS "loanContract.customerType",
+		l.five_level AS "loanContract.fiveLevel",
+		l.is_extend AS "loanContract.isExtend",
+		l.loan_amount AS "loanContract.loanAmount",
+		l.loan_date AS "loanContract.loanDate",
+		l.loan_period AS "loanContract.loanPeriod",
+		l.loan_rate AS "loanContract.loanRate",
+		l.loan_rate_type AS "loanContract.loanRateType",
+		l.pay_principal_date AS "loanContract.payPrincipalDate",
+		l.loan_type AS "loanContract.loanType",
+		l.max_number AS "loanContract.maxNumber",
+		l.pay_day AS "loanContract.payDay",
+		l.pay_type AS "loanContract.payType",
+		l.period_type AS "loanContract.periodType",
+		l.sign_date AS "loanContract.signDate",
+		l.status AS "loanContract.status",
+		l.product_id AS "loanContract.productId",
+		l.purpose_id AS "loanContract.purposeId",
+		l.area_id AS "loanContract.area.id",
+		l.industry_id AS "loanContract.industryId",
+		<!-- l.borrower AS "loanContract.borrower", --><!-- add 20170218 -->
+		<!-- l.agriculture AS "loanContract.agriculture", --><!-- add 20170218 -->
+		<!-- l.credit_apply_id AS "loanContract.creditApplyId", --><!-- add 20170325 -->
+		l.gathering_bank AS "loanContract.gatheringBank",
+		l.gathering_name AS "loanContract.gatheringName",
+		l.gathering_number AS "loanContract.gatheringNumber",
+		l.guarant_number AS "loanContract.guarantNumber",
+		l.pay_options AS "loanContract.payOptions",
+		l.pay_day_type AS "loanContract.payDayType",
+		l.create_by AS "loanContract.createBy.id",
+		l.create_date AS "loanContract.createDate",
+		l.update_by AS "loanContract.updateBy.id",
+		l.update_date AS "loanContract.updateDate",
+		l.remarks AS "loanContract.remarks",
+		l.del_flag AS "loanContract.delFlag",
+		l.organ_id AS "loanContract.organId",
+		l.server_fee AS "loanContract.serverFee",	 
+		l.mange_fee AS "loanContract.mangeFee",	 	 
+		l.if_advance AS "loanContract.ifAdvance",		
+		l.advance_damages AS "loanContract.advanceDamages",	
+		l.late_fee AS "loanContract.lateFee",			
+		l.rate_discont AS "loanContract.rateDiscont",		 
+		l.if_interest_relief AS "loanContract.ifInterestRelief",  
+		l.grace_period AS "loanContract.gracePeriod",		
+		l.grace_period_penalty AS "loanContract.gracePeriodPenalty",
+		l.late_penalty AS "loanContract.latePenalty",		 
+		l.late_penalty_fee AS "loanContract.latePenaltyFee",	
+		l.is_deal AS "loanContract.isDeal",	
+		l.type AS "loanContract.type",	
+		l.wtypeId AS "loanContract.wtypeId",	
+		<!-- l.proc_ins_id AS "loanContract.act.procInsId", -->
+		a24.name AS "loanContract.area.name",
+		u39.name AS "loanContract.productName",
+		m.surety as "loanContract.legalPerson",
+		m.surety_telephone as "loanContract.suretyTelephone",
+		e.telephone as "loanContract.linkphone",
+		l.transfer_id AS "loanContract.TransferId",
+		l.is_transfered AS "loanContract.isTransfered",
+		o.name AS "loanContract.companyName",
+		l.push_status AS "loanContract.pushStatus",
+		l.isdirect_loan AS "loanContract.isdirectLoan",
+		l.if_reality_day AS "loanContract.ifRealityDay"
+	</sql>
+	
+	<sql id="contractAuditJoins">
+		LEFT JOIN t_loan_contract l ON l.id = a.loan_contract_id
+		LEFT JOIN sys_area a24 ON a24.id = l.area_id
+		LEFT JOIN sys_user u36 ON u36.id = l.create_by
+		LEFT JOIN sys_user u38 ON u38.id = l.update_by
+		LEFT JOIN t_product u39 ON u39.id = l.product_id
+		LEFT JOIN t_company m on m.id  = l.customer_id
+        LEFT JOIN t_employee e on e.id = l.customer_id
+        LEFT JOIN sys_office o ON o.id = l.organ_id
+		LEFT JOIN sys_user u ON u.id = l.create_by
+		LEFT JOIN t_advance ad ON ad.loan_contract_id = l.id
+	</sql>
+    
+	<select id="get" resultType="ContractAudit">
+		SELECT 
+			<include refid="contractAuditColumns"/>,
+			<include refid="tLoanContractColumns"/>
+		FROM t_contract_audit a
+		<include refid="contractAuditJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getByLoanContract" resultType="ContractAudit">
+		SELECT 
+			<include refid="contractAuditColumns"/>,
+			<include refid="tLoanContractColumns"/>
+		FROM t_contract_audit a
+		<include refid="contractAuditJoins"/>
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.loan_contract_id = #{loanContract.id}
+	</select>
+	
+	<select id="findList" resultType="ContractAudit">
+		SELECT 
+			<include refid="contractAuditColumns"/>,
+			<include refid="tLoanContractColumns"/>
+		FROM t_contract_audit a
+		<include refid="contractAuditJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="procInsId != null and procInsId != ''">
+				AND a.proc_ins_id = #{procInsId}
+			</if>
+			<if test="loanContract != null and loanContractId != null and loanContractId != ''">
+				AND a.loan_contract_id = #{loanContract.id}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ContractAudit">
+		SELECT 
+			<include refid="contractAuditColumns"/>,
+			<include refid="tLoanContractColumns"/>
+		FROM t_contract_audit a
+		<include refid="contractAuditJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_contract_audit(
+			id,
+			proc_ins_id,
+			loan_contract_id,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{procInsId},
+			#{loanContract.id},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_contract_audit SET 	
+			<!-- proc_ins_id = #{procInsId}, -->
+			loan_contract_id = #{loanContract.id},
+			status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_contract_audit SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delByLoanContract">
+		UPDATE t_contract_audit SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE a.loan_contract_id = #{loanContract.id}
+	</update>
+	
+</mapper>

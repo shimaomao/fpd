@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.credit.dao.CifQhValidateDao">
+    
+	<sql id="cifQhValidateColumns">
+		a.id AS "id",
+		a.res_id AS "resId",
+		a.id_no AS "idNo",
+		a.id_type AS "idType",
+		a.name AS "name",
+		a.mobile_no AS "mobileNo",
+		a.seq_no AS "seqNo",
+		a.is_real_identity AS "isRealIdentity",
+		a.is_valid_address AS "isValidAddress",
+		a.address_type AS "addressType",
+		a.is_real_company AS "isRealCompany",
+		a.company_sim_deg AS "companySimDeg",
+		a.appear1_th_date AS "appear1ThDate",
+		a.appear_last_date AS "appearLastDate",
+		a.is_owner_mobile AS "isOwnerMobile",
+		a.owner_mobile_status AS "ownerMobileStatus",
+		a.use_time_score AS "useTimeScore",
+		a.is_exist_rel AS "isExistRel",
+		a.rel_level AS "relLevel",
+		a.car_chk_result AS "carChkResult",
+		a.is_asyned AS "isAsyned",
+		a.car_type_inc AS "carTypeInc",
+		a.car_factory_inc AS "carFactoryInc",
+		a.car_price AS "carPrice",
+		a.drv_status_qry_id AS "drvStatusQryId",
+		a.house_chk_result AS "houseChkResult",
+		a.house_data_date AS "houseDataDate",
+		a.photo_cmp_result AS "photoCmpResult",
+		a.photo_sim_deg AS "photoSimDeg",
+		a.is_highest_edu_bkg AS "isHighestEduBkg",
+		a.data_date AS "dataDate",
+		a.graduate_school AS "graduateSchool",
+		a.graduate_major AS "graduateMajor",
+		a.graduate_year AS "graduateYear",
+		a.is_owner_mobile_two AS "isOwnerMobileTwo",
+		a.owner_mobile_status_two AS "ownerMobileStatusTwo",
+		a.use_time_score_two AS "useTimeScoreTwo",
+		a.error_info AS "errorInfo",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.office_id AS "office.id",
+		o46.name AS "office.name"
+	</sql>
+	
+	<sql id="cifQhValidateJoins">
+		LEFT JOIN sys_office o46 ON o46.id = a.office_id
+	</sql>
+    
+	<select id="get" resultType="com.wanfin.fpd.modules.credit.entity.CifQhValidate">
+		SELECT 
+			<include refid="cifQhValidateColumns"/>
+		FROM cif_qh_validate a
+		<include refid="cifQhValidateJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.wanfin.fpd.modules.credit.entity.CifQhValidate">
+		SELECT 
+			<include refid="cifQhValidateColumns"/>
+		FROM cif_qh_validate a
+		<include refid="cifQhValidateJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="com.wanfin.fpd.modules.credit.entity.CifQhValidate">
+		SELECT 
+			<include refid="cifQhValidateColumns"/>
+		FROM cif_qh_validate a
+		<include refid="cifQhValidateJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cif_qh_validate(
+			id,
+			res_id,
+			id_no,
+			id_type,
+			name,
+			mobile_no,
+			seq_no,
+			is_real_identity,
+			is_valid_address,
+			address_type,
+			is_real_company,
+			company_sim_deg,
+			appear1_th_date,
+			appear_last_date,
+			is_owner_mobile,
+			owner_mobile_status,
+			use_time_score,
+			is_exist_rel,
+			rel_level,
+			car_chk_result,
+			is_asyned,
+			car_type_inc,
+			car_factory_inc,
+			car_price,
+			drv_status_qry_id,
+			house_chk_result,
+			house_data_date,
+			photo_cmp_result,
+			photo_sim_deg,
+			is_highest_edu_bkg,
+			data_date,
+			graduate_school,
+			graduate_major,
+			graduate_year,
+			is_owner_mobile_two,
+			owner_mobile_status_two,
+			use_time_score_two,
+			error_info,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id,
+			office_id
+		) VALUES (
+			#{id},
+			#{resId},
+			#{idNo},
+			#{idType},
+			#{name},
+			#{mobileNo},
+			#{seqNo},
+			#{isRealIdentity},
+			#{isValidAddress},
+			#{addressType},
+			#{isRealCompany},
+			#{companySimDeg},
+			#{appear1ThDate},
+			#{appearLastDate},
+			#{isOwnerMobile},
+			#{ownerMobileStatus},
+			#{useTimeScore},
+			#{isExistRel},
+			#{relLevel},
+			#{carChkResult},
+			#{isAsyned},
+			#{carTypeInc},
+			#{carFactoryInc},
+			#{carPrice},
+			#{drvStatusQryId},
+			#{houseChkResult},
+			#{houseDataDate},
+			#{photoCmpResult},
+			#{photoSimDeg},
+			#{isHighestEduBkg},
+			#{dataDate},
+			#{graduateSchool},
+			#{graduateMajor},
+			#{graduateYear},
+			#{isOwnerMobileTwo},
+			#{ownerMobileStatusTwo},
+			#{useTimeScoreTwo},
+			#{errorInfo},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId},
+			#{office.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE cif_qh_validate SET 	
+			res_id = #{resId},
+			id_no = #{idNo},
+			id_type = #{idType},
+			name = #{name},
+			mobile_no = #{mobileNo},
+			seq_no = #{seqNo},
+			is_real_identity = #{isRealIdentity},
+			is_valid_address = #{isValidAddress},
+			address_type = #{addressType},
+			is_real_company = #{isRealCompany},
+			company_sim_deg = #{companySimDeg},
+			appear1_th_date = #{appear1ThDate},
+			appear_last_date = #{appearLastDate},
+			is_owner_mobile = #{isOwnerMobile},
+			owner_mobile_status = #{ownerMobileStatus},
+			use_time_score = #{useTimeScore},
+			is_exist_rel = #{isExistRel},
+			rel_level = #{relLevel},
+			car_chk_result = #{carChkResult},
+			is_asyned = #{isAsyned},
+			car_type_inc = #{carTypeInc},
+			car_factory_inc = #{carFactoryInc},
+			car_price = #{carPrice},
+			drv_status_qry_id = #{drvStatusQryId},
+			house_chk_result = #{houseChkResult},
+			house_data_date = #{houseDataDate},
+			photo_cmp_result = #{photoCmpResult},
+			photo_sim_deg = #{photoSimDeg},
+			is_highest_edu_bkg = #{isHighestEduBkg},
+			data_date = #{dataDate},
+			graduate_school = #{graduateSchool},
+			graduate_major = #{graduateMajor},
+			graduate_year = #{graduateYear},
+			is_owner_mobile_two = #{isOwnerMobileTwo},
+			owner_mobile_status_two = #{ownerMobileStatusTwo},
+			use_time_score_two = #{useTimeScoreTwo},
+			error_info = #{errorInfo},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId},
+			office_id = #{office.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE cif_qh_validate SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

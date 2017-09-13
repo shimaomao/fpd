@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.api.wiss.dao.InformOrderDao">
+    
+	<sql id="informOrderColumns">
+		a.id AS "id",
+		a.user_id AS "userId",
+		m.merchant_id AS "merchantId",
+		a.start_date AS "startDate",
+		a.end_date AS "endDate",
+		a.req_orders_no AS "reqOrdersNo",
+		a.deal_status AS "dealStatus",
+		a.back_start_date AS "backStartDate",
+		a.back_end_date AS "backEndDate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="informOrderJoins">
+		LEFT JOIN t_merchant m ON m.user_id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="InformOrder">
+		SELECT 
+			<include refid="informOrderColumns"/>
+		FROM yl_inform_order a
+		<include refid="informOrderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getByCondition" resultType="InformOrder">
+		SELECT 
+			<include refid="informOrderColumns"/>
+		FROM yl_inform_order a
+		<include refid="informOrderJoins"/>
+		<where>
+			a.user_id = #{userId}
+			AND a.req_orders_no = #{reqOrdersNo}
+			<if test="startDate != null and startDate != ''">
+				AND a.start_date = #{startDate}
+			</if>
+			<if test="endDate != null and endDate != ''">
+				AND a.end_date = #{endDate}
+			</if>
+		</where>
+		ORDER BY a.update_date DESC limit 1
+	</select>
+	
+	<select id="findList" resultType="InformOrder">
+		SELECT 
+			<include refid="informOrderColumns"/>
+		FROM yl_inform_order a
+		<include refid="informOrderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
+			<if test="startDate != null and startDate != ''">
+				AND a.start_date = #{startDate}
+			</if>
+			<if test="endDate != null and endDate != ''">
+				AND a.end_date = #{endDate}
+			</if>
+			<if test="reqOrdersNo != null and reqOrdersNo != ''">
+				AND a.req_orders_no = #{reqOrdersNo}
+			</if>
+			<if test="dealStatus != null and dealStatus != ''">
+				AND a.deal_status = #{dealStatus}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="InformOrder">
+		SELECT 
+			<include refid="informOrderColumns"/>
+		FROM yl_inform_order a
+		<include refid="informOrderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO yl_inform_order(
+			id,
+			user_id,
+			start_date,
+			end_date,
+			req_orders_no,
+			deal_status,
+			back_start_date,
+			back_end_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{userId},
+			#{startDate},
+			#{endDate},
+			#{reqOrdersNo},
+			#{dealStatus},
+			#{backStartDate},
+			#{backEndDate},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE yl_inform_order SET 	
+			user_id = #{userId},
+			start_date = #{startDate},
+			end_date = #{endDate},
+			req_orders_no = #{reqOrdersNo},
+			deal_status = #{dealStatus},
+			back_start_date = #{backStartDate},
+			back_end_date = #{backEndDate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE yl_inform_order SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

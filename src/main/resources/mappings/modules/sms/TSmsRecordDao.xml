@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.sms.dao.TSmsRecordDao">
+    
+	<sql id="tSmsRecordColumns">
+		a.id AS "id",
+		a.content AS "content",
+		a.date AS "date",
+		a.mobile AS "mobile",
+		a.type AS "type",
+		a.return_str AS "returnStr",
+		a.create_by AS "createBy.id",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="tSmsRecordJoins">
+	LEFT JOIN sys_office o ON o.id = a.organ_id
+	LEFT JOIN sys_user u ON u.id = a.create_by
+	</sql>
+    
+	<select id="get" resultType="TSmsRecord">
+		SELECT 
+			<include refid="tSmsRecordColumns"/>
+		FROM t_sms_record a
+		<include refid="tSmsRecordJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TSmsRecord">
+		SELECT 
+			<include refid="tSmsRecordColumns"/>
+		FROM t_sms_record a
+		<include refid="tSmsRecordJoins"/>
+		<where>
+			
+			<if test="mobile != null and mobile != ''">
+				AND a.mobile = #{mobile}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="currentUser.id != ''">
+			   and a.create_by = #{currentUser.id}
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TSmsRecord">
+		SELECT 
+			<include refid="tSmsRecordColumns"/>
+		FROM t_sms_record a
+		<include refid="tSmsRecordJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	<update id="delete">
+		DELETE FROM t_sms_record
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

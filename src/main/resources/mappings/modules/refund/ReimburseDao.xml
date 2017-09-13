@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.refund.dao.ReimburseDao">
+    
+	<sql id="reimburseColumns">
+		a.id AS "id",
+		a.proc_ins_id AS "procInsId",
+		a.back_month AS "backMonth",
+		a.back_name AS "backName",
+		a.back_price AS "backPrice",
+		a.business_type AS "businessType",
+		a.customer_name AS "customerName",
+		a.insert_time AS "insertTime",
+		a.loan_contract_id AS "loanContractId",
+		a.loan_period AS "loanPeriod",
+		a.out_day AS "outDay",
+		a.out_price AS "outPrice",
+		a.reimbursey_date AS "reimburseyDate",
+		a.return_time AS "returnTime",
+		a.status AS "status",
+		a.is_read AS "isRead",
+		a.jie_price AS "jiePrice",
+		a.ti_price AS "tiPrice",
+		a.yong_day AS "yongDay",
+		a.bankname AS "bankname",
+		a.banknumber AS "banknumber",
+		a.bankusername AS "bankusername",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		c.contract_number AS "contractNumber"
+	</sql>
+	
+	<sql id="reimburseJoins">	
+	LEFT JOIN sys_office o ON o.id = a.organ_id
+	LEFT JOIN sys_user u ON u.id = a.create_by
+	LEFT JOIN t_loan_contract c ON c.id = a.loan_contract_id
+	
+
+	</sql>
+    
+	<select id="get" resultType="Reimburse">
+		SELECT 
+			<include refid="reimburseColumns"/>
+		FROM t_reimburse a
+		<include refid="reimburseJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getContition" resultType="Reimburse">
+		SELECT 
+			<include refid="reimburseColumns"/>
+		FROM t_reimburse a
+		<include refid="reimburseJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND and a.id = #{id}
+			</if>
+			<if test="act.procInsId != null and act.procInsId !=''">
+				AND a.proc_ins_id = #{act.procInsId}
+			</if>
+		</where>
+		
+	</select>
+	
+	<select id="findList" resultType="Reimburse">
+		SELECT 
+			<include refid="reimburseColumns"/>
+		FROM t_reimburse a
+		<include refid="reimburseJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="backName != null and backName != ''">
+				AND a.back_name = #{backName}
+			</if>
+			<if test="customerName != null and customerName != ''">
+				AND a.customer_name = #{customerName}
+			</if>
+			<if test="reimburseyDate != null and reimburseyDate != ''">
+				AND a.reimbursey_date = #{reimburseyDate}
+			</if>
+			<if test="returnTime != null and returnTime != ''">
+				AND a.return_time = #{returnTime}
+			</if>
+			<if test="loanContractId != null and loanContractId != ''"><!--for:viewList -->
+				AND a.loan_contract_id = #{loanContractId}
+			</if>
+			<if test="currentUser.company.id != ''">
+			   and a.organ_id = #{currentUser.company.id}
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Reimburse">
+		SELECT 
+			<include refid="reimburseColumns"/>
+		FROM t_reimburse a
+		<include refid="reimburseJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_reimburse(
+			id,
+			back_month,
+			back_name,
+			back_price,
+			business_type,
+			customer_name,
+			insert_time,
+			loan_contract_id,
+			loan_period,
+			out_day,
+			out_price,
+			reimbursey_date,
+			return_time,
+			status,
+			is_read,
+			jie_price,
+			ti_price,
+			yong_day,
+			bankname,
+			banknumber,
+			bankusername,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{backMonth},
+			#{backName},
+			#{backPrice},
+			#{businessType},
+			#{customerName},
+			#{insertTime},
+			#{loanContractId},
+			#{loanPeriod},
+			#{outDay},
+			#{outPrice},
+			#{reimburseyDate},
+			#{returnTime},
+			#{status},
+			#{isRead},
+			#{jiePrice},
+			#{tiPrice},
+			#{yongDay},
+			#{bankname},
+			#{banknumber},
+			#{bankusername},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_reimburse SET 	
+			back_month = #{backMonth},
+			back_name = #{backName},
+			back_price = #{backPrice},
+			business_type = #{businessType},
+			customer_name = #{customerName},
+			insert_time = #{insertTime},
+			loan_contract_id = #{loanContractId},
+			loan_period = #{loanPeriod},
+			out_day = #{outDay},
+			out_price = #{outPrice},
+			reimbursey_date = #{reimburseyDate},
+			return_time = #{returnTime},
+			status = #{status},
+			is_read = #{isRead},
+			jie_price = #{jiePrice},
+			ti_price = #{tiPrice},
+			yong_day = #{yongDay},
+			bankname = #{bankname},
+			banknumber = #{banknumber},
+			bankusername = #{bankusername},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateStatus">
+		UPDATE t_reimburse SET 	
+			status = #{status}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_reimburse SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

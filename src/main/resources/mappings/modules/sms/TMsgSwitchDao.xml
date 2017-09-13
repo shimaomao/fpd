@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.sms.dao.TMsgSwitchDao">
+    
+	<sql id="tMsgSwitchColumns">
+		a.id AS "id",
+		a.business_name AS "businessName",
+		a.letter_status AS "letterStatus",
+		a.business_type AS "businessType",
+		a.market_status AS "marketStatus",
+		a.mail_status AS "mailStatus"
+	</sql>
+	
+	<sql id="tMsgSwitchJoins">
+	
+	</sql>
+    	<select id="checkMsgSwitch" resultType="TMsgSwitch">
+		SELECT a.letter_status AS 'letterStatus',a.market_status AS 'marketStatus',a.mail_status AS 'mailStatus'
+		FROM t_msg_switch a where a.business_type = #{businessType}
+		
+	</select>
+	
+	<select id="get" resultType="TMsgSwitch">
+		SELECT 
+			<include refid="tMsgSwitchColumns"/>
+		FROM t_msg_switch a
+		<include refid="tMsgSwitchJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TMsgSwitch">
+		SELECT 
+			<include refid="tMsgSwitchColumns"/>
+		FROM t_msg_switch a
+		<include refid="tMsgSwitchJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TMsgSwitch">
+		SELECT 
+			<include refid="tMsgSwitchColumns"/>
+		FROM t_msg_switch a
+		<include refid="tMsgSwitchJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_msg_switch(
+			id,
+			business_name,
+			letter_status,
+			business_type,
+			market_status,
+			mail_status
+		) VALUES (
+			#{id},
+			#{businessName},
+			#{letterStatus},
+			#{businessType},
+			#{marketStatus},
+			#{mailStatus}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_msg_switch SET 	
+			business_name = #{businessName},
+			letter_status = #{letterStatus},
+			business_type = #{businessType},
+			market_status = #{marketStatus},
+			mail_status = #{mailStatus}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM t_msg_switch
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

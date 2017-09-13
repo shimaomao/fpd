@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+	<!-- default-autowire="byName" default-lazy-init="false"此两个值可以不配置 -->
+	<description>Quartz Job Setting</description>
+
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- QMethod -->
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- A.配置调度的任务对应bean的id和自定义class -->
+	<bean id="QTCreditChecking" class="com.wanfin.fpd.common.quartz.QTCreditChecking" />
+
+	<!-- B.配置调度任务对应的bean的id和执行的方法,作业不并发调度 -->
+	<bean id="QTCreditCheckingDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="QTCreditChecking" />
+		<property name="targetMethod">
+			<value>execute</value>
+		</property>
+		<property name="concurrent" value="false" />
+	</bean>
+
+	<!-- C.配置调度任务执行的触发的时间 -->
+	<bean id="QTCreditCheckingDetailTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="QTCreditCheckingDetail" />
+		<property name="cronExpression">
+			<!-- 每分钟的第3秒执行任务调度 -->
+			<!-- <value>3 * * * * ?</value> -->
+			<!-- 每60秒执行任务调度 -->
+			<!-- <value>0/60 * * * * ?</value> -->
+			<!-- 每周第0秒执行任务调度 -->
+			<!-- <value>0 * * */7 * ?</value> -->
+			<value>0 0 * * * ?</value>
+		</property>
+	</bean>
+
+
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- SFTP上传时间配置 -->
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- A.配置调度的任务对应bean的id和自定义class -->
+	<bean id="FtpTasks" class="com.wanfin.fpd.common.quartz.ftp.UploadFileFromFtpTask" />
+
+	<!-- B.配置调度任务对应的bean的id和执行的方法,作业不并发调度 -->
+	<bean id="FtpTasksDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="FtpTasks" />
+		<property name="targetMethod">
+			<value>execute</value>
+		</property>
+		<property name="concurrent" value="false" />
+	</bean>
+
+	<!-- C.配置调度任务执行的触发的时间 -->
+	<bean id="FtpTasksDetailTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="FtpTasksDetail" />
+		<property name="cronExpression">
+			<!-- 每分钟的第3秒执行任务调度 -->
+			<!-- <value>3 * * * * ?</value> -->
+			<!-- 每60秒执行任务调度 -->
+			<!-- <value>0/60 * * * * ?</value> -->
+			<!-- 每周第0秒执行任务调度 -->
+			<!-- <value>0 * * */7 * ?</value> -->
+			<value>30 22 20 * * ?</value>
+		</property>
+	</bean>
+
+
+	<!-- FTP 解析回执 A.配置调度的任务对应bean的id和自定义class -->
+	<bean id="FtpDownloadTasks"
+		class="com.wanfin.fpd.common.quartz.ftp.DownLoadFileFromFtpTask" />
+
+	<!-- B.配置调度任务对应的bean的id和执行的方法,作业不并发调度 -->
+	<bean id="FtpDownloadTasksDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="FtpDownloadTasks" />
+		<property name="targetMethod">
+			<value>downloadFileScheduler</value>
+		</property>
+		<property name="concurrent" value="false" />
+	</bean>
+
+	<!-- C.配置调度任务执行的触发的时间 -->
+	<bean id="FtpDownloadTasksDetailTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="FtpDownloadTasksDetail" />
+		<property name="cronExpression">
+			<!-- 每分钟的第3秒执行任务调度 -->
+			<!-- <value>3 * * * * ?</value> -->
+			<!-- 每60秒执行任务调度 -->
+			<!-- <value>0/60 * * * * ?</value> -->
+			<!-- 每周第0秒执行任务调度 -->
+			<!-- <value>0 * * */7 * ?</value> -->
+			<value>30 10 01 * * ?</value>
+		</property>
+	</bean>
+
+
+
+
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- BillingQT -->
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<bean id="BillingQT" class="com.wanfin.fpd.common.extend.billing.BillingQT" />
+	<bean id="BillingQTDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="BillingQT" />
+		<property name="targetMethod">
+			<value>execute</value>
+		</property>
+		<property name="concurrent" value="false" />
+	</bean>
+	<bean id="BillingQTDetailTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="BillingQTDetail" />
+		<property name="cronExpression">
+			<!-- 每小时执行任务调度 -->
+			<value>0 0 * * * ?</value>
+		</property>
+	</bean>
+
+
+
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- repayplan #2316 #2314 -->
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<bean id="repaywarnQT" class="com.wanfin.fpd.common.quartz.repaywarn" />
+	<bean id="repaywarn"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="repaywarnQT" />
+		<property name="targetMethod">
+			<value>execute</value>
+		</property>
+		<property name="concurrent" value="false" />
+	</bean>
+	<bean id="repaywarnTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="repaywarn" />
+		<property name="cronExpression">
+			<!--秒 、 分 、小时、 日期、 月份、 星期 -->
+			<!--每天6点定时发送短信提醒 -->
+			<value>0 0 10 * * ?</value>
+		</property>
+	</bean>
+
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- wishOrderQuartz #2316 #2314 -->
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<bean id="wishOrderQT" class="com.wanfin.fpd.common.quartz.WishOrderQuartz" />
+	<bean id="WishOrderQuartzDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="wishOrderQT" />
+		<property name="targetMethod">
+			<value>execute</value>
+		</property>
+		<property name="concurrent" value="false" />
+	</bean>
+	<bean id="wishOrderTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="WishOrderQuartzDetail" />
+		<property name="cronExpression">
+			<!--秒 、 分 、小时、 日期、 月份、 星期 -->
+			<value>0 0/5 * * * ?</value>
+		</property>
+	</bean>
+
+
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- ReturnMoneyQuartz #2316 #2314 -->
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<bean id="returnMoneyQuartz" class="com.wanfin.fpd.common.quartz.ReturnMoneyQuartz" />
+	<bean id="ReturnMoneyQuartzDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="returnMoneyQuartz" />
+		<property name="targetMethod">
+			<value>execute</value>
+		</property>
+		<property name="concurrent" value="false" />
+	</bean>
+	<bean id="returnMoneyTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="ReturnMoneyQuartzDetail" />
+		<property name="cronExpression">
+			<!--秒 、 分 、小时、 日期、 月份、 星期 -->
+			<value>0 0/5 * * * ?</value>
+		</property>
+	</bean>
+
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- 9.1 放款日对账报表定时器loanDayQuartz #2316 #2314 -->
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!--<bean id="loanDayQuartz" class="com.wanfin.fpd.common.quartz.LoanDayQuartz" />-->
+	<!--<bean id="loanDayQuartzDetail"-->
+		<!--class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">-->
+		<!--<property name="targetObject" ref="loanDayQuartz" />-->
+		<!--<property name="targetMethod">-->
+			<!--<value>execute</value>-->
+		<!--</property>-->
+		<!--<property name="concurrent" value="false" />-->
+	<!--</bean>-->
+	<!--<bean id="loanTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">-->
+		<!--<property name="jobDetail" ref="loanDayQuartzDetail" />-->
+		<!--<property name="cronExpression">-->
+			<!--&lt;!&ndash; 秒 、 分 、小时、 日期、 月份、 星期 &ndash;&gt;-->
+			<!--<value>0 0/10 * * * ?</value>-->
+		<!--</property>-->
+	<!--</bean>-->
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- 9.2 还款月对账报表定时器loanDayQuartz #2316 #2314 -->
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!--<bean id="loanMonthQuartz" class="com.wanfin.fpd.common.quartz.LoanMonthQuartz" />-->
+	<!--<bean id="LoanMonthQuartzDetail"-->
+		<!--class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">-->
+		<!--<property name="targetObject" ref="loanMonthQuartz" />-->
+		<!--<property name="targetMethod">-->
+			<!--<value>execute</value>-->
+		<!--</property>-->
+		<!--<property name="concurrent" value="false" />-->
+	<!--</bean>-->
+	<!--<bean id="loanMonthTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">-->
+		<!--<property name="jobDetail" ref="LoanMonthQuartzDetail" />-->
+		<!--<property name="cronExpression">-->
+			<!--&lt;!&ndash; 秒 、 分 、小时、 日期、 月份、 星期 &ndash;&gt;-->
+			<!--<value>30 0/10 * * * ?</value>-->
+		<!--</property>-->
+	<!--</bean>-->
+
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- 汇率获取 -->
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- A.配置调度的任务对应bean的id和自定义class -->
+	<bean id="ExchangeRatesDeals" class="com.wanfin.fpd.common.quartz.ExchangeRatesDeals" />
+
+	<!-- B.配置调度任务对应的bean的id和执行的方法,作业不并发调度 -->
+	<bean id="ExchangeRatesDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="ExchangeRatesDeals" />
+		<property name="targetMethod">
+			<value>execute</value>
+		</property>
+		<property name="concurrent" value="false" />
+	</bean>
+
+	<!-- C.配置调度任务执行的触发的时间 -->
+	<bean id="ExchangeRatesTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="ExchangeRatesDetail" />
+		<property name="cronExpression">
+			<!-- 每分钟的第3秒执行任务调度 -->
+			<!-- <value>3 * * * * ?</value> -->
+			<!-- 每60秒执行任务调度 -->
+			<!-- <value>0/60 * * * * ?</value> -->
+			<!-- 每周第0秒执行任务调度 -->
+			<!-- <value>0 * * */7 * ?</value> -->
+			<value>0 0/10 10-19 * * ?</value>
+		</property>
+	</bean>
+
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- 更新商铺信息 -->
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- A.配置调度的任务对应bean的id和自定义class -->
+	<bean id="MerchantTarget" class="com.wanfin.fpd.common.quartz.MerchantQuartz" />
+
+	<!-- B.配置调度任务对应的bean的id和执行的方法,作业不并发调度 -->
+	<bean id="MerchantJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="MerchantTarget" />
+		<property name="targetMethod">
+			<value>execute</value>
+		</property>
+		<property name="concurrent" value="false" />
+	</bean>
+
+	<!-- C.配置调度任务执行的触发的时间 -->
+	<bean id="MerchantTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="MerchantJob" />
+		<property name="cronExpression">
+			<!-- 每分钟的第3秒执行任务调度 -->
+			<!-- <value>3 * * * * ?</value> -->
+			<!-- 每60秒执行任务调度 -->
+			<!-- <value>0/60 * * * * ?</value> -->
+			<!-- 每周第0秒执行任务调度 -->
+			<!-- <value>0 * * */7 * ?</value> -->
+			<value>0 35 3 * * ?</value>
+		</property>
+	</bean>
+
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- 通知获取订单信息 -->
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- A.配置调度的任务对应bean的id和自定义class -->
+	<bean id="InformGetOrders" class="com.wanfin.fpd.common.quartz.InformGetOrders" />
+
+	<!-- B.配置调度任务对应的bean的id和执行的方法,作业不并发调度 -->
+	<bean id="InformGetOrdersDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="InformGetOrders" />
+		<property name="targetMethod">
+			<value>execute</value>
+		</property>
+		<property name="concurrent" value="false" />
+	</bean>
+
+	<!-- C.配置调度任务执行的触发的时间 -->
+	<bean id="InformGetOrdersTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="InformGetOrdersDetail" />
+		<property name="cronExpression">
+			<!-- 每分钟的第3秒执行任务调度 -->
+			<!-- <value>3 * * * * ?</value> -->
+			<!-- 每60秒执行任务调度 -->
+			<!-- <value>0/60 * * * * ?</value> -->
+			<!-- 每周第0秒执行任务调度 -->
+			<!-- <value>0 * * */7 * ?</value> -->
+			<value>0 13 03 * * ?</value>
+		</property>
+	</bean>
+
+
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- 业务状态同步至易联 wish -->
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- A.配置调度的任务对应bean的id和自定义class -->
+	<bean id="SynContractStatus" class="com.wanfin.fpd.common.quartz.SynContractStatus" />
+
+	<!-- B.配置调度任务对应的bean的id和执行的方法,作业不并发调度 -->
+	<bean id="SynContractStatusDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="SynContractStatus" />
+		<property name="targetMethod">
+			<value>execute</value>
+		</property>
+		<property name="concurrent" value="false" />
+	</bean>
+	<bean id="SynContractStatusTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="SynContractStatusDetail" />
+		<property name="cronExpression">
+			<!-- 每分钟的第3秒执行任务调度 -->
+			<value>0 0/2 * * * ?</value>
+			<!-- 每60秒执行任务调度 -->
+			<!-- <value>0 * * * * ?</value> -->
+			<!-- 每周第0秒执行任务调度 -->
+			<!-- <value>0 * * */7 * ?</value> -->
+			<!-- <value>0 0/10 09-16 * * ?</value> -->
+
+		</property>
+	</bean>
+
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- 打款通知易联 wish -->
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- A.配置调度的任务对应bean的id和自定义class -->
+	<!-- <bean id="RepayContractMsg" class="com.wanfin.fpd.common.quartz.RepayContractMsg" 
+		/> -->
+
+	<!-- B.配置调度任务对应的bean的id和执行的方法,作业不并发调度 -->
+	<!-- <bean id="RepayContractMsgDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"> 
+		<property name="targetObject" ref="RepayContractMsg" /> <property name="targetMethod"> 
+		<value>execute</value> </property> <property name="concurrent" value="false" 
+		/> </bean> -->
+	<!-- <bean id="RepayContractMsgTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean"> 
+		<property name="jobDetail" ref="RepayContractMsgDetail" /> <property name="cronExpression"> 
+		<value>0 0/10 * * * ?</value> </property> </bean> -->
+
+
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- wish业务逾期处理 -->
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- A.配置调度的任务对应bean的id和自定义class -->
+	<bean id="WishOverPlan" class="com.wanfin.fpd.common.quartz.WishOverPlan" />
+
+	<!-- B.配置调度任务对应的bean的id和执行的方法,作业不并发调度 -->
+	<bean id="WishOverPlanDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="WishOverPlan" />
+		<property name="targetMethod">
+			<value>execute</value>
+		</property>
+		<property name="concurrent" value="false" />
+	</bean>
+	<bean id="WishOverPlanTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="WishOverPlanDetail" />
+		<property name="cronExpression">
+			<!-- 每分钟的第3秒执行任务调度 -->
+			<!-- <value>3 * * * * ?</value> -->
+			<!-- 每60秒执行任务调度 -->
+			<value>0 0/20 * * * ?</value>
+			<!-- 每周第0秒执行任务调度 -->
+			<!-- <value>0 * * */7 * ?</value> -->
+			<!-- <value>0 0/10 09-16 * * ?</value> -->
+		</property>
+	</bean>
+
+
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- 定时执行wish风控模型 -->
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- A.配置调度的任务对应bean的id和自定义class -->
+	<bean id="RiskControlQuartz" class="com.wanfin.fpd.common.quartz.RiskControlQuartz" />
+
+	<!-- B.配置调度任务对应的bean的id和执行的方法,作业不并发调度 -->
+	<bean id="RiskControlQuartzDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="RiskControlQuartz" />
+		<property name="targetMethod">
+			<value>execute</value>
+		</property>
+		<property name="concurrent" value="false" />
+	</bean>
+	<bean id="RiskControlQuartzTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="RiskControlQuartzDetail" />
+		<property name="cronExpression">
+			<!-- 每天下午八10点触发 ：在计算时长之后执行 -->
+			<value>50 0/6 * * * ?</value>
+			<!-- <value>0 0/1 * * * ?</value> -->
+		</property>
+	</bean>
+
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- 定时执行wish经营时长：要在风控之前执行 -->
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- A.配置调度的任务对应bean的id和自定义class -->
+	<bean id="BusiLengthQuartz" class="com.wanfin.fpd.common.quartz.BusiLengthQuartz" />
+
+	<!-- B.配置调度任务对应的bean的id和执行的方法,作业不并发调度 -->
+	<bean id="BusiLengthQuartzDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="BusiLengthQuartz" />
+		<property name="targetMethod">
+			<value>execute</value>
+		</property>
+		<property name="concurrent" value="false" />
+	</bean>
+	<bean id="BusiLengthQuartzTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="BusiLengthQuartzDetail" />
+		<property name="cronExpression">
+			<!-- 每天下午八点触发 ：在风控之前执行 -->
+			<value>5 0/6 * * * ?</value>
+		</property>
+	</bean>
+
+
+	<!-- ——————————————————————————————————————————————————————————————————————————————————————————————————— -->
+	<!-- D.Quartz的调度工厂，调度工厂只能有一个，多个调度任务在list中添加 -->
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<!-- 征信调度任务 -->
+				<!-- <ref bean="QTCreditCheckingDetailTrigger" /> -->
+				<!-- 计费调度任务 -->
+				<!-- <ref bean="BillingQTDetailTrigger" /> -->
+				<!-- <ref bean="repaywarnTrigger"/> -->
+				<!-- sftp、ftp 临时关闭 -->
+				<!-- <ref bean="FtpTasksDetailTrigger" /> -->
+				<!-- <ref bean="FtpDownloadTasksDetailTrigger" /> -->
+				<!-- 汇率获取 -->
+				<ref bean="ExchangeRatesTrigger" />
+				<!-- 更新商铺信息 -->
+				<ref bean="MerchantTrigger" />
+				<!-- 通知获取订单信息 -->
+				<ref bean="InformGetOrdersTrigger" />
+				<!-- 7.1 借款业务状态变更通知,放款至wish -->
+				<ref bean="SynContractStatusTrigger" />
+				<!-- 商铺历史订单处理 -->
+				<ref bean="wishOrderTrigger" />
+				<!-- 8.1 回款通知 -->
+				<ref bean="returnMoneyTrigger" />
+				<!-- 回款通知至wish 废弃 -->
+				<!-- <ref bean="RepayContractMsgTrigger" /> -->
+				<!-- txt 9.1 日对账报表 -->
+				<!--<ref bean="loanTrigger" />-->
+				<!-- 9.2 还款月对账表 -->
+				<!--<ref bean="loanMonthTrigger" />-->
+				<!-- wish业务逾期处理 -->
+				<ref bean="WishOverPlanTrigger" />
+				<!-- 定时执行wish经营时长：要在风控之前执行 -->
+				<ref bean="BusiLengthQuartzTrigger" />
+				<!-- 定时执行wish风控模型 -->
+				<ref bean="RiskControlQuartzTrigger" />
+			</list>
+		</property>
+	</bean>
+</beans>

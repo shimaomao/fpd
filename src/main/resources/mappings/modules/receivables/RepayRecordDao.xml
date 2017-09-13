@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.receivables.dao.RepayRecordDao">
+    
+	<sql id="repayRecordColumns">
+		a.id AS "id",
+		a.scan_flag AS "scanFlag",
+		a.push_status AS "pushStatus",
+		o.name AS "reportName",
+		a.is_yu_qi AS "isYuQi",
+		a.money AS "money",
+		a.repay_date AS "repayDate",
+		a.loan_contract_id AS "loanContractId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.wish_over_fee AS "wishOverFee",
+		a.re_interest AS "reInterest",
+		a.sum_repay_money
+		
+	</sql>
+	
+	<sql id="repayRecordJoins">
+	LEFT JOIN t_loan_contract c on c.id = a.loan_contract_id	
+	LEFT JOIN sys_office o ON o.id = a.organ_id	
+	</sql>
+    
+	<select id="get" resultType="RepayRecord">
+		SELECT 
+			<include refid="repayRecordColumns"/>
+		FROM t_repay_real a
+		<include refid="repayRecordJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getOneByOther" resultType="RepayRecord">
+		SELECT 
+			<include refid="repayRecordColumns"/>
+		FROM t_repay_real a
+		<include refid="repayRecordJoins"/>
+		WHERE <!-- a.id != #{id} -->
+		 a.loan_contract_id=#{loanContractId}
+		ORDER BY a.repay_date,a.create_date DESC
+	</select>
+	
+	<select id="findList" resultType="RepayRecord">
+		SELECT 
+			<include refid="repayRecordColumns"/>
+		FROM t_repay_real a
+		<include refid="repayRecordJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="money != null and money != ''">
+				AND a.money = #{money}
+			</if>
+			<if test="loanContractId != null and loanContractId != ''">
+				AND a.loan_contract_id = #{loanContractId}
+			</if>
+			<if test="repayDate != null and repayDate != ''">
+				AND a.repay_date = #{repayDate}
+			</if>
+			<if test="scanFlag != null and scanFlag != ''">
+				AND a.scan_flag = #{scanFlag}
+			</if>
+		</where>
+		<choose>
+<!-- 			<when test="page !=null and page.orderBy != null and page.orderBy != ''"> -->
+<!-- 				ORDER BY ${page.orderBy} -->
+<!-- 			</when> -->
+			<otherwise>
+				ORDER BY a.update_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+<select id="findRepayRecordVoPage" resultType="com.wanfin.fpd.modules.wish.contract.vo.RepayRecordVo">
+   SELECT
+	r.money AS "repayMoney",
+	t.id AS "id",
+	r.wish_over_fee AS "overFee",
+	r.repay_date AS "repayTime",
+	r.sum_repay_money AS "sumRepayAmount",
+	t.id AS "loanContractId",
+	t.customer_id AS "customerId",
+	t.customer_name AS "customerName",
+	t.gathering_number AS "gatheringNumber",
+	t.loan_amount AS "sumLoanAmount",
+	t.wish_charge AS "sumCharge",
+	t. STATUS AS "status"
+   FROM
+	 t_repay_real r
+   LEFT JOIN t_loan_contract t
+      ON r.loan_contract_id=t.id
+        <where>
+         t.type = '2'
+               <if test="starttime !=null and starttime !=''">
+			       <![CDATA[
+				      and repay_date >= #{starttime}
+			       ]]>
+		        </if>
+		        <if test="endtime !=null and endtime !=''">
+			       <![CDATA[
+				     and repay_date <= #{endtime}
+			      ]]>
+		         </if> 
+		         <if test="customerName != null and customerName != ''">
+				     AND t.customer_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{customerName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{customerName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{customerName},'%')</if>
+			     </if>
+			     <if test="customerId != null and customerId != ''"> 
+				       AND t.customer_id = #{customerId}
+			     </if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''"> 
+				ORDER BY ${page.orderBy} 
+			</when> 
+			<otherwise>
+				ORDER BY t.id,r.repay_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	<select id="findListByScan" resultType="RepayRecord">
+		SELECT 
+			<include refid="repayRecordColumns"/>
+		FROM t_repay_real a
+		<include refid="repayRecordJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="money != null and money != ''">
+				AND a.money = #{money}
+			</if>
+			
+			<if test="loanContractId != null and loanContractId == '-ET'">
+				AND c.contract_number LIKE 
+					<if test="dbName == 'oracle'">'%'||#{loanContractId}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{loanContractId}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{loanContractId},'%')</if>
+			</if>
+			<if test="loanContractId != null and loanContractId == 'NOT-ET'">
+				AND c.contract_number not LIKE 
+					<if test="dbName == 'oracle'">'%'||#{loanContractId}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{loanContractId}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{loanContractId},'%')</if>
+			</if>
+			<if test="repayDate != null and repayDate != ''">
+				AND a.repay_date = #{repayDate}
+			</if>
+			<if test="scanFlag != null and scanFlag != ''">
+				AND a.scan_flag = #{scanFlag}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY  a.organ_id  DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="RepayRecord">
+		SELECT 
+			<include refid="repayRecordColumns"/>
+		FROM t_repay_real a
+		<include refid="repayRecordJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_repay_real(
+			id,
+			scan_flag,
+			push_status,
+			report_name,
+			is_yu_qi,
+			money,
+			repay_date,
+			loan_contract_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id,
+			wish_over_fee,
+			re_interest,
+			sum_repay_money
+		) VALUES (
+			#{id},
+			#{scanFlag},
+			'0',
+			#{reportName},
+			#{isYuQi},
+			#{money},
+			#{repayDate},
+			#{loanContractId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId},
+			#{wishOverFee},
+			#{reInterest},
+			#{sumRepayMoney}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_repay_real SET 	
+			scan_flag = '0',
+			is_yu_qi = #{isYuQi},			
+			report_name = #{reportName},
+			money = #{money},
+			repay_date = #{repayDate},
+			loan_contract_id = #{loanContractId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			re_interest = #{reInterest},
+			sum_repay_money = #{sumRepayMoney}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateByscanFlag">
+		UPDATE t_repay_real SET		
+		scan_flag = #{scanFlag},			
+		push_status = #{pushStatus},
+		update_date = #{updateDate}	
+			
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_repay_real SET 
+			del_flag = #{DEL_FLAG_DELETE},
+			scan_flag = '0',
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

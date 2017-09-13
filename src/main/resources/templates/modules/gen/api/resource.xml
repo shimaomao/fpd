@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>resource</name>
+	<filePath>src/main/api/${packageName}/${moduleName}/resource/${subModuleName}</filePath>
+	<fileName>${ClassName}ApiResource.java</fileName>
+	<content><![CDATA[
+/**
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
+ * @Project fpd 
+ * @Title ${ClassName}ApiResource.java
+ * @Package ${packageName}.${moduleName}.resource<#if subModuleName != "">.${subModuleName}</#if>
+ * @Description [[_${functionName}_]]文件 
+ * @author Chenh
+ * @date 2016年5月12日 下午3:08:57 
+ * @version V1.0   
+ */
+package ${packageName}.${moduleName}.resource<#if subModuleName != "">.${subModuleName}</#if>;
+
+import java.util.List;
+
+import javax.ws.rs.core.UriInfo;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import com.wanfin.fpd.common.utils.DateUtils;
+
+import com.wanfin.fpd.core.Link;
+import com.wanfin.fpd.core.filter.LinkFilter;
+import ${packageName}.${moduleName}.entity<#if subModuleName != "">.${subModuleName}</#if>.${ClassName};
+
+/**
+ * @Description [[_${functionName}_]] ${ClassName}ApiResource资源类
+ * @author ${functionAuthor}
+ * @version ${functionVersion}
+ * @date 2016年6月6日 下午7:24:32 
+ */
+@SuppressWarnings("unchecked")
+public class ${ClassName}ApiResource extends CollectionResTool<${ClassName}> implements LinkFilter<${ClassName}> {
+	private static final long serialVersionUID = 1L;
+	
+	public ${ClassName}ApiResource() {
+		super();
+	}
+
+	public ${ClassName}ApiResource(${ClassName} entity) {
+        super(entity);
+		filterChange(entity);
+    }
+	
+	public ${ClassName}ApiResource(UriInfo info, ${ClassName} entity) {
+		super(info, entity);
+       	filterDeal(entity);
+	}
+	
+	public ${ClassName}ApiResource(${ClassName} entity, List<String> fields) {
+		super(entity);
+       	filterDeal(entity);
+	}
+	
+	public ${ClassName}ApiResource(UriInfo info, ${ClassName} entity, List<String> fields) {
+		super(info, entity);
+		filterByFields(entity, fields);
+	}
+
+	@Override
+	public void filter(${ClassName} entity) {
+		put("id", entity.getId());
+		
+        put("remarks", entity.getRemarks());
+         if(entity.getCreateBy() != null){
+        	put("createBy", entity.getCreateBy().getName());
+        }
+        if(entity.getUpdateBy() != null){
+        	put("updateBy", entity.getCreateBy().getName());
+        }
+        if(entity.getCreateDate() != null){
+        	put("createDate", DateUtils.formatDateTime(entity.getCreateDate()));
+        }
+        if(entity.getUpdateDate() != null){
+            put("updateDate", DateUtils.formatDateTime(entity.getUpdateDate()));
+        }
+	}
+	
+	@Override
+	public void filterChange(Office entity) {
+        filter(entity);
+	}
+	
+	@Override
+	public void filterQuery(Office entity) {
+        filter(entity);
+	}
+	
+	@Override
+	public void filterByFields(${ClassName} entity, List<String> fields) {
+		JSONObject jentity =  new JSONObject(entity);
+		/**
+		 * 过滤属性
+		 */
+		fields.removeAll(ignoreFilter());
+    	for (String key : fields) {
+            try {
+            	put(key, jentity.get(key));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/** 公共方法 ***********************************************************************************/
+	@Override 
+	public Link filterApiResourceByFields(${ClassName} entity, ${ClassName} enty) {
+		if((entity != null) && (entity.getFields() != null) && (entity.getFields().size() > 0)){
+			return new ${ClassName}ApiResource(enty, entity.getFields());
+		}else{
+			return new ${ClassName}ApiResource(enty);
+		}
+	}
+	
+	@Override
+	public Link filterApiResourceByFields(ApiUriInfo info, ${ClassName} entity, ${ClassName} enty) {
+		if((entity != null) && (entity.getFields() != null) && (entity.getFields().size() > 0)){
+			return new ${ClassName}ApiResource(info, enty, entity.getFields());
+		}else{
+			return new ${ClassName}ApiResource(info, enty);
+		}
+	}
+	
+	@Override
+	public void filterDeal(${ClassName} entity) {
+		if((entity != null) && (entity.getOper() != null)){
+        	if((entity.getOper().equals(RequestMethod.POST)) || (entity.getOper().equals(RequestMethod.PUT)) || (entity.getOper().equals(RequestMethod.PATCH))){
+	        	filterChange(entity);
+	        }else if((entity.getOper().equals(RequestMethod.GET))){
+	        	filterQuery(entity);
+	        }
+        }else{
+        	filter(entity);
+        }
+	}
+}]]>
+	</content>
+</template>

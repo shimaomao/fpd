@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.account.dao.BsAccountDao">
+    
+	<sql id="bsAccountColumns">
+		a.id AS "id",
+		a.auth_user_id AS "authUserId",
+		a.user_name AS "userName",
+		a.total_funds AS "totalFunds",
+		a.available_funds AS "availableFunds",
+		a.freezing_funds AS "freezingFunds",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.margin_amount AS "marginAmount",
+		aur.buser_id AS "buserId"
+	</sql>
+	
+	<sql id="bsAccountJoins">
+		LEFT JOIN sys_authentication_user au ON au.id = a.auth_user_id 
+		LEFT JOIN sys_authentication_user_rel aur ON aur.anuthenuser_id = a.auth_user_id
+	</sql>
+    
+	<select id="get" resultType="BsAccount">
+		SELECT 
+			<include refid="bsAccountColumns"/>
+		FROM bs_account a
+		<include refid="bsAccountJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getByAuthUser" resultType="BsAccount">
+		SELECT 
+			<include refid="bsAccountColumns"/>
+		FROM bs_account a
+		<include refid="bsAccountJoins"/>
+		WHERE a.auth_user_id = #{authUserId}
+	</select>
+	<select id="getbyOrganId" resultType="BsAccount">
+		SELECT  
+		bs.id AS "id",
+		bs.auth_user_id AS "authUserId",
+		bs.user_name AS "userName",
+		bs.total_funds AS "totalFunds",
+		bs.available_funds AS "availableFunds",
+		bs.freezing_funds AS "freezingFunds",
+		bs.create_by AS "createBy.id",
+		bs.create_date AS "createDate",
+		bs.update_by AS "updateBy.id",
+		bs.update_date AS "updateDate",
+		bs.remarks AS "remarks",
+		bs.del_flag AS "delFlag",
+		bs.margin_amount AS "marginAmount"
+	    FROM bs_account bs WHERE bs.auth_user_id=(
+        SELECT rel.anuthenuser_id from sys_authentication_user_rel rel where rel.buser_id=( 
+        SELECT  su.id FROM sys_user su where su.company_id=#{organId}  and su.create_by='1'))
+	</select>
+	
+	<select id="findList" resultType="BsAccount">
+		SELECT 
+			<include refid="bsAccountColumns"/>
+		FROM bs_account a
+		<include refid="bsAccountJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="authUserId != null and authUserId != ''">
+				AND a.auth_user_id = #{authUserId}
+			</if>
+			<if test="userName != null and userName != ''">
+				AND a.user_name = #{userName}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BsAccount">
+		SELECT 
+			<include refid="bsAccountColumns"/>
+		FROM bs_account a
+		<include refid="bsAccountJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO bs_account(
+			id,
+			auth_user_id,
+			user_name,
+			total_funds,
+			available_funds,
+			freezing_funds,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			margin_amount
+		) VALUES (
+			#{id},
+			#{authUserId},
+			#{userName},
+			#{totalFunds},
+			#{availableFunds},
+			#{freezingFunds},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{marginAmount}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE bs_account SET 	
+			auth_user_id = #{authUserId},
+			user_name = #{userName},
+			total_funds = #{totalFunds},
+			available_funds = #{availableFunds},
+			freezing_funds = #{freezingFunds},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			margin_amount = #{marginAmount}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE bs_account SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

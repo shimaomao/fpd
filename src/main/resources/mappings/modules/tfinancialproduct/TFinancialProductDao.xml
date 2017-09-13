@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.tfinancialproduct.dao.TFinancialProductDao">
+    
+	<sql id="tFinancialProductColumns">
+		a.id AS "id",
+		a.pid AS "pid",
+		a.product_name AS "productName",
+		a.product_type AS "productType",
+		a.product_detail AS "productDetail",
+		a.year_conversion AS "yearConversion",
+		a.shi_conversion AS "shiConversion",
+		a.limit_time AS "limitTime",
+		a.danwei AS "danwei",
+		a.progress AS "progress",
+		a.kemoney AS "kemoney",
+		a.zrmoney AS "zrmoney",
+		a.amount AS "amount",
+		a.releases_obje AS "releasesObje",
+		a.buy_amount_min AS "buyAmountMin",
+		a.buy_amount_max AS "buyAmountMax",
+		a.if_ransfer AS "ifRansfer",
+		a.transfer_limit AS "transferLimit",
+		a.rate_discount AS "rateDiscount",
+		a.fund_record_id AS "fundRecordId",
+		a.repay_type AS "repayType",
+		a.rzstatus AS "rzstatus",
+		a.status AS "status",
+		a.end_date AS "endDate",
+		a.publish_time AS "publishTime",
+		a.full_scale_date AS "fullScaleDate",
+		a.loan_date AS "loanDate",
+		a.start_repay_date AS "startRepayDate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.anuthenuser_id AS "anuthenuserId",
+		a.if_discount AS "ifDiscount",
+		a.organ_id AS "organId",
+		a.organ_name AS "organName",
+		a.yuqi_free AS "yuqiFree"
+	</sql>
+	
+	<sql id="tFinancialProductJoins">
+	</sql>
+    
+	<select id="get" resultType="TFinancialProduct">
+		SELECT 
+			<include refid="tFinancialProductColumns"/>
+		FROM t_financial_product a
+		<include refid="tFinancialProductJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TFinancialProduct">
+		SELECT 
+			<include refid="tFinancialProductColumns"/>
+		FROM t_financial_product a
+		<include refid="tFinancialProductJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="productName != null and productName != ''">
+				AND a.product_name = #{productName}
+			</if>
+			<if test="productType != null and productType != ''">
+				AND a.product_type = #{productType}
+			</if>
+			<if test="yearConversion != null and yearConversion != ''">
+				AND a.year_conversion = #{yearConversion}
+			</if>
+			<if test="limitTime != null and limitTime != ''">
+				AND a.limit_time = #{limitTime}
+			</if>
+			<if test="danwei != null and danwei != ''">
+				AND a.danwei = #{danwei}
+			</if>
+			<if test="organId != null and organId != ''">
+				AND a.organ_id = #{organId}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TFinancialProduct">
+		SELECT 
+			<include refid="tFinancialProductColumns"/>
+		FROM t_financial_product a
+		<include refid="tFinancialProductJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_financial_product(
+			id,
+			pid,
+			product_name,
+			product_type,
+			product_detail,
+			year_conversion,
+			shi_conversion,
+			limit_time,
+			danwei,
+			progress,
+			kemoney,
+			zrmoney,
+			amount,
+			releases_obje,
+			buy_amount_min,
+			buy_amount_max,
+			if_ransfer,
+			transfer_limit,
+			rate_discount,
+			fund_record_id,
+			repay_type,
+			rzstatus,
+			status,
+			end_date,
+			publish_time,
+			full_scale_date,
+			loan_date,
+			start_repay_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			anuthenuser_id,
+			if_discount,
+			organ_id,
+			organ_name,
+			yuqi_free
+		) VALUES (
+			#{id},
+			#{pid},
+			#{productName},
+			#{productType},
+			#{productDetail},
+			#{yearConversion},
+			#{shiConversion},
+			#{limitTime},
+			#{danwei},
+			#{progress},
+			#{kemoney},
+			#{zrmoney},
+			#{amount},
+			#{releasesObje},
+			#{buyAmountMin},
+			#{buyAmountMax},
+			#{ifRansfer},
+			#{transferLimit},
+			#{rateDiscount},
+			#{fundRecordId},
+			#{repayType},
+			#{rzstatus},
+			#{status},
+			#{endDate},
+			#{publishTime},
+			#{fullScaleDate},
+			#{loanDate},
+			#{startRepayDate},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{anuthenuserId},
+			#{ifDiscount},
+			#{organId},
+			#{organName},
+			#{yuqiFree}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_financial_product SET 	
+			pid = #{pid},
+			product_name = #{productName},
+			product_type = #{productType},
+			product_detail = #{productDetail},
+			year_conversion = #{yearConversion},
+			shi_conversion = #{shiConversion},
+			limit_time = #{limitTime},
+			danwei = #{danwei},
+			progress = #{progress},
+			kemoney = #{kemoney},
+			zrmoney = #{zrmoney},
+			amount = #{amount},
+			releases_obje = #{releasesObje},
+			buy_amount_min = #{buyAmountMin},
+			buy_amount_max = #{buyAmountMax},
+			if_ransfer = #{ifRansfer},
+			transfer_limit = #{transferLimit},
+			rate_discount = #{rateDiscount},
+			fund_record_id = #{fundRecordId},
+			repay_type = #{repayType},
+			rzstatus = #{rzstatus},
+			status = #{status},
+			end_date = #{endDate},
+			publish_time = #{publishTime},
+			full_scale_date = #{fullScaleDate},
+			loan_date = #{loanDate},
+			start_repay_date = #{startRepayDate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			anuthenuser_id = #{anuthenuserId},
+			if_discount = #{ifDiscount},
+			organ_id = #{organId},
+			organ_name = #{organName},
+			yuqi_free = #{yuqiFree}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_financial_product SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+		<insert id="insertFinaproductLoan">
+		INSERT INTO t_finproduct_contract(finaproduct_id, contract_id)
+		<foreach collection="contractids" item="param" separator=" union all ">
+          SELECT #{id}, #{param}
+			<if test="dbName != 'mssql'">
+			FROM dual
+			</if>
+      </foreach>
+	</insert>
+	
+	<update id="deleteFinaproductLoan">
+		delete from  t_finproduct_contract WHERE finaproduct_id = #{id}
+	</update>
+	
+	
+	
+	<select id="findLoanContractIds" resultType="java.lang.String"  parameterType = "java.util.List">
+		SELECT contract_id FROM t_finproduct_contract a WHERE a.finaproduct_id = #{id}
+	</select>
+	
+	<select id="getLoanContractIds" resultType="java.lang.String"  parameterType = "java.util.List">
+		SELECT contract_id FROM t_finproduct_contract
+	</select>
+	
+	
+</mapper>

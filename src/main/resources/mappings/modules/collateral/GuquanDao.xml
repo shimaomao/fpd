@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.collateral.dao.GuquanDao">
+    
+	<sql id="guquanColumns">
+		a.id AS "id",
+		a.capital AS "capital",
+		a.control AS "control",
+		a.dengji AS "dengji",
+		a.hang_type AS "hangType",
+		a.license AS "license",
+		a.mo_money AS "moMoney",
+		a.name AS "name",
+		a.net_assets AS "netAssets",
+		a.run_date AS "runDate",
+		a.run_status AS "runStatus",
+		a.zhu_date AS "zhuDate",
+		a.dizhi_contract_id AS "dizhiContractId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="guquanJoins">
+	</sql>
+    
+	<select id="get" resultType="Guquan">
+		SELECT 
+			<include refid="guquanColumns"/>
+		FROM t_guquan a
+		<include refid="guquanJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<!--add by shirf-->
+	<select id="getByPledge" resultType="Guquan">
+		SELECT 
+			<include refid="guquanColumns"/>
+		FROM t_guquan a
+		<include refid="guquanJoins"/>
+		WHERE a.dizhi_contract_id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Guquan">
+		SELECT 
+			<include refid="guquanColumns"/>
+		FROM t_guquan a
+		<include refid="guquanJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="beginCapital != null and endCapital != null and beginCapital != '' and endCapital != ''">
+				AND a.capital BETWEEN #{beginCapital} AND #{endCapital}
+			</if>
+			<if test="control != null and control != ''">
+				AND a.control LIKE 
+					<if test="dbName == 'oracle'">'%'||#{control}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{control}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{control},'%')</if>
+			</if>
+			<if test="hangType != null and hangType != ''">
+				AND a.hang_type LIKE 
+					<if test="dbName == 'oracle'">'%'||#{hangType}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{hangType}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{hangType},'%')</if>
+			</if>
+			<if test="license != null and license != ''">
+				AND a.license LIKE 
+					<if test="dbName == 'oracle'">'%'||#{license}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{license}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{license},'%')</if>
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Guquan">
+		SELECT 
+			<include refid="guquanColumns"/>
+		FROM t_guquan a
+		<include refid="guquanJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_guquan(
+			id,
+			capital,
+			control,
+			dengji,
+			hang_type,
+			license,
+			mo_money,
+			name,
+			net_assets,
+			run_date,
+			run_status,
+			zhu_date,
+			dizhi_contract_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{capital},
+			#{control},
+			#{dengji},
+			#{hangType},
+			#{license},
+			#{moMoney},
+			#{name},
+			#{netAssets},
+			#{runDate},
+			#{runStatus},
+			#{zhuDate},
+			#{dizhiContractId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_guquan SET 	
+			capital = #{capital},
+			control = #{control},
+			dengji = #{dengji},
+			hang_type = #{hangType},
+			license = #{license},
+			mo_money = #{moMoney},
+			name = #{name},
+			net_assets = #{netAssets},
+			run_date = #{runDate},
+			run_status = #{runStatus},
+			zhu_date = #{zhuDate},
+			dizhi_contract_id = #{dizhiContractId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_guquan SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

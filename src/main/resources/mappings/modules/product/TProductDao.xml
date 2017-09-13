@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.product.dao.TProductDao">
+    
+	<sql id="tProductColumns">
+		a.id AS "id",
+		a.wtypeId AS "wtypeId",
+		a.type AS "type",
+		a.name AS "name",
+		a.detail AS "detail",
+		a.risk_detail AS "riskDetail",
+		a.releases_obje AS "releasesObje",
+		a.com_sales AS "comSales",
+		a.area_id AS "area.id",
+		a.releases_way AS "releasesWay",
+		a.amount AS "amount",
+		a.amount_max AS "amountMax",
+		a.amount_min AS "amountMin",
+		a.loan_way AS "loanWay",
+		a.pay_type AS "payType",
+		a.period AS "period",
+		a.year_days AS "yearDays",
+		a.rate AS "rate",
+		a.server_fee AS "serverFee",
+		a.server_refund AS "serverRefund",
+		a.guarantee_fee AS "guaranteeFee",
+		a.guarantee_refund AS "guaranteeRefund",
+		a.mange_fee AS "mangeFee",
+		a.mange_refund AS "mangeRefund",
+		a.advance_repay AS "advanceRepay",
+		a.break_fee AS "breakFee",
+		a.late_fee AS "lateFee",
+		a.rate_discount AS "rateDiscount",
+		a.iflixi_redu AS "iflixiRedu",
+		a.grace_period AS "gracePeriod",
+		a.grace_faxi AS "graceFaxi",
+		a.yuqi_faxi AS "yuqiFaxi",
+		a.yuqi_fee AS "yuqiFee",
+		a.loan_type AS "loanType",
+		a.loan_type2 AS "loanType2",
+		a.diyalv AS "diyalv",
+		a.zhiyalv AS "zhiyalv",
+		a.credit_way AS "creditWay",
+		a.credit_period AS "creditPeriod",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a8.name AS "area.name",
+		a.min_loan_time AS "minLoanTime",
+		a.max_loan_time AS "maxLoanTime"
+	</sql>
+	
+	<sql id="tProductVoColumns">
+		a.id AS "id",
+		a.wtypeId AS "wtypeId",
+		a.type AS "type",
+		a.name AS "name",
+		a.detail AS "detail",
+		a.risk_detail AS "riskDetail",
+		a.releases_obje AS "releasesObje",
+		a.com_sales AS "comSales",
+		a.area_id AS "area.id",
+		a.releases_way AS "releasesWay",
+		a.amount AS "amount",
+		a.amount_max AS "amountMax",
+		a.amount_min AS "amountMin",
+		a.loan_way AS "loanWay",
+		a.pay_type AS "payType",
+		a.period AS "period",
+		a.year_days AS "yearDays",
+		a.rate AS "rate",
+		a.server_fee AS "serverFee",
+		a.server_refund AS "serverRefund",
+		a.guarantee_fee AS "guaranteeFee",
+		a.guarantee_refund AS "guaranteeRefund",
+		a.mange_fee AS "mangeFee",
+		a.mange_refund AS "mangeRefund",
+		a.advance_repay AS "advanceRepay",
+		a.break_fee AS "breakFee",
+		a.late_fee AS "lateFee",
+		a.rate_discount AS "rateDiscount",
+		a.iflixi_redu AS "iflixiRedu",
+		a.grace_period AS "gracePeriod",
+		a.grace_faxi AS "graceFaxi",
+		a.yuqi_faxi AS "yuqiFaxi",
+		a.yuqi_fee AS "yuqiFee",
+		a.loan_type AS "loanType",
+		a.loan_type2 AS "loanType2",
+		a.diyalv AS "diyalv",
+		a.zhiyalv AS "zhiyalv",
+		a.credit_way AS "creditWay",
+		a.credit_period AS "creditPeriod",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.min_loan_time AS "minLoanTime",
+		a.max_loan_time AS "maxLoanTime",
+		a8.name AS "area.name",
+		
+		c.id AS "cfg.id",
+		c.proc_def_id AS "cfg.procDefId",
+		c.risk_id AS "cfg.riskId",
+		c.update_by AS "cfg.updateBy.id",
+		c.create_by AS "cfg.createBy.id",
+		c.update_date AS "cfg.updateDate",
+		c.create_date AS "cfg.createDate",
+		c.remarks AS "cfg.remarks",
+		c.del_flag AS "cfg.delFlag",
+		c.organ_id AS "cfg.organId",
+		
+		b.id AS "biz.id",
+		b.biz_name AS "biz.bizName",
+		b.biz_url AS "biz.bizUrl",
+		b.biz_param AS "biz.bizParam",
+		b.create_by AS "biz.createBy.id",
+		b.create_date AS "biz.createDate",
+		b.update_by AS "biz.updateBy.id",
+		b.update_date AS "biz.updateDate",
+		b.del_flag AS "biz.delFlag",
+		b.organ_id AS "biz.organId",
+		b.type AS "biz.type",
+		
+		re.NAME_ AS "procDefName"
+	</sql>
+	
+	
+	<sql id="tProductVoJoins">
+		JOIN t_product_biz_cfg c on a.id = c.product_id
+		JOIN t_product_biz b on b.id = c.biz_id
+		LEFT JOIN ACT_RE_PROCDEF re on re.ID_ = c.proc_def_id
+		LEFT JOIN sys_area a8 ON a8.id = a.area_id
+		
+		
+	</sql>
+	
+	<sql id="tProductJoins">
+		LEFT JOIN sys_area a8 ON a8.id = a.area_id
+		LEFT JOIN sys_office o ON o.id = a.organ_id
+		LEFT JOIN sys_user u ON u.id = a.create_by
+	</sql>
+    
+	<select id="get" resultType="TProduct">
+		SELECT 
+			<include refid="tProductColumns"/>
+		FROM t_product a
+		<include refid="tProductJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getByWtypeId" resultType="TProduct">
+		SELECT 
+			<include refid="tProductColumns"/>
+		FROM t_product a
+		<include refid="tProductJoins"/>
+		WHERE a.wtypeId = #{wtypeId}
+	</select>
+
+	<select id="findByOrganId" resultType="TProduct">
+		SELECT 
+			<include refid="tProductColumns"/>
+		FROM t_product a
+		<include refid="tProductJoins"/>
+		WHERE a.organ_id = #{organId} and a.del_flag != 1
+	</select>
+	
+	<select id="findList" resultType="TProduct">
+		SELECT 
+			<include refid="tProductColumns"/>
+		FROM t_product a
+		<include refid="tProductJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="releasesObje != null and releasesObje != ''">
+				AND a.releases_obje = #{releasesObje}
+			</if>
+			<if test="area != null and area.id != null and area.id != ''">
+				AND a.area_id = #{area.id}
+			</if>
+			<if test="releasesWay != null and releasesWay != ''">
+				AND a.releases_way = #{releasesWay}
+			</if>
+			<if test="payType != null and payType != ''">
+				AND a.pay_type = #{payType}
+			</if>
+			<if test="rate != null and rate != ''">
+				AND a.rate = #{rate}
+			</if>
+			<if test="currentUser.company.id != ''">
+			   and a.organ_id = #{currentUser.company.id}
+			</if>
+			<if test="status !=null and status != ''">
+			   and a.status = #{status}
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+<!-- 		${sqlMap.dsf} -->
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TProduct">
+		SELECT 
+			<include refid="tProductColumns"/>
+		FROM t_product a
+		<include refid="tProductJoins"/>
+			<where>
+			a.del_flag =0
+		</where>	
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_product(
+			id,
+			wtypeId,
+			type,
+			name,
+			detail,
+			risk_detail,
+			releases_obje,
+			com_sales,
+			area_id,
+			releases_way,
+			amount,
+			amount_max,
+			amount_min,
+			loan_way,
+			pay_type,
+			period,
+			year_days,
+			rate,
+			server_fee,
+			server_refund,
+			guarantee_fee,
+			guarantee_refund,
+			mange_fee,
+			mange_refund,
+			advance_repay,
+			break_fee,
+			late_fee,
+			rate_discount,
+			iflixi_redu,
+			grace_period,
+			grace_faxi,
+			yuqi_faxi,
+			yuqi_fee,
+			loan_type,
+			loan_type2,
+			diyalv,
+			zhiyalv,
+			credit_way,
+			credit_period,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id,
+			min_loan_time,
+			max_loan_time
+		) VALUES (
+			#{id},
+			#{wtypeId},
+			#{type},
+			#{name},
+			#{detail},
+			#{riskDetail},
+			#{releasesObje},
+			#{comSales},
+			#{area.id},
+			#{releasesWay},
+			#{amount},
+			#{amountMax},
+			#{amountMin},
+			#{loanWay},
+			#{payType},
+			#{period},
+			#{yearDays},
+			#{rate},
+			#{serverFee},
+			#{serverRefund},
+			#{guaranteeFee},
+			#{guaranteeRefund},
+			#{mangeFee},
+			#{mangeRefund},
+			#{advanceRepay},
+			#{breakFee},
+			#{lateFee},
+			#{rateDiscount},
+			#{iflixiRedu},
+			#{gracePeriod},
+			#{graceFaxi},
+			#{yuqiFaxi},
+			#{yuqiFee},
+			#{loanType},
+			#{loanType2},
+			#{diyalv},
+			#{zhiyalv},
+			#{creditWay},
+			#{creditPeriod},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId},
+			#{minLoanTime},
+			#{maxLoanTime}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_product SET 	
+			type = #{type},
+			wtypeId = #{wtypeId},
+			name = #{name},
+			detail = #{detail},
+			risk_detail = #{riskDetail},
+			releases_obje = #{releasesObje},
+			com_sales = #{comSales},
+			area_id = #{area.id},
+			releases_way = #{releasesWay},
+			amount = #{amount},
+			amount_max = #{amountMax},
+			amount_min = #{amountMin},
+			loan_way = #{loanWay},
+			pay_type = #{payType},
+			period = #{period},
+			year_days = #{yearDays},
+			rate = #{rate},
+			server_fee = #{serverFee},
+			server_refund = #{serverRefund},
+			guarantee_fee = #{guaranteeFee},
+			guarantee_refund = #{guaranteeRefund},
+			mange_fee = #{mangeFee},
+			mange_refund = #{mangeRefund},
+			advance_repay = #{advanceRepay},
+			break_fee = #{breakFee},
+			late_fee = #{lateFee},
+			rate_discount = #{rateDiscount},
+			iflixi_redu = #{iflixiRedu},
+			grace_period = #{gracePeriod},
+			grace_faxi = #{graceFaxi},
+			yuqi_faxi = #{yuqiFaxi},
+			yuqi_fee = #{yuqiFee},
+			loan_type = #{loanType},
+			loan_type2 = #{loanType2},
+			diyalv = #{diyalv},
+			zhiyalv = #{zhiyalv},
+			credit_way = #{creditWay},
+			credit_period = #{creditPeriod},
+			status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			min_loan_time = #{minLoanTime},
+			max_loan_time = #{maxLoanTime}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_product SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	
+	<select id="findListVo" resultType="TProductVo">
+		SELECT 
+			<include refid="tProductVoColumns"/>
+		FROM t_product a
+		<include refid="tProductVoJoins"/>
+		<where>
+			1 = 1 AND a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="releasesObje != null and releasesObje != ''">
+				AND a.releases_obje = #{releasesObje}
+			</if>
+			<if test="area != null and area.id != null and area.id != ''">
+				AND a.area_id = #{area.id}
+			</if>
+			<if test="releasesWay != null and releasesWay != ''">
+				AND a.releases_way = #{releasesWay}
+			</if>
+			<if test="payType != null and payType != ''">
+				AND a.pay_type = #{payType}
+			</if>
+			<if test="rate != null and rate != ''">
+				AND a.rate = #{rate}
+			</if>
+			<if test="currentUser.company.id != ''">
+			   and a.organ_id = #{currentUser.company.id}
+			</if>
+			<if test="status !=null and status != ''">
+			   and a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY a.name, ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.name, a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+</mapper>

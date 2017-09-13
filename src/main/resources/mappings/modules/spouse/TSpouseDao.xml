@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.spouse.dao.TSpouseDao">
+    
+	<sql id="tSpouseColumns">
+		a.id AS "id",
+		a.name AS "pouseName",
+		a.card_type AS "cardType",
+		a.card_num AS "pouseCardNum",
+		a.education AS "pouseEducation",
+		a.units AS "units",
+		a.month_income AS "pouseMonthIncome",
+		a.units_phone AS "unitsPhone",
+		a.units_address AS "unitsAddress",
+		a.position AS "position",
+		a.political_status AS "politicalStatus",
+		a.phone AS "phone",
+		a.address AS "address",
+		a.customer_type AS "customerType",
+		a.customer_id AS "customerId",
+		a.customer_name AS "customerName",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+	    a.birthday	AS "birthday",
+		a.live_time    AS "liveTime",
+		a.industry    AS "industry",
+		a.unit_nature	AS "unitNature",
+		a.unit_size	AS "unitSize",
+		a.unit_time	AS "unitTime",
+		a.political	AS "political"
+	</sql>
+	
+	<sql id="tSpouseJoins">
+	</sql>
+    
+	<select id="get" resultType="TSpouse">
+		SELECT 
+			<include refid="tSpouseColumns"/>
+		FROM t_spouse a
+		<include refid="tSpouseJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TSpouse">
+		SELECT 
+			<include refid="tSpouseColumns"/>
+		FROM t_spouse a
+		<include refid="tSpouseJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TSpouse">
+		SELECT 
+			<include refid="tSpouseColumns"/>
+		FROM t_spouse a
+		<include refid="tSpouseJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_spouse(
+			id,
+			name,
+			card_type,
+			card_num,
+			education,
+			units,
+			month_income,
+			units_phone,
+			units_address,
+			position,
+			political_status,
+			phone,
+			address,
+			customer_type,
+			customer_id,
+			customer_name,
+			del_flag,
+			organ_id,
+			birthday,
+			live_time,
+			industry,
+			unit_nature,
+			unit_size,
+			unit_time,
+			political
+		) VALUES (
+			#{id},
+			#{pouseName},
+			#{cardType},
+			#{pouseCardNum},
+			#{pouseEducation},
+			#{units},
+			#{pouseMonthIncome},
+			#{unitsPhone},
+			#{unitsAddress},
+			#{position},
+			#{politicalStatus},
+			#{phone},
+			#{address},
+			#{customerType},
+            #{customerId},
+			#{customerName},
+			#{delFlag},
+			#{organId},
+			#{birthday},
+			#{liveTime},
+			#{industry},
+			#{unitNature},
+			#{unitSize},
+			#{unitTime},
+			#{political}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_spouse SET 	
+			name = #{pouseName},
+			card_type = #{cardType},
+			card_num = #{pouseCardNum},
+			education = #{pouseEducation},
+			units = #{units},
+			month_income = #{pouseMonthIncome},
+			units_phone = #{unitsPhone},
+			units_address = #{unitsAddress},
+			position = #{position},
+			political_status = #{politicalStatus},
+			phone = #{phone},
+			address = #{address},
+			customer_type = #{customerType},
+			customer_id =  #{customerId},
+			customer_name = #{customerName},
+			birthday = #{birthday},
+			live_time = #{liveTime},
+			industry = #{industry},
+			unit_nature = #{unitNature},
+			unit_size = #{unitSize},
+			unit_time = #{unitTime},
+			political = #{political},
+			organ_id = #{organId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_spouse SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

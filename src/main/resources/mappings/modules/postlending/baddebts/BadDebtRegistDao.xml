@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.postlending.dao.baddebts.BadDebtRegistDao">
+    
+	<sql id="badDebtRegistColumns">
+		a.id AS "id",
+		a.proc_ins_id AS "procInsId",
+		a.loan_contract_id AS "loanContractId",
+		a.register_date AS "registerDate",
+		a.regist_name AS "registName",
+		a.department AS "department",
+		a.loss_money AS "lossMoney",
+		a.gained_money AS "gainedMoney",
+		a.loss_interest AS "lossInterest",
+		a.gained_interest AS "gainedInterest",
+		a.current_info AS "currentInfo",
+		a.reason AS "reason",
+		a.exceed_time AS "exceedTime",
+		a.info AS "info",
+		a.debt_collecter AS "debtCollecter",
+		a.phone AS "phone",
+		a.last_repay AS "lastRepay",
+		a.approval_statis AS "approvalStatis",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="tLoanContractColumns">
+		lc.id AS "loanContract.id",
+		lc.apply_date AS "loanContract.applyDate",
+		lc.contract_number AS "loanContract.contractNumber",
+		lc.customer_id AS "loanContract.customerId",
+		lc.customer_name AS "loanContract.customerName",
+		lc.customer_type AS "loanContract.customerType",
+		lc.five_level AS "loanContract.fiveLevel",
+		lc.is_extend AS "loanContract.isExtend",
+		lc.loan_amount AS "loanContract.loanAmount",
+		lc.loan_date AS "loanContract.loanDate",
+		lc.loan_period AS "loanContract.loanPeriod",
+		lc.loan_rate AS "loanContract.loanRate",
+		lc.loan_rate_type AS "loanContract.loanRateType",
+		lc.pay_principal_date AS "loanContract.payPrincipalDate",
+		lc.loan_type AS "loanContract.loanType",
+		lc.max_number AS "loanContract.maxNumber",
+		lc.pay_day AS "loanContract.payDay",
+		lc.pay_type AS "loanContract.payType",
+		lc.period_type AS "loanContract.periodType",
+		lc.sign_date AS "loanContract.signDate",
+		lc.status AS "loanContract.status",
+		lc.product_id AS "loanContract.productId",
+		lc.purpose_id AS "loanContract.purposeId",
+		lc.area_id AS "loanContract.area.id",
+		lc.industry_id AS "loanContract.industryId",
+		lc.gathering_bank AS "loanContract.gatheringBank",
+		lc.gathering_name AS "loanContract.gatheringName",
+		lc.gathering_number AS "loanContract.gatheringNumber",
+		lc.guarant_number AS "loanContract.guarantNumber",
+		lc.pay_options AS "loanContract.payOptions",
+		lc.pay_day_type AS "loanContract.payDayType",
+		lc.create_by AS "loanContract.createBy.id",
+		lc.create_date AS "loanContract.createDate",
+		lc.update_by AS "loanContract.updateBy.id",
+		lc.update_date AS "loanContract.updateDate",
+		lc.remarks AS "loanContract.remarks",
+		lc.del_flag AS "loanContract.delFlag",
+		lc.organ_id AS "loanContract.organId",
+		lc.server_fee AS "loanContract.serverFee",	 
+		lc.mange_fee AS "loanContract.mangeFee",	 	 
+		lc.if_advance AS "loanContract.ifAdvance",		
+		lc.advance_damages AS "loanContract.advanceDamages",	
+		lc.late_fee AS "loanContract.lateFee",			
+		lc.rate_discont AS "loanContract.rateDiscont",		 
+		lc.if_interest_relief AS "loanContract.ifInterestRelief",  
+		lc.grace_period AS "loanContract.gracePeriod",		
+		lc.grace_period_penalty AS "loanContract.gracePeriodPenalty",
+		lc.late_penalty AS "loanContract.latePenalty",		 
+		lc.late_penalty_fee AS "loanContract.latePenaltyFee"	
+	</sql>
+	
+	<sql id="badDebtRegistJoins">
+		LEFT JOIN t_loan_contract lc ON lc.id = a.loan_contract_id
+	</sql>
+    
+	<select id="get" resultType="BadDebtRegist">
+		SELECT 
+			<include refid="badDebtRegistColumns"/>
+		FROM t_bad_debt_regist a
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getByProcInsId" resultType="BadDebtRegist">
+		SELECT 
+			<include refid="badDebtRegistColumns"/>
+		FROM t_bad_debt_regist a
+		
+		WHERE a.proc_ins_id = #{procInsId}
+	</select>
+	
+	<select id="findList" resultType="BadDebtRegist">
+		SELECT 
+			<include refid="badDebtRegistColumns"/>,
+			<include refid="tLoanContractColumns"/>
+		FROM t_bad_debt_regist a
+		<include refid="badDebtRegistJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="loanContractId != null and loanContractId != ''">
+				AND a.loan_contract_id = #{loanContractId}
+			</if>
+			<if test="approvalStatis != null and approvalStatis != ''">
+				AND a.approval_statis = #{approvalStatis}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BadDebtRegist">
+		SELECT 
+			<include refid="badDebtRegistColumns"/>
+		FROM t_bad_debt_regist a
+		
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_bad_debt_regist(
+			id,
+			loan_contract_id,
+			register_date,
+			regist_name,
+			department,
+			loss_money,
+			gained_money,
+			loss_interest,
+			gained_interest,
+			current_info,
+			reason,
+			exceed_time,
+			info,
+			debt_collecter,
+			phone,
+			last_repay,
+			approval_statis,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{loanContractId},
+			#{registerDate},
+			#{registName},
+			#{department},
+			#{lossMoney},
+			#{gainedMoney},
+			#{lossInterest},
+			#{gainedInterest},
+			#{currentInfo},
+			#{reason},
+			#{exceedTime},
+			#{info},
+			#{debtCollecter},
+			#{phone},
+			#{lastRepay},
+			#{approvalStatis},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_bad_debt_regist SET
+			loan_contract_id = #{loanContractId},
+			register_date = #{registerDate},
+			regist_name = #{registName},
+			department = #{department},
+			loss_money = #{lossMoney},
+			gained_money = #{gainedMoney},
+			loss_interest = #{lossInterest},
+			gained_interest = #{gainedInterest},
+			current_info = #{currentInfo},
+			reason = #{reason},
+			exceed_time = #{exceedTime},
+			info = #{info},
+			debt_collecter = #{debtCollecter},
+			phone = #{phone},
+			last_repay = #{lastRepay},
+			approval_statis = #{approvalStatis},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_bad_debt_regist SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,72 @@
+ [
+	 {
+		 "zjl":[
+		 	{
+			    "remarks": "自动初始化租户",
+			    "name": "总经理",
+			    "loginName": "zjl",
+			    "password": ""
+		    }
+		 ]
+	 },
+	 {
+		 "khjl":[
+		 	{
+			    "remarks": "自动初始化用户",
+			    "name": "客户经理",
+			    "loginName": "khjl",
+			    "password": ""
+		    }
+		 ]
+	 },
+	 {
+		 "khzj":[
+		 	{
+			    "remarks": "自动初始化用户",
+			    "name": "客户总监",
+			    "loginName": "khzj",
+			    "password": ""
+		    }
+		 ]
+	 },
+	 {
+		 "cwjl":[
+		 	{
+			    "remarks": "自动初始化用户",
+			    "name": "财务经理",
+			    "loginName": "cwjl",
+			    "password": ""
+		    }
+		 ]
+	 },
+	 {
+		 "cwzj":[
+		 	{
+			    "remarks": "自动初始化用户",
+			    "name": "财务总监",
+			    "loginName": "cwzj",
+			    "password": ""
+		    }
+		 ]
+	 },
+	 {
+		 "fkjl":[
+		 	{
+			    "remarks": "自动初始化用户",
+			    "name": "风控经理",
+			    "loginName": "fkjl",
+			    "password": ""
+		    }
+		 ]
+	 },
+	 {
+		 "fkzj":[
+		 	{
+			    "remarks": "自动初始化用户",
+			    "name": "风控总监",
+			    "loginName": "fkzj",
+			    "password": ""
+		    }
+		 ]
+	 }
+ ]

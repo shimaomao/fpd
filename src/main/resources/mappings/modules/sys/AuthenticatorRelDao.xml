@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.sys.dao.AuthenticatorRelDao">
+    
+	<sql id="authenColumns">
+	    a.id,
+		a.anuthenuser_id AS "anuthenuserId",
+		a.wuser_id AS "wuserId",
+		a.buser_id AS "buserId",
+		a.fuser_id AS "fuserId",
+		a.remarks,
+		<!-- a.create_by AS "createBy.id", -->
+		a.create_date,
+		<!-- a.update_by AS "updateBy.id", -->
+		a.update_date,
+		a.del_flag
+	</sql>
+	
+	<sql id="authenJoins">
+    </sql>
+    
+	<select id="get" resultType="AuthenticationUserRel">
+		SELECT
+			<include refid="authenColumns"/>
+		FROM sys_authentication_user_rel a
+		<include refid="authenJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findAuthByBuserId" resultType="AuthenticationUserRel">
+		SELECT
+			<include refid="authenColumns"/>
+		FROM sys_authentication_user_rel a
+		where a.buser_id = #{buserId}
+	</select>
+    
+	
+
+	<select id="getBid" resultType="AuthenticationUserRel">
+		SELECT
+			<include refid="authenColumns"/>
+		FROM sys_authentication_user_rel a
+		<include refid="authenJoins"/>
+		WHERE a.buser_id = #{bid}
+	</select>
+	
+	<select id="findRelByAnuthenuserId" resultType="AuthenticationUserRel">
+		SELECT
+			<include refid="authenColumns"/>
+		FROM sys_authentication_user_rel a
+		<include refid="authenJoins"/>
+		WHERE a.anuthenuser_id= #{anuthenuserId}
+	</select>
+
+
+	
+	
+	<insert id="insert">
+		INSERT INTO sys_authentication_user_rel(
+		    id,
+			anuthenuser_id,
+			wuser_id,
+			buser_id,
+			fuser_id,
+			<!-- create_by AS "createBy.id", -->
+			create_date,
+			<!-- update_by AS "updateBy.id", -->
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+		    #{id},
+			#{anuthenuserId},
+			#{wuserId},
+			#{buserId},
+			#{fuserId},
+			<!-- #{createBy.id},  -->
+			#{createDate}, 
+			<!-- #{updateBy.id},  -->
+			#{updateDate}, 
+			#{remarks}, 
+			#{delFlag}
+		)
+	</insert>
+	
+	
+	
+	
+	<update id="update">
+		UPDATE sys_authentication_user_rel SET 
+			anuthenuser_id = #{anuthenuserId},
+			wuser_id = #{wuserId},
+			buser_id = #{buserId},
+			fuser_id = #{fuserId},
+			update_date = #{updateDate}, 
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sys_authentication_user_rel SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+</mapper>

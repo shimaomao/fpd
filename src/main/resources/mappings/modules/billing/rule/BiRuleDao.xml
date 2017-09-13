@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.billing.dao.rule.BiRuleDao">
+    
+	<sql id="biRuleColumns">
+		a.id AS "id",
+		a.price_id AS "price.id",
+		a.name AS "name",
+		a.number AS "number",
+		a.waring_number AS "waringNumber",
+		a.rate AS "rate",
+		a.average_price AS "averagePrice",
+		a.total_price AS "totalPrice",
+		a.total_time AS "totalTime",
+		a.unit AS "unit",
+		a.unit_val AS "unitVal",
+		a.type AS "type",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		
+		c.element_id AS "price.element.id",
+		c.price AS "price.price",
+		c.unit AS "price.unit",
+		c.unit_val AS "price.unitVal",
+		c.type AS "price.type",
+		c.create_by AS "price.createBy.id",
+		c.create_date AS "price.createDate",
+		c.update_by AS "price.updateBy.id",
+		c.update_date AS "price.updateDate",
+		c.remarks AS "price.remarks",
+		c.del_flag AS "price.delFlag",
+		c.organ_id AS "price.organId",
+		
+		b.name AS "price.element.name",
+		b.pid AS "price.element.element.id",
+		b.type AS "price.element.type",
+		b.type_id AS "price.element.typeId",
+		b.create_by AS "price.element.createBy.id",
+		b.create_date AS "price.element.createDate",
+		b.update_by AS "price.element.updateBy.id",
+		b.update_date AS "price.element.updateDate",
+		b.remarks AS "price.element.remarks",
+		b.del_flag AS "price.element.delFlag",
+		b.organ_id AS "price.element.organId"
+	</sql>
+	
+	<sql id="biRuleJoins">
+		LEFT JOIN bi_price c ON c.id = a.price_id
+		LEFT JOIN bi_element b ON b.id = c.element_id
+	</sql>
+    
+	<select id="get" resultType="BiRule">
+		SELECT 
+			<include refid="biRuleColumns"/>
+		FROM bi_rule a
+		<include refid="biRuleJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BiRule">
+		SELECT 
+			<include refid="biRuleColumns"/>
+		FROM bi_rule a
+		<include refid="biRuleJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="unit != null and unit != ''">
+				AND a.unit = #{unit}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name = #{name}
+			</if>
+			<if test="price != null">
+				<if test="type != null and type != ''">
+					AND a.type = #{type}
+				</if>
+				<if test="price.element != null">
+					<if test="price.element.name != null and price.element.name != ''">
+						AND b.name LIKE 
+							<if test="dbName == 'oracle'">'%'||#{price.element.name}||'%'</if>
+							<if test="dbName == 'mssql'">'%'+#{price.element.name}+'%'</if>
+							<if test="dbName == 'mysql'">concat('%',#{price.element.name},'%')</if>
+					</if>
+				</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY b.pid DESC, b.id DESC, a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BiRule">
+		SELECT 
+			<include refid="biRuleColumns"/>
+		FROM bi_rule a
+		<include refid="biRuleJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="price != null">
+				<if test="name != null and name != ''">
+					AND a.name = #{name}
+				</if>
+				<if test="unit != null and unit != ''">
+					AND a.unit = #{unit}
+				</if>
+				<if test="type != null and type != ''">
+					AND a.type = #{type}
+				</if>
+				<if test="price.element != null">
+					<if test="price.element.name != null and price.element.name != ''">
+						AND b.name LIKE 
+							<if test="dbName == 'oracle'">'%'||#{price.element.name}||'%'</if>
+							<if test="dbName == 'mssql'">'%'+#{price.element.name}+'%'</if>
+							<if test="dbName == 'mysql'">concat('%',#{price.element.name},'%')</if>
+					</if>
+				</if>
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY b.pid DESC, b.id DESC, a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO bi_rule(
+			id,
+			price_id,
+			number,
+			waring_number,
+			name,
+			rate,
+			average_price,
+			total_price,
+			total_time,
+			unit_val,
+			unit,
+			type,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{price.id},
+			#{number},
+			#{waringNumber},
+			#{name},
+			#{rate},
+			#{averagePrice},
+			#{totalPrice},
+			#{totalTime},
+			#{unitVal},
+			#{unit},
+			#{type},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE bi_rule SET 	
+			price_id = #{price.id},
+			number = #{number},
+			waring_number = #{waringNumber},
+			name = #{name},
+			rate = #{rate},
+			average_price = #{averagePrice},
+			total_price = #{totalPrice},
+			total_time = #{totalTime},
+			unit_val = #{unitVal},
+			unit = #{unit},
+			type = #{type},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE bi_rule SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

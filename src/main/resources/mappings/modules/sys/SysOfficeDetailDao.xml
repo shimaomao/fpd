@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.sys.dao.SysOfficeDetailDao">
+    
+	<sql id="sysOfficeDetailColumns">
+		a.id AS "id",
+		a.pid AS "pid",
+		a.address AS "address",
+		a.fan_wei AS "fanWei",
+		a.fang_fan AS "fangFan",
+		a.flag AS "flag",
+		a.lic_num_scan AS "licNumScan",
+		a.lic_num_scan_path AS "licNumScanPath",
+		a.license_numbers AS "licenseNumbers",
+		a.mian_ji AS "mianJi",
+		a.mu_di AS "muDi",
+		a.name AS "name",
+		a.org_code AS "orgCode",
+		a.org_code_scan AS "orgCodeScan",
+		a.org_code_scan_path AS "orgCodeScanPath",
+		a.org_form AS "orgForm",
+		a.protocol AS "protocol",
+		a.protocol_path AS "protocolPath",
+		a.register_money AS "registerMoney",
+		a.type AS "type",
+		a.di_tax_code AS "diTaxCode",
+		a.di_tax_scan AS "diTaxScan",
+		a.di_tax_scan_path AS "diTaxScanPath",
+		a.guo_tax_code AS "guoTaxCode",
+		a.guo_tax_scan AS "guoTaxScan",
+		a.guo_tax_scan_path AS "guoTaxScanPath",
+		a.open_date AS "openDate",
+		a.sign_date AS "signDate",
+		a.di_tax_scan_rename AS "diTaxScanRename",
+		a.guo_tax_scan_rename AS "guoTaxScanRename",
+		a.lic_num_scan_rename AS "licNumScanRename",
+		a.org_code_scan_rename AS "orgCodeScanRename",
+		a.protocol_rename AS "protocolRename",
+		a.found_date AS "foundDate",
+		a.juan_money AS "juanMoney",
+		a.faren AS "faren",
+		a.source_flag AS "sourceFlag",
+		a.source_status AS "sourceStatus",
+		a.nif_id AS "nifId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.credit_Num AS "creditNum"
+	</sql>
+	
+	<sql id="sysOfficeDetailJoins">
+	</sql>
+    
+	<select id="get" resultType="SysOfficeDetail">
+		SELECT 
+			<include refid="sysOfficeDetailColumns"/>
+		FROM sys_office_detail a
+		<include refid="sysOfficeDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getByField" resultType="SysOfficeDetail">
+		SELECT 
+			<include refid="sysOfficeDetailColumns"/>
+		FROM sys_office_detail a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			 <if test="pid != null" >
+		        AND a.pid = #{pid}
+		     </if>
+		</where>
+	</select>
+	
+	<select id="getByPid" resultType="SysOfficeDetail" parameterType="java.lang.String" >
+    select 
+    <include refid="sysOfficeDetailColumns" />
+    from sys_office_detail a
+    where a.pid = #{pid}
+  </select>
+	
+	<select id="findList" resultType="SysOfficeDetail">
+		SELECT 
+			<include refid="sysOfficeDetailColumns"/>
+		FROM sys_office_detail a
+		<include refid="sysOfficeDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SysOfficeDetail">
+		SELECT 
+			<include refid="sysOfficeDetailColumns"/>
+		FROM sys_office_detail a
+		<include refid="sysOfficeDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_office_detail(
+			id,
+			pid,
+			address,
+			fan_wei,
+			fang_fan,
+			flag,
+			lic_num_scan,
+			lic_num_scan_path,
+			license_numbers,
+			mian_ji,
+			mu_di,
+			name,
+			org_code,
+			org_code_scan,
+			org_code_scan_path,
+			org_form,
+			protocol,
+			protocol_path,
+			register_money,
+			type,
+			di_tax_code,
+			di_tax_scan,
+			di_tax_scan_path,
+			guo_tax_code,
+			guo_tax_scan,
+			guo_tax_scan_path,
+			open_date,
+			sign_date,
+			di_tax_scan_rename,
+			guo_tax_scan_rename,
+			lic_num_scan_rename,
+			org_code_scan_rename,
+			protocol_rename,
+			found_date,
+			juan_money,
+			faren,
+			source_flag,
+			source_status,
+			nif_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			credit_Num
+		) VALUES (
+			#{id},
+			#{pid},
+			#{address},
+			#{fanWei},
+			#{fangFan},
+			#{flag},
+			#{licNumScan},
+			#{licNumScanPath},
+			#{licenseNumbers},
+			#{mianJi},
+			#{muDi},
+			#{name},
+			#{orgCode},
+			#{orgCodeScan},
+			#{orgCodeScanPath},
+			#{orgForm},
+			#{protocol},
+			#{protocolPath},
+			#{registerMoney},
+			#{type},
+			#{diTaxCode},
+			#{diTaxScan},
+			#{diTaxScanPath},
+			#{guoTaxCode},
+			#{guoTaxScan},
+			#{guoTaxScanPath},
+			#{openDate},
+			#{signDate},
+			#{diTaxScanRename},
+			#{guoTaxScanRename},
+			#{licNumScanRename},
+			#{orgCodeScanRename},
+			#{protocolRename},
+			#{foundDate},
+			#{juanMoney},
+			#{faren},
+			#{sourceFlag},
+			#{sourceStatus},
+			#{nifId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{creditNum}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_office_detail SET 	
+			pid = #{pid},
+			address = #{address},
+			fan_wei = #{fanWei},
+			fang_fan = #{fangFan},
+			flag = #{flag},
+			lic_num_scan = #{licNumScan},
+			lic_num_scan_path = #{licNumScanPath},
+			license_numbers = #{licenseNumbers},
+			mian_ji = #{mianJi},
+			mu_di = #{muDi},
+			name = #{name},
+			org_code = #{orgCode},
+			org_code_scan = #{orgCodeScan},
+			org_code_scan_path = #{orgCodeScanPath},
+			org_form = #{orgForm},
+			protocol = #{protocol},
+			protocol_path = #{protocolPath},
+			register_money = #{registerMoney},
+			type = #{type},
+			di_tax_code = #{diTaxCode},
+			di_tax_scan = #{diTaxScan},
+			di_tax_scan_path = #{diTaxScanPath},
+			guo_tax_code = #{guoTaxCode},
+			guo_tax_scan = #{guoTaxScan},
+			guo_tax_scan_path = #{guoTaxScanPath},
+			open_date = #{openDate},
+			sign_date = #{signDate},
+			di_tax_scan_rename = #{diTaxScanRename},
+			guo_tax_scan_rename = #{guoTaxScanRename},
+			lic_num_scan_rename = #{licNumScanRename},
+			org_code_scan_rename = #{orgCodeScanRename},
+			protocol_rename = #{protocolRename},
+			found_date = #{foundDate},
+			juan_money = #{juanMoney},
+			faren = #{faren},
+			source_flag = #{sourceFlag},
+			source_status = #{sourceStatus},
+			nif_id = #{nifId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			credit_Num = #{creditNum}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sys_office_detail SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

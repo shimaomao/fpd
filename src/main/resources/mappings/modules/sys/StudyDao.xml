@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.sys.dao.StudyDao">
+    
+	<sql id="studyColumns">
+		a.id AS "id",
+		a.job AS "job",
+		a.professional AS "professional",
+		a.school AS "school",
+		a.study_date AS "studyDate",
+		a.employ_id AS "employId",
+		a.sign_date AS "signDate",
+		a.study_end_date AS "studyEndDate",
+		a.source_flag AS "sourceFlag",
+		a.source_status AS "sourceStatus",
+		a.nif_id AS "nifId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="studyJoins">
+	</sql>
+    
+	<select id="get" resultType="Study">
+		SELECT 
+			<include refid="studyColumns"/>
+		FROM sys_office_study a
+		<include refid="studyJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Study">
+		SELECT 
+			<include refid="studyColumns"/>
+		FROM sys_office_study a
+		<include refid="studyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="employId != null and employId != ''">
+				AND  a.employ_id = #{employId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Study">
+		SELECT 
+			<include refid="studyColumns"/>
+		FROM sys_office_study a
+		<include refid="studyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_office_study(
+			id,
+			job,
+			professional,
+			school,
+			study_date,
+			employ_id,
+			sign_date,
+			study_end_date,
+			source_flag,
+			source_status,
+			nif_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{job},
+			#{professional},
+			#{school},
+			#{studyDate},
+			#{employId},
+			#{signDate},
+			#{studyEndDate},
+			#{sourceFlag},
+			#{sourceStatus},
+			#{nifId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_office_study SET 	
+			job = #{job},
+			professional = #{professional},
+			school = #{school},
+			study_date = #{studyDate},
+			employ_id = #{employId},
+			sign_date = #{signDate},
+			study_end_date = #{studyEndDate},
+			source_flag = #{sourceFlag},
+			source_status = #{sourceStatus},
+			nif_id = #{nifId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sys_office_study SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

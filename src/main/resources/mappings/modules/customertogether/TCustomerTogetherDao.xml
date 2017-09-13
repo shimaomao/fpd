@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.customertogether.dao.TCustomerTogetherDao">
+    
+	<sql id="tCustomerTogetherColumns">
+		a.id AS "id",
+		a.customer_type AS "customerType",
+		a.customer_id AS "customerId",
+		a.customer_name AS "customerName",
+		a.together_money AS "togetherMoney",
+		a.loan_money AS "loanMoney",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.main_employeeid AS "mainEmployeeid",
+		a.main_companyid AS "mainCompanyid"
+	</sql>
+	
+	<sql id="tCustomerTogetherJoins">
+	</sql>
+    
+	<select id="get" resultType="TCustomerTogether">
+		SELECT 
+			<include refid="tCustomerTogetherColumns"/>
+		FROM t_customer_together a
+		<include refid="tCustomerTogetherJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TCustomerTogether">
+		SELECT 
+			<include refid="tCustomerTogetherColumns"/>
+		FROM t_customer_together a
+		<include refid="tCustomerTogetherJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<if test="mainEmployeeid != null and mainEmployeeid != ''">
+				AND a.main_employeeid = #{mainEmployeeid}
+		</if>
+		<if test="mainCompanyid != null and mainCompanyid != ''">
+			AND a.main_companyid = #{mainCompanyid}
+		</if>
+		<if test="customerName != null and customerName != ''">
+			AND a.customer_name = #{customerName}
+		</if>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TCustomerTogether">
+		SELECT 
+			<include refid="tCustomerTogetherColumns"/>
+		FROM t_customer_together a
+		<include refid="tCustomerTogetherJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_customer_together(
+			id,
+			customer_type,
+			customer_id,
+			customer_name,
+			together_money,
+			loan_money,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			main_employeeid,
+			main_companyid
+		) VALUES (
+			#{id},
+			#{customerType},
+			#{customerId},
+			#{customerName},
+			#{togetherMoney},
+			#{loanMoney},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{mainEmployeeid},
+			#{mainCompanyid}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_customer_together SET 	
+			customer_type = #{customerType},
+			customer_id = #{customerId},
+			customer_name = #{customerName},
+			together_money = #{togetherMoney},
+			loan_money = #{loanMoney},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_customer_together SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

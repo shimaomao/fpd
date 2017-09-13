@@ -1,0 +1,31 @@
+/* Generic Utility */
+.hide {
+	position:absolute;
+	top:-9999px;
+	left:-9999px
+}
+/* Specific to example two */
+
+#tablist .list-wrap {
+}
+#tablist .nav {
+	overflow:hidden
+}
+#tablist .nav li {
+	margin:0;
+	padding:0;
+	float:left;
+	width:50%;
+}
+#tablist .nav li a {
+	display:block;
+	text-align:center;
+	font-size:24px;
+	color:#FFF;
+	line-height:60px;
+	text-decoration:none;
+	background:url(../images/translucent_bg.png) 0 0 repeat;
+}
+#tablist li a.current {
+	background:none;
+}

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.gen.dao.GenSchemeDao">
+    
+    <sql id="genSchemeColumns">
+		a.*,
+		a.gen_table_id AS "genTable.id",
+		
+		b.name AS "genTable.name", 
+		b.is_by AS "genTable.isBy", 
+		b.is_api AS "genTable.isApi", 
+		b.is_batch AS "genTable.isBatch", 
+		b.comments AS "genTable.comments", 
+		b.class_name AS "genTable.className", 
+		b.parent_table AS "genTable.parentTable", 
+		b.parent_table_fk AS "genTable.parentTableFk", 
+		b.create_by AS "genTable.createBy", 
+		b.create_date AS "genTable.createDate", 
+		b.update_by AS "genTable.updateBy", 
+		b.update_date AS "genTable.updateDate", 
+		b.remarks AS "genTable.remarks", 
+		b.del_flag AS "genTable.delFlag"
+	</sql>
+	
+	<sql id="genSchemeJoins">
+		LEFT JOIN gen_table b on b.id = a.gen_table_id
+	
+		
+    </sql>
+    
+    <select id="get" resultType="GenScheme">
+		SELECT 
+			<include refid="genSchemeColumns"/>
+		FROM gen_scheme a
+		<include refid="genSchemeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="GenScheme">
+		SELECT 
+			<include refid="genSchemeColumns"/>
+		FROM gen_scheme a
+		<include refid="genSchemeJoins"/>
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL} 
+		<if test="name != null and name != ''">
+			AND a.name LIKE 
+				<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+		</if>
+		<if test="category != null and category != ''">
+			AND a.category LIKE 
+				<if test="dbName == 'oracle'">'%'||#{category}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{category}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{category},'%')</if>
+		</if>
+		<if test="genTable != null">
+			<if test="genTable.isApi != null and genTable.isApi != ''">
+			AND b.is_api = #{genTable.isApi}
+			</if>
+		</if>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		
+		ORDER BY a.category ASC, a.update_date DESC
+	</select>
+
+	<select id="findListByCategory" resultType="GenScheme">
+		SELECT 
+			<include refid="genSchemeColumns"/>
+		FROM gen_scheme a
+		<include refid="genSchemeJoins"/>
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND a.category = #{category}
+		<if test="name != null and name != ''">
+			AND a.name LIKE 
+				<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+		</if>
+		<if test="genTable != null">
+			<if test="genTable.isApi != null and genTable.isApi != ''">
+			AND b.is_api = #{genTable.isApi}
+			</if>
+		</if>
+		ORDER BY a.category ASC, a.update_date DESC
+	</select>
+
+	<select id="findAllList" resultType="GenScheme">
+		SELECT 
+			<include refid="genSchemeColumns"/>
+		FROM gen_scheme a
+		<include refid="genSchemeJoins"/>
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL} 
+		ORDER BY a.update_date DESC
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO gen_scheme(
+			id, 
+			name, 
+			category, 
+			package_name, 
+			module_name, 
+			sub_module_name, 
+			function_name, 
+			function_name_simple, 
+			function_author, 
+			gen_table_id, 
+			create_by, 
+			create_date, 
+			update_by, 
+			update_date, 
+			remarks, 
+			del_flag
+		) VALUES (
+			#{id}, 
+			#{name}, 
+			#{category},  
+			#{packageName},  
+			#{moduleName},  
+			#{subModuleName},  
+			#{functionName},  
+			#{functionNameSimple},  
+			#{functionAuthor},  
+			#{genTable.id},  
+			#{createBy.id}, 
+			#{createDate}, 
+			#{updateBy.id}, 
+			#{updateDate}, 
+			#{remarks}, 
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE gen_scheme SET 
+			name = #{name}, 
+			category = #{category},  
+			package_name = #{packageName},  
+			module_name = #{moduleName},  
+			sub_module_name = #{subModuleName},  
+			function_name = #{functionName},  
+			function_name_simple = #{functionNameSimple},  
+			function_author = #{functionAuthor},  
+			gen_table_id = #{genTable.id},  
+			update_by = #{updateBy.id}, 
+			update_date = #{updateDate}, 
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE gen_scheme SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

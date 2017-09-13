@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.collateral.dao.ZhuLandDao">
+    
+	<sql id="zhuLandColumns">
+		a.id AS "id",
+		a.address AS "address",
+		a.area AS "area",
+		a.chan_quality AS "chanQuality",
+		a.dai_balance AS "daiBalance",
+		a.dengji AS "dengji",
+		a.land_money1 AS "landMoney1",
+		a.land_money2 AS "landMoney2",
+		a.man AS "man",
+		a.quan_num AS "quanNum",
+		a.remark AS "remark",
+		a.yu_area AS "yuArea",
+		a.housing_mon_money AS "housingMonMoney",
+		a.housing_money AS "housingMoney",
+		a.lease_valuation AS "leaseValuation",
+		a.model_valuation AS "modelValuation",
+		a.sales_valuation AS "salesValuation",
+		a.dizhi_contract_id AS "dizhiContractId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="zhuLandJoins">
+	</sql>
+    
+	<select id="get" resultType="ZhuLand">
+		SELECT 
+			<include refid="zhuLandColumns"/>
+		FROM t_zhu_land a
+		<include refid="zhuLandJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<!--add by shirf-->
+	<select id="getByPledge" resultType="ZhuLand">
+		SELECT 
+			<include refid="zhuLandColumns"/>
+		FROM t_zhu_land a
+		<include refid="zhuLandJoins"/>
+		WHERE a.dizhi_contract_id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ZhuLand">
+		SELECT 
+			<include refid="zhuLandColumns"/>
+		FROM t_zhu_land a
+		<include refid="zhuLandJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="address != null and address != ''">
+				AND a.address LIKE 
+					<if test="dbName == 'oracle'">'%'||#{address}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{address}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{address},'%')</if>
+			</if>
+			<if test="beginArea != null and endArea != null and beginArea != '' and endArea != ''">
+				AND a.area BETWEEN #{beginArea} AND #{endArea}
+			</if>
+			<if test="beginDaiBalance != null and endDaiBalance != null and beginDaiBalance != '' and endDaiBalance != ''">
+				AND a.dai_balance BETWEEN #{beginDaiBalance} AND #{endDaiBalance}
+			</if>
+			<if test="man != null and man != ''">
+				AND a.man = #{man}
+			</if>
+			<if test="quanNum != null and quanNum != ''">
+				AND a.quan_num = #{quanNum}
+			</if>
+			<if test="beginModelValuation != null and endModelValuation != null and beginModelValuation != '' and endModelValuation != ''">
+				AND a.model_valuation BETWEEN #{beginModelValuation} AND #{endModelValuation}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ZhuLand">
+		SELECT 
+			<include refid="zhuLandColumns"/>
+		FROM t_zhu_land a
+		<include refid="zhuLandJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_zhu_land(
+			id,
+			address,
+			area,
+			chan_quality,
+			dai_balance,
+			dengji,
+			land_money1,
+			land_money2,
+			man,
+			quan_num,
+			remark,
+			yu_area,
+			housing_mon_money,
+			housing_money,
+			lease_valuation,
+			model_valuation,
+			sales_valuation,
+			dizhi_contract_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{address},
+			#{area},
+			#{chanQuality},
+			#{daiBalance},
+			#{dengji},
+			#{landMoney1},
+			#{landMoney2},
+			#{man},
+			#{quanNum},
+			#{remark},
+			#{yuArea},
+			#{housingMonMoney},
+			#{housingMoney},
+			#{leaseValuation},
+			#{modelValuation},
+			#{salesValuation},
+			#{dizhiContractId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_zhu_land SET 	
+			address = #{address},
+			area = #{area},
+			chan_quality = #{chanQuality},
+			dai_balance = #{daiBalance},
+			dengji = #{dengji},
+			land_money1 = #{landMoney1},
+			land_money2 = #{landMoney2},
+			man = #{man},
+			quan_num = #{quanNum},
+			remark = #{remark},
+			yu_area = #{yuArea},
+			housing_mon_money = #{housingMonMoney},
+			housing_money = #{housingMoney},
+			lease_valuation = #{leaseValuation},
+			model_valuation = #{modelValuation},
+			sales_valuation = #{salesValuation},
+			dizhi_contract_id = #{dizhiContractId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_zhu_land SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

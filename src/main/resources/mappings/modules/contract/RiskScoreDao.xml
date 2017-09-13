@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.contract.dao.RiskScoreDao">
+    
+	<sql id="riskScoreColumns">
+		a.id AS "id",
+		a.loan_contract_id AS "loanContractId",
+		a.category AS "category",
+		a.grade AS "grade",
+		a.rpn AS "rpn",
+		a.remarks AS "remarks"
+	</sql>
+	
+	<sql id="riskScoreJoins">
+	</sql>
+    
+	<select id="get" resultType="RiskScore">
+		SELECT 
+			<include refid="riskScoreColumns"/>
+		FROM t_risk_score a
+		<include refid="riskScoreJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="RiskScore">
+		SELECT 
+			<include refid="riskScoreColumns"/>
+		FROM t_risk_score a
+		<include refid="riskScoreJoins"/>
+		<where> 1=1
+			<if test="loanContractId != null and loanContractId != ''">
+				AND a.loan_contract_id = #{loanContractId}
+			</if>
+			<if test="category != null and category != ''">
+				AND a.category = #{category}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="RiskScore">
+		SELECT 
+			<include refid="riskScoreColumns"/>
+		FROM t_risk_score a
+		<include refid="riskScoreJoins"/>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_risk_score(
+			id,
+			loan_contract_id,
+			category,
+			grade,
+			rpn,
+			remarks
+		) VALUES (
+			#{id},
+			#{loanContractId},
+			#{category},
+			#{grade},
+			#{rpn},
+			#{remarks}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_risk_score SET 	
+			loan_contract_id = #{loanContractId},
+			category = #{category},
+			grade = #{grade},
+			rpn = #{rpn},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_risk_score SET 
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

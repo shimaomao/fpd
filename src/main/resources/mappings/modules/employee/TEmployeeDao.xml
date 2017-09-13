@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.employee.dao.TEmployeeDao">
+    
+	<sql id="tEmployeeColumns">
+		a.id AS "id",
+		a.wtypeId AS "wtypeId",
+		a.scan_flag AS "scanFlag",
+		a.proc_ins_id AS "act.procInsId",
+		a.name AS "name",
+		a.sex AS "sex",
+		a.position AS "position",
+		a.evaluate AS "evaluate",
+		a.age AS "age",
+		a.birthday AS "birthday",
+		a.card_num AS "cardNum",
+		a.email AS "email",
+		a.gathering_bank AS "gatheringBank",
+		a.gathering_name AS "gatheringName",
+		a.household_reg_addr AS "householdRegAddr",
+		a.current_live_address AS "currentLiveAddress",
+		a.gathering_number AS "gatheringNumber",
+		a.mobile AS "mobile",
+		a.telephone AS "telephone",
+		a.education AS "education",
+		a.is_local_household AS "isLocalHousehold",
+		a.live_age_limit AS "liveAgeLimit",
+		a.married_info AS "marriedInfo",
+		a.work_unit AS "workUnit",
+		a.nature_of_unit AS "natureOfUnit",
+		a.post AS "post",
+		a.unit_address AS "unitAddress",
+		a.work_telephone AS "workTelephone",
+		a.month_income AS "monthIncome",
+		a.status AS "status",
+		a.reason AS "reason",
+		a.customer_source AS "customerSource",
+		a.years_of_working AS "yearsOfWorking",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		
+		a.register_status AS "registerStatus",
+		a.reside_time AS "resideTime",
+		a.reside_status AS "resideStatus",
+		a.house_hold AS "houseHold",
+		a.drive_no AS "driveNo",
+		a.biz_category AS "bizCategory",
+		a.unit_scale AS "unitScale",
+		a.entry_time AS "entryTime",
+		a.tech_title AS "techTitle",
+		a.max_credit_card AS "maxCreditCard",
+		a.per_monthly_pay AS "perMonthlyPay",
+		a.deposit_and_invest AS "depositAndInvest",
+		o.name AS "companyName",
+		a.push_status AS "pushStatus"	
+	</sql>
+	
+	<sql id="tEmployeeJoins">
+	      LEFT JOIN sys_office o ON o.id = a.organ_id
+		  LEFT JOIN sys_user u ON u.id = a.create_by
+	</sql>
+    
+	<select id="get" resultType="TEmployee">
+		SELECT 
+			<include refid="tEmployeeColumns"/>
+		FROM t_employee a
+		<include refid="tEmployeeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+    
+	<select id="getByWtypeId" resultType="TEmployee">
+		SELECT 
+			<include refid="tEmployeeColumns"/>
+		FROM t_employee a
+		<include refid="tEmployeeJoins"/>
+		WHERE a.wtypeId = #{wtypeId}
+	</select>
+	
+	<select id="getByCondition" resultType="TEmployee">
+		SELECT 
+			<include refid="tEmployeeColumns"/>
+		FROM t_employee a
+		<include refid="tEmployeeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="cardNum != null and cardNum != ''">
+				AND a.card_num = #{cardNum}
+			</if>
+			<if test="organId != null and organId != ''">
+			   and a.organ_id = #{organId}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findList" resultType="TEmployee">
+		SELECT 
+			<include refid="tEmployeeColumns"/>
+		FROM t_employee a
+		<include refid="tEmployeeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="cardNum != null and cardNum != ''">
+				AND a.card_num = #{cardNum}
+			</if>
+			<if test="currentUser.company.id != ''">
+			   and a.organ_id = #{currentUser.company.id}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TEmployee">
+		SELECT 
+			<include refid="tEmployeeColumns"/>
+		FROM t_employee a
+		<include refid="tEmployeeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="currentUser.company.id != ''">
+			   and a.organ_id = #{currentUser.company.id}
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findListByScanFlag" resultType="TEmployee">
+		SELECT 
+			<include refid="tEmployeeColumns"/>
+		FROM t_employee a
+		<include refid="tEmployeeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="scanFlag != null and scanFlag != ''">
+				AND a.scan_flag = #{scanFlag}
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	
+	<select id="findListByScanFlagAndPushStatus" resultType="TEmployee">
+		SELECT 
+			<include refid="tEmployeeColumns"/>
+		FROM t_employee a
+		<include refid="tEmployeeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="scanFlag != null and scanFlag != ''">
+				AND a.scan_flag = #{scanFlag}
+			</if>
+			<if test="pushStatus != null and pushStatus != ''">
+				AND a.push_status = #{pushStatus}
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	
+	
+	<select id="findAllCardNumList" resultType="java.lang.String">
+		SELECT DISTINCT(a.card_num) FROM t_employee a WHERE a.del_flag = 0
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_employee(
+			id,
+			scan_flag,
+			push_status,
+			name,
+			wtypeId,
+			sex,
+			position,
+			evaluate,
+			age,
+			birthday,
+			card_num,
+			email,
+			gathering_bank,
+			gathering_name,
+			household_reg_addr,
+			current_live_address,
+			gathering_number,
+			mobile,
+			telephone,
+			education,
+			is_local_household,
+			live_age_limit,
+			married_info,
+			work_unit,
+			nature_of_unit,
+			post,
+			unit_address,
+			work_telephone,
+			month_income,
+			status,
+			reason,
+			customer_source,
+			years_of_working,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id,
+			register_status,
+			reside_time,
+			reside_status,
+			house_hold,
+			drive_no,
+			biz_category,
+			unit_scale,
+			entry_time,
+			tech_title,
+			max_credit_card,
+			per_monthly_pay,
+			deposit_and_invest
+			
+		) VALUES (
+			#{id},
+			#{scanFlag},
+			'0',
+			#{name},
+			#{wtypeId},
+			#{sex},
+			#{position},
+			#{evaluate},
+			#{age},
+			#{birthday},
+			#{cardNum},
+			#{email},
+			#{gatheringBank},
+			#{gatheringName},
+			#{householdRegAddr},
+			#{currentLiveAddress},
+			#{gatheringNumber},
+			#{mobile},
+			#{telephone},
+			#{education},
+			#{isLocalHousehold},
+			#{liveAgeLimit},
+			#{marriedInfo},
+			#{workUnit},
+			#{natureOfUnit},
+			#{post},
+			#{unitAddress},
+			#{workTelephone},
+			#{monthIncome},
+			#{status},
+			#{reason},
+			#{customerSource},
+			#{yearsOfWorking},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId},
+			
+			#{registerStatus},
+			#{resideTime},
+			#{resideStatus},
+			#{houseHold},
+			#{driveNo},
+			#{bizCategory},
+			#{unitScale},
+			#{entryTime},
+			#{techTitle},
+			#{maxCreditCard},
+			#{perMonthlyPay},
+			#{depositAndInvest}
+
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_employee SET 	
+			name = #{name},
+			scan_flag = #{scanFlag},
+			sex = #{sex},
+			position = #{position},
+			evaluate = #{evaluate},
+			age = #{age},
+			birthday = #{birthday},
+			wtypeId = #{wtypeId},
+			card_num = #{cardNum},
+			email = #{email},
+			gathering_bank = #{gatheringBank},
+			gathering_name = #{gatheringName},
+			household_reg_addr = #{householdRegAddr},
+			current_live_address = #{currentLiveAddress},
+			gathering_number = #{gatheringNumber},
+			mobile = #{mobile},
+			telephone = #{telephone},
+			education = #{education},
+			is_local_household = #{isLocalHousehold},
+			live_age_limit = #{liveAgeLimit},
+			married_info = #{marriedInfo},
+			work_unit = #{workUnit},
+			nature_of_unit = #{natureOfUnit},
+			post = #{post},
+			unit_address = #{unitAddress},
+			work_telephone = #{workTelephone},
+			month_income = #{monthIncome},
+			status = #{status},
+			reason = #{reason},
+			customer_source = #{customerSource},
+			years_of_working = #{yearsOfWorking},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId},
+			
+			register_status = #{registerStatus},
+			reside_time = #{resideTime},
+			reside_status = #{resideStatus},
+			house_hold = #{houseHold},
+			drive_no = #{driveNo},
+			biz_category = #{bizCategory},
+			unit_scale = #{unitScale},
+			entry_time = #{entryTime},
+			tech_title = #{techTitle},
+			max_credit_card = #{maxCreditCard},
+			per_monthly_pay = #{perMonthlyPay},
+			deposit_and_invest = #{depositAndInvest}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_employee SET 
+			del_flag = #{DEL_FLAG_DELETE},			
+			scan_flag = #{scanFlag}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<update id="updateByPushStatus">
+		UPDATE t_employee SET 	
+			push_status = #{pushStatus},
+			scan_flag = #{scanFlag}	,	
+			update_date = #{updateDate}			
+		WHERE id = #{id}
+	</update>
+	
+	<select id="byTEmployeeAndContract" resultType="TEmployee">
+		select * from
+		t_employee where card_num = #{cardNum}
+	</select>
+	
+</mapper>

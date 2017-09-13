@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.advisory.dao.TAdvisoryDao">
+    
+	<sql id="tAdvisoryColumns">
+		a.id AS "id",
+		a.customer_type AS "customerType",
+		a.customer_name AS "customerName",
+		a.customer_tel AS "customerTel",
+		a.card_type AS "cardType",
+		a.card_no AS "cardNo",
+		a.advisory_fees AS "advisoryFees",
+		a.advisory_time AS "advisoryTime",
+		a.content AS "content",
+		a.suggestion AS "suggestion",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.product_id AS "product.id",
+		a.loan_purpose AS "loanPurpose",
+		a.loan_period AS "loanPeriod",
+		a.loan_amount AS "loanAmount",
+		a.repay_sourse AS "repaySourse"
+	</sql>
+	
+	<sql id="tAdvisoryJoins">
+	     LEFT JOIN sys_office o ON o.id = a.organ_id
+		 LEFT JOIN sys_user u ON u.id = a.create_by
+	</sql>
+    
+	<select id="get" resultType="TAdvisory">
+		SELECT 
+			<include refid="tAdvisoryColumns"/>
+		FROM t_advisory a
+		<include refid="tAdvisoryJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TAdvisory">
+		SELECT 
+			<include refid="tAdvisoryColumns"/>
+		FROM t_advisory a
+		<include refid="tAdvisoryJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="customerTel != null and customerTel != ''">
+				AND a.customer_tel = #{customerTel}
+			</if>
+			<if test="product != null and product.id != null and product !=''">
+				AND a.product_id = #{product.id}
+			</if>
+			<if test="currentUser.company.id != ''">
+			   and a.organ_id = #{currentUser.company.id}
+			</if>
+			<if test="customerName != null and customerName != ''">
+				AND a.customer_name = #{customerName}
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TAdvisory">
+		SELECT 
+			<include refid="tAdvisoryColumns"/>
+		FROM t_advisory a
+		<include refid="tAdvisoryJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_advisory(
+			id,
+			product_id,
+			customer_type,
+			customer_name,
+			customer_tel,
+			card_type,
+			card_no,
+			advisory_fees,
+			advisory_time,
+			content,
+			suggestion,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id,
+			loan_purpose,
+			loan_period,
+			loan_amount,
+			repay_sourse
+		) VALUES (
+			#{id},
+			#{product.id},
+			#{customerType},
+			#{customerName},
+			#{customerTel},
+			#{cardType},
+			#{cardNo},
+			#{advisoryFees},
+			#{advisoryTime},
+			#{content},
+			#{suggestion},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId},
+			#{loanPurpose},
+			#{loanPeriod},
+			#{loanAmount},
+			#{repaySourse}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_advisory SET 	
+			customer_type = #{customerType},
+			customer_name = #{customerName},
+			customer_tel = #{customerTel},
+			card_type = #{cardType},
+			card_no = #{cardNo},
+			advisory_fees = #{advisoryFees},
+			advisory_time = #{advisoryTime},
+			content = #{content},
+			suggestion = #{suggestion},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId},
+			loan_purpose = #{loanPurpose},
+			loan_period = #{loanPeriod},
+			loan_amount = #{loanAmount},
+			repay_sourse = #{repaySourse}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_advisory SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

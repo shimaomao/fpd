@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.mortgage.dao.TMortgageApplayDao">
+    
+	<sql id="tMortgageApplayColumns">
+		a.id AS "id",
+		a.mortgage_contract_id AS "mortgageContractId",
+		a.applay_type AS "applayType",
+		a.start_time AS "startTime",
+		a.end_time AS "endTime",
+		a.status AS "status",
+		a.remarks AS "remarks",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.audit_type AS "auditType"
+	</sql>
+	
+	<sql id="tMortgageApplayJoins">
+	</sql>
+    
+	<select id="get" resultType="TMortgageApplay">
+		SELECT 
+			<include refid="tMortgageApplayColumns"/>
+		FROM t_mortgage_applay a
+		<include refid="tMortgageApplayJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getPojoByContract" resultType="TMortgageApplay">
+		SELECT 
+			<include refid="tMortgageApplayColumns"/>
+		FROM t_mortgage_applay a
+		<include refid="tMortgageApplayJoins"/>
+		WHERE a.mortgage_contract_id = #{mortgageContractId}
+		ORDER BY a.create_date desc
+		LIMIT 1
+		
+	</select>
+	
+	<select id="findList" resultType="TMortgageApplay">
+		SELECT 
+			<include refid="tMortgageApplayColumns"/>
+		FROM t_mortgage_applay a
+		<include refid="tMortgageApplayJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="mortgageContractId != null and mortgageContractId != ''">
+				AND a.mortgage_contract_id = #{mortgageContractId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TMortgageApplay">
+		SELECT 
+			<include refid="tMortgageApplayColumns"/>
+		FROM t_mortgage_applay a
+		<include refid="tMortgageApplayJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_mortgage_applay(
+			id,
+			mortgage_contract_id,
+			applay_type,
+			start_time,
+			end_time,
+			status,
+			remarks,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			organ_id,
+			audit_type
+		) VALUES (
+			#{id},
+			#{mortgageContractId},
+			#{applayType},
+			#{startTime},
+			#{endTime},
+			#{status},
+			#{remarks},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{organId},
+			#{auditType}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_mortgage_applay SET 	
+			mortgage_contract_id = #{mortgageContractId},
+			applay_type = #{applayType},
+			start_time = #{startTime},
+			end_time = #{endTime},
+			status = #{status},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_mortgage_applay SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

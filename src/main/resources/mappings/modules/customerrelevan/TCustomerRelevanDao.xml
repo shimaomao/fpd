@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.customerrelevan.dao.TCustomerRelevanDao">
+    
+	<sql id="tCustomerRelevanColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.zzjg_card AS "zzjgCard",
+		a.yyzz_card AS "yyzzCard",
+		a.relevan AS "relevan",
+		a.link_man AS "linkMan",
+		a.card_id AS "cardId",
+		a.phone AS "phone",
+		a.register_date AS "registerDate",
+		a.register_capital AS "registerCapital",
+		a.address AS "address",
+		a.company_id AS "companyId",
+		a.employee_id AS "employeeId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="tCustomerRelevanJoins">
+	</sql>
+    
+	<select id="get" resultType="TCustomerRelevan">
+		SELECT 
+			<include refid="tCustomerRelevanColumns"/>
+		FROM t_customer_relevan a
+		<include refid="tCustomerRelevanJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TCustomerRelevan">
+		SELECT 
+			<include refid="tCustomerRelevanColumns"/>
+		FROM t_customer_relevan a
+		<include refid="tCustomerRelevanJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="companyId != null and companyId != ''">
+				AND a.company_id = #{companyId}
+			</if>
+			<if test="employeeId != null and employeeId != ''">
+				AND a.employee_id = #{employeeId}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="linkMan != null and linkMan != ''">
+				AND a.link_man = #{linkMan}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TCustomerRelevan">
+		SELECT 
+			<include refid="tCustomerRelevanColumns"/>
+		FROM t_customer_relevan a
+		<include refid="tCustomerRelevanJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_customer_relevan(
+			id,
+			name,
+			zzjg_card,
+			yyzz_card,
+			relevan,
+			link_man,
+			card_id,
+			phone,
+			register_date,
+			register_capital,
+			address,
+			company_id,
+			employee_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{name},
+			#{zzjgCard},
+			#{yyzzCard},
+			#{relevan},
+			#{linkMan},
+			#{cardId},
+			#{phone},
+			#{registerDate},
+			#{registerCapital},
+			#{address},
+			#{companyId},
+			#{employeeId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_customer_relevan SET 	
+			name = #{name},
+			zzjg_card = #{zzjgCard},
+			yyzz_card = #{yyzzCard},
+			relevan = #{relevan},
+			link_man = #{linkMan},
+			card_id = #{cardId},
+			phone = #{phone},
+			register_date = #{registerDate},
+			register_capital = #{registerCapital},
+			address = #{address},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_customer_relevan SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

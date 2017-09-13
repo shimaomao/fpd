@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.credit.dao.report.ReportPlantedDao">
+    
+	<sql id="reportPlantedColumns">
+		a.id AS "id",
+		a.credit_type AS "creditType",
+		a.credit_apply_id AS "creditApplyId",
+		a.product_type AS "productType",
+		a.tpl_code AS "tplCode",
+		a.department AS "department",
+		a.name AS "name",
+		a.salesman AS "salesman",
+		a.accept_date AS "acceptDate",
+		a.credit_money AS "creditMoney",
+		a.credit_period AS "creditPeriod",
+		a.credit_single_period AS "creditSinglePeriod",
+		a.rate AS "rate",
+		a.loan_money AS "loanMoney",
+		a.loan_period AS "loanPeriod",
+		a.consulting_fee AS "consultingFee",
+		a.repay_type AS "repayType",
+		a.business_source AS "businessSource",
+		a.ftl_content AS "ftlContent",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="reportPlantedJoins">
+	</sql>
+    
+	<select id="get" resultType="ReportPlanted">
+		SELECT 
+			<include refid="reportPlantedColumns"/>
+		FROM t_report_planted a
+		<include refid="reportPlantedJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getByCreditApply" resultType="ReportPlanted">
+		SELECT 
+			<include refid="reportPlantedColumns"/>
+		FROM t_report_planted a
+		<include refid="reportPlantedJoins"/>
+		WHERE a.del_flag = 0 AND a.credit_apply_id = #{creditApplyId}
+	</select>
+	
+	<select id="findList" resultType="ReportPlanted">
+		SELECT 
+			<include refid="reportPlantedColumns"/>
+		FROM t_report_planted a
+		<include refid="reportPlantedJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="creditApplyId != null and creditApplyId != ''">
+				AND a.credit_apply_id = #{creditApplyId}
+			</if>
+			<if test="tplCode != null and tplCode != ''">
+				AND a.tpl_code = #{tplCode}
+			</if>
+			<if test="department != null and department != ''">
+				AND a.department = #{department}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ReportPlanted">
+		SELECT 
+			<include refid="reportPlantedColumns"/>
+		FROM t_report_planted a
+		<include refid="reportPlantedJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_report_planted(
+			id,
+			credit_type,
+			credit_apply_id,
+			product_type,
+			tpl_code,
+			department,
+			name,
+			salesman,
+			accept_date,
+			credit_money,
+			credit_period,
+			credit_single_period,
+			rate,
+			loan_money,
+			loan_period,
+			consulting_fee,
+			repay_type,
+			business_source,
+			ftl_content,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{creditType},
+			#{creditApplyId},
+			#{productType},
+			#{tplCode},
+			#{department},
+			#{name},
+			#{salesman},
+			#{acceptDate},
+			#{creditMoney},
+			#{creditPeriod},
+			#{creditSinglePeriod},
+			#{rate},
+			#{loanMoney},
+			#{loanPeriod},
+			#{consultingFee},
+			#{repayType},
+			#{businessSource},
+			#{ftlContent},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_report_planted SET
+			credit_type = #{creditType},
+			credit_apply_id = #{creditApplyId},
+			product_type = #{productType},
+			tpl_code = #{tplCode},
+			department = #{department},
+			name = #{name},
+			salesman = #{salesman},
+			accept_date = #{acceptDate},
+			credit_money = #{creditMoney},
+			credit_period = #{creditPeriod},
+			rate = #{rate},
+			loan_money = #{loanMoney},
+			loan_period = #{loanPeriod},
+			credit_single_period = #{creditSinglePeriod},
+			consulting_fee = #{consultingFee},
+			repay_type = #{repayType},
+			business_source = #{businessSource},
+			ftl_content = #{ftlContent},
+			status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_report_planted SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

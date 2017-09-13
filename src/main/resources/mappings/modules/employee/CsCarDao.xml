@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.employee.dao.CsCarDao">
+    
+	<sql id="csCarColumns">
+		a.id AS "id",
+		a.customer_id AS "customerId",
+		a.car_code AS "carCode",
+		a.car_num AS "carNum",
+		a.engine_num AS "engineNum",
+		a.regist_time AS "registTime",
+		a.buy_time AS "buyTime",
+		a.buyprice AS "buyprice",
+		a.evalprice AS "evalprice",
+		a.is_mortgage AS "isMortgage",
+		a.mortgagee AS "mortgagee",
+		a.mortgage_amount AS "mortgageAmount",
+		a.mortgage_balance AS "mortgageBalance",
+		a.loan_due_time AS "loanDueTime",
+		a.car_pur AS "carPur",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="csCarJoins">
+	</sql>
+    
+	<select id="get" resultType="CsCar">
+		SELECT 
+			<include refid="csCarColumns"/>
+		FROM t_cs_car a
+		<include refid="csCarJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CsCar">
+		SELECT 
+			<include refid="csCarColumns"/>
+		FROM t_cs_car a
+		<include refid="csCarJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="customerId != null and customerId != ''">
+				AND a.customer_id = #{customerId}
+			</if>
+			<if test="carCode != null and carCode != ''">
+				AND a.car_code = #{carCode}
+			</if>
+			<if test="carNum != null and carNum != ''">
+				AND a.car_num = #{carNum}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CsCar">
+		SELECT 
+			<include refid="csCarColumns"/>
+		FROM t_cs_car a
+		<include refid="csCarJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_cs_car(
+			id,
+			customer_id,
+			car_code,
+			car_num,
+			engine_num,
+			regist_time,
+			buy_time,
+			buyprice,
+			evalprice,
+			is_mortgage,
+			mortgagee,
+			mortgage_amount,
+			mortgage_balance,
+			loan_due_time,
+			car_pur,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{customerId},
+			#{carCode},
+			#{carNum},
+			#{engineNum},
+			#{registTime},
+			#{buyTime},
+			#{buyprice},
+			#{evalprice},
+			#{isMortgage},
+			#{mortgagee},
+			#{mortgageAmount},
+			#{mortgageBalance},
+			#{loanDueTime},
+			#{carPur},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_cs_car SET 	
+			customer_id = #{customerId},
+			car_code = #{carCode},
+			car_num = #{carNum},
+			engine_num = #{engineNum},
+			regist_time = #{registTime},
+			buy_time = #{buyTime},
+			buyprice = #{buyprice},
+			evalprice = #{evalprice},
+			is_mortgage = #{isMortgage},
+			mortgagee = #{mortgagee},
+			mortgage_amount = #{mortgageAmount},
+			mortgage_balance = #{mortgageBalance},
+			loan_due_time = #{loanDueTime},
+			car_pur = #{carPur},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_cs_car SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

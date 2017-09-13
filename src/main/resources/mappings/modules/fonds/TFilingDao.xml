@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.fonds.dao.TFilingDao">
+    
+	<sql id="tFilingColumns">
+		a.id AS "id",
+		a.fonds_name AS "fondsName",
+		a.fonds_number AS "fondsNumber",
+		a.file_number AS "fileNumber",
+		a.file_name AS "fileName",
+		a.file_sheets AS "fileSheets",
+		a.file_endash AS "fileEndash",
+		a.position AS "position",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="tFilingJoins">
+	</sql>
+    
+	<select id="get" resultType="TFiling">
+		SELECT 
+			<include refid="tFilingColumns"/>
+		FROM t_filing a
+		<include refid="tFilingJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TFiling">
+		SELECT 
+			<include refid="tFilingColumns"/>
+		FROM t_filing a
+		<include refid="tFilingJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="fondsName != null and fondsName != ''">
+				AND a.fonds_name = #{fondsName}
+			</if>
+			<if test="fileNumber != null and fileNumber != ''">
+				AND a.file_number = #{fileNumber}
+			</if>
+			<if test="fileName != null and fileName != ''">
+				AND a.file_name = #{fileName}
+			</if>
+				<if test="loancontractId != null and loancontractId != ''">
+				AND a.loancontract_id = #{loancontractId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TFiling">
+		SELECT 
+			<include refid="tFilingColumns"/>
+		FROM t_filing a
+		<include refid="tFilingJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_filing(
+			id,
+			fonds_name,
+			fonds_number,
+			file_number,
+			file_name,
+			file_sheets,
+			file_endash,
+			position,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id,
+			loancontract_id
+		) VALUES (
+			#{id},
+			#{fondsName},
+			#{fondsNumber},
+			#{fileNumber},
+			#{fileName},
+			#{fileSheets},
+			#{fileEndash},
+			#{position},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId},
+			#{loancontractId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_filing SET 	
+			fonds_name = #{fondsName},
+			fonds_number = #{fondsNumber},
+			file_number = #{fileNumber},
+			file_name = #{fileName},
+			file_sheets = #{fileSheets},
+			file_endash = #{fileEndash},
+			position = #{position},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_filing SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

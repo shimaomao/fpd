@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.credit.dao.CreditTotalDao">
+    
+	<sql id="creditTotalColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.total_num AS "totalNum",
+		a.own_num AS "ownNum",
+		a.pay_num AS "payNum",
+		a.type AS "type",
+		a.remarks AS "remarks",
+		a.code AS "code"
+	</sql>
+	
+	<sql id="creditTotalJoins">
+	</sql>
+    
+	<select id="get" resultType="com.wanfin.fpd.modules.credit.entity.CreditTotal">
+		SELECT 
+			<include refid="creditTotalColumns"/>
+		FROM credit_total a
+		<include refid="creditTotalJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.wanfin.fpd.modules.credit.entity.CreditTotal">
+		SELECT 
+			<include refid="creditTotalColumns"/>
+		FROM credit_total a
+		<include refid="creditTotalJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="com.wanfin.fpd.modules.credit.entity.CreditTotal">
+		SELECT 
+			<include refid="creditTotalColumns"/>
+		FROM credit_total a
+		<include refid="creditTotalJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO credit_total(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			organ_id,
+			total_num,
+			own_num,
+			pay_num,
+			type,
+			remarks,
+			code
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{organId},
+			#{totalNum},
+			#{ownNum},
+			#{payNum},
+			#{type},
+			#{remarks},
+			#{code}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE credit_total SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			organ_id = #{organId},
+			total_num = #{totalNum},
+			own_num = #{ownNum},
+			pay_num = #{payNum},
+			type = #{type},
+			remarks = #{remarks},
+			code = #{code}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE credit_total SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.sys.dao.SysOfficePartnerDao">
+    
+	<sql id="sysOfficePartnerColumns">
+		a.id AS "id",
+		a.pid AS "pid",
+		a.address AS "address",
+		a.bus_addr AS "busAddr",
+		a.email AS "email",
+		a.fan_wei AS "fanWei",
+		a.flag AS "flag",
+		a.funds AS "funds",
+		a.legal_person AS "legalPerson",
+		a.lic_num AS "licNum",
+		a.name AS "name",
+		a.org_code AS "orgCode",
+		a.proportion AS "proportion",
+		a.reg_addr AS "regAddr",
+		a.status AS "status",
+		a.telephone AS "telephone",
+		a.sign_date AS "signDate",
+		a.chezhi AS "chezhi",
+		a.chigu_date1 AS "chiguDate1",
+		a.chigu_date2 AS "chiguDate2",
+		a.zaizhi_date1 AS "zaizhiDate1",
+		a.zaizhi_date2 AS "zaizhiDate2",
+		a.bian_bi AS "bianBi",
+		a.bian_date AS "bianDate",
+		a.bian_id AS "bianId",
+		a.bian_shi AS "bianShi",
+		a.bian_zi AS "bianZi",
+		a.islisi AS "islisi",
+		a.ping_jia AS "pingJia",
+		a.source_flag AS "sourceFlag",
+		a.source_status AS "sourceStatus",
+		a.nif_id AS "nifId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.credit_Num AS "creditNum",
+		a.is_Guoqi AS "isGuoqi",
+		a.is_Shangshi AS "isShangshi"
+	</sql>
+	
+	<sql id="sysOfficePartnerJoins">
+	</sql>
+    
+	<select id="get" resultType="SysOfficePartner">
+		SELECT 
+			<include refid="sysOfficePartnerColumns"/>
+		FROM sys_office_partner a
+		<include refid="sysOfficePartnerJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SysOfficePartner">
+		SELECT 
+			<include refid="sysOfficePartnerColumns"/>
+		FROM sys_office_partner a
+		<include refid="sysOfficePartnerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="pid != null and pid != ''">
+				AND  a.pid = #{pid}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SysOfficePartner">
+		SELECT 
+			<include refid="sysOfficePartnerColumns"/>
+		FROM sys_office_partner a
+		<include refid="sysOfficePartnerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_office_partner(
+			id,
+			pid,
+			address,
+			bus_addr,
+			email,
+			fan_wei,
+			flag,
+			funds,
+			legal_person,
+			lic_num,
+			name,
+			org_code,
+			proportion,
+			reg_addr,
+			status,
+			telephone,
+			sign_date,
+			chezhi,
+			chigu_date1,
+			chigu_date2,
+			zaizhi_date1,
+			zaizhi_date2,
+			bian_bi,
+			bian_date,
+			bian_id,
+			bian_shi,
+			bian_zi,
+			islisi,
+			ping_jia,
+			source_flag,
+			source_status,
+			nif_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			credit_Num,
+			is_Guoqi,
+			is_Shangshi
+		) VALUES (
+			#{id},
+			#{pid},
+			#{address},
+			#{busAddr},
+			#{email},
+			#{fanWei},
+			#{flag},
+			#{funds},
+			#{legalPerson},
+			#{licNum},
+			#{name},
+			#{orgCode},
+			#{proportion},
+			#{regAddr},
+			#{status},
+			#{telephone},
+			#{signDate},
+			#{chezhi},
+			#{chiguDate1},
+			#{chiguDate2},
+			#{zaizhiDate1},
+			#{zaizhiDate2},
+			#{bianBi},
+			#{bianDate},
+			#{bianId},
+			#{bianShi},
+			#{bianZi},
+			#{islisi},
+			#{pingJia},
+			#{sourceFlag},
+			#{sourceStatus},
+			#{nifId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{creditNum},
+			#{isGuoqi},
+			#{isShangshi}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_office_partner SET 	
+			pid = #{pid},
+			address = #{address},
+			bus_addr = #{busAddr},
+			email = #{email},
+			fan_wei = #{fanWei},
+			flag = #{flag},
+			funds = #{funds},
+			legal_person = #{legalPerson},
+			lic_num = #{licNum},
+			name = #{name},
+			org_code = #{orgCode},
+			proportion = #{proportion},
+			reg_addr = #{regAddr},
+			status = #{status},
+			telephone = #{telephone},
+			sign_date = #{signDate},
+			chezhi = #{chezhi},
+			chigu_date1 = #{chiguDate1},
+			chigu_date2 = #{chiguDate2},
+			zaizhi_date1 = #{zaizhiDate1},
+			zaizhi_date2 = #{zaizhiDate2},
+			bian_bi = #{bianBi},
+			bian_date = #{bianDate},
+			bian_id = #{bianId},
+			bian_shi = #{bianShi},
+			bian_zi = #{bianZi},
+			islisi = #{islisi},
+			ping_jia = #{pingJia},
+			source_flag = #{sourceFlag},
+			source_status = #{sourceStatus},
+			nif_id = #{nifId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sys_office_partner SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

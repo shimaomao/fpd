@@ -1,0 +1,46 @@
+@charset "UTF-8";
+/*清除浮动*/
+.clearfix:after {
+  content: "";
+  display: block;
+  height: 0;
+  overflow: hidden;
+  clear: both;
+}
+
+.clearfix {
+  *zoom: 1;
+}
+
+/* 清除浮动*/
+.fl {
+  float: left;
+}
+
+.fr {
+  float: right;
+}
+
+a {
+  text-decoration: none;
+}
+
+.padd {
+  display: inline-block;
+  font-size: 18px;
+  line-height: 35px;
+}
+
+.mt_20 {
+  margin-top: 20px;
+}
+
+.mb_20 {
+  margin-bottom: 20px;
+}
+
+.mb_0 {
+  margin-bottom: 0 !important;
+}
+
+/*# sourceMappingURL=common.css.map */

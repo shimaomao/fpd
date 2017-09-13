@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.receivables.dao.RealIncomeDao">
+    
+	<sql id="realIncomeColumns">
+		a.id AS "id",
+		a.consultancy_amount AS "consultancyAmount",
+		a.pay_real_date AS "payRealDate",
+		a.punish_amount AS "punishAmount",
+		a.interest_penalties AS "interestPenalties",
+		a.loan_contract_id AS "loanContractId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.guarantee_fee AS "guaranteeFee",
+		a.review_fee AS "reviewFee"
+	</sql>
+	
+	<sql id="realIncomeJoins">
+	</sql>
+    
+	<select id="get" resultType="RealIncome">
+		SELECT 
+			<include refid="realIncomeColumns"/>
+		FROM t_real_income a
+		<include refid="realIncomeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="RealIncome">
+		SELECT 
+			<include refid="realIncomeColumns"/>
+		FROM t_real_income a
+		<include refid="realIncomeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="loanContractId !=null and loanContractId !=''">
+				AND a.loan_contract_id = #{loanContractId}
+			</if>
+			<if test="payRealDate != null and payRealDate != ''">
+				AND a.pay_real_date = #{payRealDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="RealIncome">
+		SELECT 
+			<include refid="realIncomeColumns"/>
+		FROM t_real_income a
+		<include refid="realIncomeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="loanContractId !=null and loanContractId !=''">
+				AND a.loan_contract_id = #{loanContractId}
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_real_income(
+			id,
+			consultancy_amount,
+			pay_real_date,
+			punish_amount,
+			interest_penalties,
+			loan_contract_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id,
+			guarantee_fee,
+		    review_fee
+		) VALUES (
+			#{id},
+			#{consultancyAmount},
+			#{payRealDate},
+			#{punishAmount},
+			#{interestPenalties},
+			#{loanContractId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId},
+			#{guaranteeFee},
+		    #{reviewFee}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_real_income SET 	
+			consultancy_amount = #{consultancyAmount},
+			pay_real_date = #{payRealDate},
+			punish_amount = #{punishAmount},
+			interest_penalties=#{interestPenalties},
+			loan_contract_id = #{loanContractId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			guarantee_fee =  #{guaranteeFee},
+		    review_fee = #{reviewFee}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_real_income SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

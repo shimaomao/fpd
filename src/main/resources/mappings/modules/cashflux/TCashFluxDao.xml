@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.cashflux.dao.TCashFluxDao">
+    
+	<sql id="tCashFluxColumns">
+		a.id AS "id",
+		a.report_name AS "reportName",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		a.row_one AS "rowOne",
+		a.row_two AS "rowTwo",
+		a.row1_one AS "row1One",
+		a.row1_two AS "row1Two",
+		a.row2_one AS "row2One",
+		a.row2_two AS "row2Two",
+		a.row3_one AS "row3One",
+		a.row3_two AS "row3Two",
+		a.row4_one AS "row4One",
+		a.row4_two AS "row4Two",
+		a.row5_one AS "row5One",
+		a.row5_two AS "row5Two",
+		a.row6_one AS "row6One",
+		a.row6_two AS "row6Two",
+		a.row7_one AS "row7One",
+		a.row7_two AS "row7Two",
+		a.row8_one AS "row8One",
+		a.row8_two AS "row8Two",
+		a.row9_one AS "row9One",
+		a.row9_two AS "row9Two",
+		a.row10_two AS "row10Two",
+		a.row11_one AS "row11One",
+		a.row11_two AS "row11Two",
+		a.row12_one AS "row12One",
+		a.row12_two AS "row12Two",
+		a.row13_one AS "row13One",
+		a.row13_two AS "row13Two",
+		a.row14_one AS "row14One",
+		a.row14_two AS "row14Two",
+		a.row15_one AS "row15One",
+		a.row15_two AS "row15Two",
+		a.row16_one AS "row16One",
+		a.row16_two AS "row16Two",
+		a.row17_one AS "row17One",
+		a.row18_one AS "row18One",
+		a.row19_one AS "row19One",
+		a.row20_one AS "row20One",
+		a.row21_two AS "row21Two",
+		a.row22_one AS "row22One",
+		a.row22_two AS "row22Two",
+		a.row23_one AS "row23One",
+		a.row23_two AS "row23Two",
+		a.row24_one AS "row24One",
+		a.row25_one AS "row25One",
+		a.row26_one AS "row26One",
+		a.row27_one AS "row27One",
+		a.row28_one AS "row28One",
+		a.row28_two AS "row28Two",
+		a.row29_one AS "row29One",
+		a.row29_two AS "row29Two",
+		a.row30_one AS "row30One",
+		a.row30_two AS "row30Two",
+		a.row31_one AS "row31One",
+		a.row31_two AS "row31Two",
+		a.row32_one AS "row32One",
+		a.row32_two AS "row32Two"
+	</sql>
+	
+	<sql id="tCashFluxJoins">
+	</sql>
+    
+	<select id="get" resultType="TCashFlux">
+		SELECT 
+			<include refid="tCashFluxColumns"/>
+		FROM t_cash_flux a
+		<include refid="tCashFluxJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TCashFlux">
+		SELECT 
+			<include refid="tCashFluxColumns"/>
+		FROM t_cash_flux a
+		<include refid="tCashFluxJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="reportName != null and reportName != ''">
+				AND a.report_name = #{reportName}
+			</if>
+			<if test="createTime != null and createTime != ''">
+				AND a.create_date like #{createTime}
+			</if>
+			<if test="currentUser.company.id != ''">
+			   and a.organ_id = #{currentUser.company.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TCashFlux">
+		SELECT 
+			<include refid="tCashFluxColumns"/>
+		FROM t_cash_flux a
+		<include refid="tCashFluxJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="currentUser.company.id != ''">
+			   and a.organ_id = #{currentUser.company.id}
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_cash_flux(
+			id,
+			report_name,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id,
+			row_one,
+			row_two,
+			row1_one,
+			row1_two,
+			row2_one,
+			row2_two,
+			row3_one,
+			row3_two,
+			row4_one,
+			row4_two,
+			row5_one,
+			row5_two,
+			row6_one,
+			row6_two,
+			row7_one,
+			row7_two,
+			row8_one,
+			row8_two,
+			row9_one,
+			row9_two,
+			row10_two,
+			row11_one,
+			row11_two,
+			row12_one,
+			row12_two,
+			row13_one,
+			row13_two,
+			row14_one,
+			row14_two,
+			row15_one,
+			row15_two,
+			row16_one,
+			row16_two,
+			row17_one,
+			row18_one,
+			row19_one,
+			row20_one,
+			row21_two,
+			row22_one,
+			row22_two,
+			row23_one,
+			row23_two,
+			row24_one,
+			row25_one,
+			row26_one,
+			row27_one,
+			row28_one,
+			row28_two,
+			row29_one,
+			row29_two,
+			row30_one,
+			row30_two,
+			row31_one,
+			row31_two,
+			row32_one,
+			row32_two
+		) VALUES (
+			#{id},
+			#{reportName},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId},
+			#{rowOne},
+			#{rowTwo},
+			#{row1One},
+			#{row1Two},
+			#{row2One},
+			#{row2Two},
+			#{row3One},
+			#{row3Two},
+			#{row4One},
+			#{row4Two},
+			#{row5One},
+			#{row5Two},
+			#{row6One},
+			#{row6Two},
+			#{row7One},
+			#{row7Two},
+			#{row8One},
+			#{row8Two},
+			#{row9One},
+			#{row9Two},
+			#{row10Two},
+			#{row11One},
+			#{row11Two},
+			#{row12One},
+			#{row12Two},
+			#{row13One},
+			#{row13Two},
+			#{row14One},
+			#{row14Two},
+			#{row15One},
+			#{row15Two},
+			#{row16One},
+			#{row16Two},
+			#{row17One},
+			#{row18One},
+			#{row19One},
+			#{row20One},
+			#{row21Two},
+			#{row22One},
+			#{row22Two},
+			#{row23One},
+			#{row23Two},
+			#{row24One},
+			#{row25One},
+			#{row26One},
+			#{row27One},
+			#{row28One},
+			#{row28Two},
+			#{row29One},
+			#{row29Two},
+			#{row30One},
+			#{row30Two},
+			#{row31One},
+			#{row31Two},
+			#{row32One},
+			#{row32Two}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_cash_flux SET 	
+			report_name = #{reportName},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			row_one = #{rowOne},
+			row_two = #{rowTwo},
+			row1_one = #{row1One},
+			row1_two = #{row1Two},
+			row2_one = #{row2One},
+			row2_two = #{row2Two},
+			row3_one = #{row3One},
+			row3_two = #{row3Two},
+			row4_one = #{row4One},
+			row4_two = #{row4Two},
+			row5_one = #{row5One},
+			row5_two = #{row5Two},
+			row6_one = #{row6One},
+			row6_two = #{row6Two},
+			row7_one = #{row7One},
+			row7_two = #{row7Two},
+			row8_one = #{row8One},
+			row8_two = #{row8Two},
+			row9_one = #{row9One},
+			row9_two = #{row9Two},
+			row10_two = #{row10Two},
+			row11_one = #{row11One},
+			row11_two = #{row11Two},
+			row12_one = #{row12One},
+			row12_two = #{row12Two},
+			row13_one = #{row13One},
+			row13_two = #{row13Two},
+			row14_one = #{row14One},
+			row14_two = #{row14Two},
+			row15_one = #{row15One},
+			row15_two = #{row15Two},
+			row16_one = #{row16One},
+			row16_two = #{row16Two},
+			row17_one = #{row17One},
+			row18_one = #{row18One},
+			row19_one = #{row19One},
+			row20_one = #{row20One},
+			row21_two = #{row21Two},
+			row22_one = #{row22One},
+			row22_two = #{row22Two},
+			row23_one = #{row23One},
+			row23_two = #{row23Two},
+			row24_one = #{row24One},
+			row25_one = #{row25One},
+			row26_one = #{row26One},
+			row27_one = #{row27One},
+			row28_one = #{row28One},
+			row28_two = #{row28Two},
+			row29_one = #{row29One},
+			row29_two = #{row29Two},
+			row30_one = #{row30One},
+			row30_two = #{row30Two},
+			row31_one = #{row31One},
+			row31_two = #{row31Two},
+			row32_one = #{row32One},
+			row32_two = #{row32Two}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_cash_flux SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

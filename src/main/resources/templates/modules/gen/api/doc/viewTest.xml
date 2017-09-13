@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>viewTest</name>
+	<filePath>src/main/webapp/WEB-INF/views/swagger/include/test/</filePath>
+	<fileName>${className}Test.jsp</fileName>
+	<content><![CDATA[
+	<#if table.isApi == '1'>
+		<%@ page contentType="text/html;charset=UTF-8" %>
+		<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+	    <!-- ${ClassName} 测试================================================== -->
+	    <div class="span4 module">
+	    	<div class="top-box">${ClassName} ${functionName}</div>
+	   		<script type="text/javascript">
+		   	  	$(function(){
+		   	  		var ${className}Model = {
+			  	   		Post:{
+ 			   	  			  model:'${className}',
+			  	   		  url:"${ctxApi}/api/${className}s"
+			  	   	  	},
+			  	   	  	Put:{
+  			   	  			model:'${className}',
+				  	   	  	url:"${ctxApi}/api/${className}s/"
+			  	   	    },
+			  	   	   	Delete:{
+  			   	  			model:'${className}',
+			  	   	  	  	url:"${ctxApi}/api/${className}s/"
+			  	   		}
+			  	   	};
+		   	  		$("#btn${ClassName}Post").click(function(){ apiTool.ajaxPost(${className}Model.Post);});
+		   	  		$("#btn${ClassName}Put").click(function(){ apiTool.ajaxPut(${className}Model.Put, $("#${className}Id").val());});
+		   	  		$("#btn${ClassName}Delete").click(function(){ apiTool.ajaxDelete(${className}Model.Delete, $("#${className}Id").val());});
+		   	  	});
+	    	</script>
+            <div class="box-tom">
+                <div class="inbox">
+                <a id="btn${ClassName}Post" class="btna co1">post</a>
+                <a id="btn${ClassName}Put" class="btna co2">put</a>
+                <a id="btn${ClassName}Delete" class="btna co3">delete</a>
+                <hr/>
+                <div class="cont-box"><input class="ids" id="${className}Id" type="text" value="" placeholder="ID值" /></div>
+                <div class="cont-box"><textarea class="jsons" id="${className}Json" placeholder="新增Json值">${fns:toJson(jsons[idx.index].isApiInsert)}</textarea></div>
+	            </div>
+	        </div>
+		</div>
+	</#if>
+	<#if table.isApi == '0'>
+		该模块没有开启API功能，请开启API功能后重新生成代码！
+	</#if>
+]]>
+	</content>
+</template>

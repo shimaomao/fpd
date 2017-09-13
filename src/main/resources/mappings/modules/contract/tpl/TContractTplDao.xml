@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.contract.dao.tpl.TContractTplDao">
+    
+	<sql id="tContractTplColumns">
+		a.id AS "id",
+		a.type AS "type",
+		a.form_id AS "formId",
+		a.form_name AS "formName",
+		a.create_name AS "createName",
+		a.ftl_content AS "ftlContent",
+		a.ftl_status AS "ftlStatus",
+		a.ftl_version AS "ftlVersion",
+		a.ftl_word_url AS "ftlWordUrl",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="tContractTplJoins">
+	</sql>
+    
+	<select id="get" resultType="TContractTpl">
+		SELECT 
+			<include refid="tContractTplColumns"/>
+		FROM t_contract_tpl a
+		<include refid="tContractTplJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TContractTpl">
+		SELECT 
+			<include refid="tContractTplColumns"/>
+		FROM t_contract_tpl a
+		<include refid="tContractTplJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="formName != null and formName != ''">
+				AND a.form_name = #{formName}
+			</if>
+			<if test="createName != null and createName != ''">
+				AND a.create_name = #{createName}
+			</if>
+			<if test="ftlStatus != null and ftlStatus != ''">
+				AND a.ftl_status = #{ftlStatus}
+			</if>
+			<if test="ftlVersion != null and ftlVersion != ''">
+				AND a.ftl_version = #{ftlVersion}
+			</if>
+			<if test="organId != null and organId != ''">
+				AND a.organ_id = #{organId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TContractTpl">
+		SELECT 
+			<include refid="tContractTplColumns"/>
+		FROM t_contract_tpl a
+		<include refid="tContractTplJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_contract_tpl(
+			id,
+			type,
+			form_id,
+			form_name,
+			create_name,
+			ftl_content,
+			ftl_status,
+			ftl_version,
+			ftl_word_url,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{type},
+			#{formId},
+			#{formName},
+			#{createName},
+			#{ftlContent},
+			#{ftlStatus},
+			#{ftlVersion},
+			#{ftlWordUrl},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_contract_tpl SET 	
+			type = #{type},
+			form_id = #{formId},
+			form_name = #{formName},
+			create_name = #{createName},
+			ftl_content = #{ftlContent},
+			ftl_status = #{ftlStatus},
+			ftl_version = #{ftlVersion},
+			ftl_word_url = #{ftlWordUrl},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_contract_tpl SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

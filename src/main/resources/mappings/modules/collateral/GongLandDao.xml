@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.collateral.dao.GongLandDao">
+    
+	<sql id="gongLandColumns">
+		a.id AS "id",
+		a.address AS "address",
+		a.area AS "area",
+		a.buy_year AS "buyYear",
+		a.chan_quality AS "chanQuality",
+		a.dai_balance AS "daiBalance",
+		a.dengji AS "dengji",
+		a.gu_money AS "guMoney",
+		a.jiao_money AS "jiaoMoney",
+		a.man AS "man",
+		a.quan_num AS "quanNum",
+		a.remark AS "remark",
+		a.tong_money1 AS "tongMoney1",
+		a.tong_money2 AS "tongMoney2",
+		a.xiao_money AS "xiaoMoney",
+		a.yu_year AS "yuYear",
+		a.zu_money1 AS "zuMoney1",
+		a.zu_money2 AS "zuMoney2",
+		a.dizhi_contract_id AS "dizhiContractId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="gongLandJoins">
+	</sql>
+    
+	<select id="get" resultType="GongLand">
+		SELECT 
+			<include refid="gongLandColumns"/>
+		FROM t_gong_land a
+		<include refid="gongLandJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<!--add by shirf-->
+	<select id="getByPledge" resultType="GongLand">
+		SELECT 
+			<include refid="gongLandColumns"/>
+		FROM t_gong_land a
+		<include refid="gongLandJoins"/>
+		WHERE a.dizhi_contract_id = #{id}
+	</select>
+			
+	<select id="findList" resultType="GongLand">
+		SELECT 
+			<include refid="gongLandColumns"/>
+		FROM t_gong_land a
+		<include refid="gongLandJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="address != null and address != ''">
+				AND a.address LIKE 
+					<if test="dbName == 'oracle'">'%'||#{address}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{address}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{address},'%')</if>
+			</if>
+			<if test="beginArea != null and endArea != null and beginArea != '' and endArea != ''">
+				AND a.area BETWEEN #{beginArea} AND #{endArea}
+			</if>
+			<if test="beginBuyYear != null and endBuyYear != null and beginBuyYear != '' and endBuyYear != ''">
+				AND a.buy_year BETWEEN #{beginBuyYear} AND #{endBuyYear}
+			</if>
+			<if test="beginJiaoMoney != null and endJiaoMoney != null and beginJiaoMoney != '' and endJiaoMoney != ''">
+				AND a.jiao_money BETWEEN #{beginJiaoMoney} AND #{endJiaoMoney}
+			</if>
+			<if test="quanNum != null and quanNum != ''">
+				AND a.quan_num = #{quanNum}
+			</if>
+			<if test="beginYuYear != null and endYuYear != null and beginYuYear != '' and endYuYear != ''">
+				AND a.yu_year BETWEEN #{beginYuYear} AND #{endYuYear}
+			</if>
+			<if test="beginZuMoney1 != null and endZuMoney1 != null and beginZuMoney1 != '' and endZuMoney1 != ''">
+				AND a.zu_money1 BETWEEN #{beginZuMoney1} AND #{endZuMoney1}
+			</if>
+			<if test="beginZuMoney2 != null and endZuMoney2 != null and beginZuMoney2 != '' and endZuMoney2 != ''">
+				AND a.zu_money2 BETWEEN #{beginZuMoney2} AND #{endZuMoney2}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="GongLand">
+		SELECT 
+			<include refid="gongLandColumns"/>
+		FROM t_gong_land a
+		<include refid="gongLandJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_gong_land(
+			id,
+			address,
+			area,
+			buy_year,
+			chan_quality,
+			dai_balance,
+			dengji,
+			gu_money,
+			jiao_money,
+			man,
+			quan_num,
+			remark,
+			tong_money1,
+			tong_money2,
+			xiao_money,
+			yu_year,
+			zu_money1,
+			zu_money2,
+			dizhi_contract_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{address},
+			#{area},
+			#{buyYear},
+			#{chanQuality},
+			#{daiBalance},
+			#{dengji},
+			#{guMoney},
+			#{jiaoMoney},
+			#{man},
+			#{quanNum},
+			#{remark},
+			#{tongMoney1},
+			#{tongMoney2},
+			#{xiaoMoney},
+			#{yuYear},
+			#{zuMoney1},
+			#{zuMoney2},
+			#{dizhiContractId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_gong_land SET 	
+			address = #{address},
+			area = #{area},
+			buy_year = #{buyYear},
+			chan_quality = #{chanQuality},
+			dai_balance = #{daiBalance},
+			dengji = #{dengji},
+			gu_money = #{guMoney},
+			jiao_money = #{jiaoMoney},
+			man = #{man},
+			quan_num = #{quanNum},
+			remark = #{remark},
+			tong_money1 = #{tongMoney1},
+			tong_money2 = #{tongMoney2},
+			xiao_money = #{xiaoMoney},
+			yu_year = #{yuYear},
+			zu_money1 = #{zuMoney1},
+			zu_money2 = #{zuMoney2},
+			dizhi_contract_id = #{dizhiContractId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_gong_land SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

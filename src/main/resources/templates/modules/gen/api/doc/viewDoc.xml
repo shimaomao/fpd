@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>viewDoc</name>
+	<filePath>src/main/webapp/WEB-INF/views/${lastPackageName}/${moduleName}/${subModuleName}</filePath>
+	<fileName>${className}Doc.jsp</fileName>
+	<content><![CDATA[
+	<#if (table.isApi ??) && (table.isApi == '1')>
+	    <!-- ${ClassName} 说明文档================================================== -->
+	    <section id="id${table.className}">
+	    	<div class="page-header">
+	        	<h1>${functionNameSimple}</h1>（${ClassName}-${table.className}s）
+	        </div>
+	        <div>
+	     		<ul>
+	     			<li>
+	     				<b>模型属性：<a href="${"$"}{ctxApi }/api/${className}s"><span class="icon-info-sign"></span>用户 : api/${className}s </a></b>   
+	     				<table class="table table-bordered table-striped">
+							<thead><tr><th>属性</th><th>说明</th><th>参数说明</th><th>数据类型</th><th>必填</th><th>插入</th><th>查询</th></tr></thead>
+							<tbody>
+							<#list table.columnList as c>
+								<tr<#if c.delFlag == '1'>' class="error" title="已删除的列，保存之后消失！"'</#if><#if c.delFlag == '0'></#if>>
+									<td <#if (c.isPk ??) && (c.isPk != '')>style="background-color:#eeee;"<#else></#if>>${c.javaField}</td>
+									<td>${c.comments}</td>
+									<#if (c.dictType ??) && (c.dictType != '')>
+									<td><a href="${"$"}{ctxApi }/api/dicts?expand=true&fields=label,value&type=${c.dictType}"><span class="icon-info-sign"></span></a>：
+										<c:forEach items="${"$"}{fns:getDictList('${c.dictType}')}" var="item">
+										${"$"}{item.value}、${"$"}{item.label};
+										</c:forEach>
+									</td>
+									<#else>
+									<td></td>
+									</#if>
+									<td>${c.javaType}</td>
+									<td><#if (table.isNull ??) && (table.isNull == '0')>Y<#else>-</#if></td>
+									<td><#if (table.isApiInsert ??) && (table.isApiInsert == '1')>Y<#else>-</#if></td>
+									<td><#if (table.isApiQuery ??) && (table.isApiQuery == '1')>Y<#else>-</#if></td>
+								</tr>
+							</#list>
+							</tbody>
+						</table> 
+		            </li>
+		            <li>
+						<b>关联模型属性：</b>
+						<table class="table table-bordered table-striped">
+							<thead><tr><th>属性</th><th>说明</th><th>数据类型</th><th>增</th><th>删</th><th>单查</th><th>多查</th></tr></thead>
+							<tbody>
+								<tr>
+									<td>office</td>
+									<td>归属部门、机构</td>
+									<td>Office</td>
+									<td>Y</td>
+									<td>-</td>
+									<td>-</td>
+									<td>-</td>
+								</tr>
+							</tbody>
+						</table>
+	       			</li>
+	       			<li><b>模型接口：</b>
+	       				<ul>
+	       					<li>标准接口: 参阅 <code>API基本规范-使用规范</code></li>
+	       					<li>关联接口: 参阅 <code>API基本规范-使用规范</code>
+	        					<ol>
+	        						<li>Role:角色</li> 
+	        					</ol>
+	        				</li>
+	       					<li>定制接口:无</li>
+	       				</ul>
+	       			</li>
+	       		</ul>
+			</div>
+		</section>
+	<#else>
+		该模块没有开启API功能，请开启API功能后重新生成代码！
+	</#if>
+]]>
+	</content>
+</template>

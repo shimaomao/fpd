@@ -1,0 +1,54 @@
+/* 上传图片样式*/
+.file {
+	display: inline-block;
+	background: #2487e4;
+	border-radius: 4px;
+	padding: 10px 10px;
+	color: #fff;
+	text-decoration: none;
+	text-indent: 0;
+	font-weight: bold;
+}
+
+.file input {
+	position: absolute;
+	opacity: 0;
+}
+
+.view {
+	margin-top: 10px;
+	/*      height: 66px; */
+}
+
+.viewitem {
+	float: left;
+	width: 141px;
+	height: 66px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	text-align: center;
+	font-size: 16px;
+	border: solid 1px #d2d2d2;
+	position: relative;
+	margin-right: 10px;
+}
+
+.viewitem img {
+	display: block;
+	width: 141px;
+	height: 66px;
+}
+
+.viewitem em {
+	display: block;
+	position: absolute;
+	top: 4px;
+	right: 6px;
+	width: 13px;
+	height: 13px;
+	background: url(../images/xx.png);
+	background-size: 13px 13px;
+	cursor: pointer;
+	background-color:#ffebcd;
+}

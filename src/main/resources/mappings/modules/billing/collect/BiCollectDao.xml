@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.billing.dao.collect.BiCollectDao">
+    
+	<sql id="biCollectColumns">
+		a.id AS "id",
+		a.rule_id AS "rule.id",
+		a.element_id AS "element.id",
+		a.total_price AS "totalPrice",
+		a.surplus_number AS "surplusNumber",
+		a.surplus_time AS "surplusTime",
+		a.number AS "number",
+		a.total_time AS "totalTime",
+		a.status AS "status",
+		a.tx_flag AS "txFlag",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		
+		b.name AS "element.name",
+		b.pid AS "element.pid.id",
+		b.type AS "element.type",
+		b.type_id AS "element.typeId",
+		b.create_by AS "element.createBy.id",
+		b.create_date AS "element.createDate",
+		b.update_by AS "element.updateBy.id",
+		b.update_date AS "element.updateDate",
+		b.remarks AS "element.remarks",
+		b.del_flag AS "element.delFlag",
+		b.organ_id AS "element.organId",
+		
+		
+		c.price_id AS "rule.price.id",
+		c.name AS "rule.name",
+		c.number AS "rule.number",
+		c.waring_number AS "rule.waringNumber",
+		c.rate AS "rule.rate",
+		c.average_price AS "rule.averagePrice",
+		c.total_price AS "rule.totalPrice",
+		c.total_time AS "rule.totalTime",
+		c.unit AS "rule.unit",
+		c.unit_val AS "rule.unitVal",
+		c.type AS "rule.type",
+		c.create_by AS "rule.createBy.id",
+		c.create_date AS "rule.createDate",
+		c.update_by AS "rule.updateBy.id",
+		c.update_date AS "rule.updateDate",
+		c.remarks AS "rule.remarks",
+		c.del_flag AS "rule.delFlag",
+		c.organ_id AS "rule.organId",
+		
+		d.element_id AS "rule.price.element.id",
+		d.price AS "rule.price.price",
+		d.unit AS "rule.price.unit",
+		d.unit_val AS "rule.price.unitVal",
+		d.type AS "rule.price.type",
+		d.create_by AS "rule.price.createBy.id",
+		d.create_date AS "rule.price.createDate",
+		d.update_by AS "rule.price.updateBy.id",
+		d.update_date AS "rule.price.updateDate",
+		d.remarks AS "rule.price.remarks",
+		d.del_flag AS "rule.price.delFlag",
+		d.organ_id AS "rule.price.organId"
+		
+	</sql>
+	
+	<sql id="biCollectJoins">
+		LEFT JOIN bi_rule c ON c.id = a.rule_id
+		LEFT JOIN bi_price d ON d.id = c.price_id
+		LEFT JOIN bi_element b ON b.id = a.element_id
+	</sql>
+    
+	<select id="get" resultType="BiCollect">
+		SELECT 
+			<include refid="biCollectColumns"/>
+		FROM bi_collect a
+		<include refid="biCollectJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getMin" resultType="BiCollect">
+		SELECT 
+			MIN(a.create_date),
+			<include refid="biCollectColumns"/>
+		FROM bi_collect a 
+		<include refid="biCollectJoins"/>
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND a.organ_id = #{organId}
+		<if test="element != null">
+			<if test="element.id != null and element.id != ''">
+				AND b.element_id = #{element.id}
+			</if>
+			<if test="element.typeId != null and element.typeId != ''">
+				AND b.type_id = #{element.typeId}
+			</if>
+		</if>
+		<if test="status != null and status != ''">
+			AND a.status = #{status}
+		</if>
+		GROUP BY a.organ_id
+		<if test="element != null">
+			<if test="element.id != null and element.id != ''">
+				,b.element_id desc
+			</if>
+			<if test="element.typeId != null and element.typeId != ''">
+				,b.type_id desc
+			</if>
+		</if>
+	</select>
+	
+	<select id="findList" resultType="BiCollect">
+		SELECT 
+			<include refid="biCollectColumns"/>
+		FROM bi_collect a
+		<include refid="biCollectJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="rule != null">
+				<if test="rule.id != null and rule.id != ''">
+					AND c.id = #{rule.id}
+				</if>
+				<if test="rule.type != null and rule.type != ''">
+					AND c.type = #{rule.type}
+				</if>
+			</if>
+			<if test="element != null">
+				<if test="element.id != null and element.id != ''">
+					AND b.element_id = #{element.id}
+				</if>
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="txFlag != null and txFlag != ''">
+				AND a.tx_flag = #{txFlag}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findListByOrganId" resultType="BiCollect">
+		SELECT 
+			<include refid="biCollectColumns"/>
+		FROM bi_collect a
+		<include refid="biCollectJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL} AND a.organ_id = #{organId}
+			<if test="rule != null">
+				<if test="rule.id != null and rule.id != ''">
+					AND c.rule_id = #{rule.id}
+				</if>
+				<if test="rule.type != null and rule.type != ''">
+					AND c.type = #{rule.type}
+				</if>
+			</if>
+			<if test="element != null">
+				<if test="element.id != null and element.id != ''">
+					AND b.element_id = #{element.id}
+				</if>
+				<if test="element.typeId != null and element.typeId != ''">
+					AND b.type_id = #{element.typeId}
+				</if>
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="txFlag != null and txFlag != ''">
+				AND a.tx_flag = #{txFlag}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BiCollect">
+		SELECT 
+			<include refid="biCollectColumns"/>
+		FROM bi_collect a
+		<include refid="biCollectJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO bi_collect(
+			id,
+			rule_id,
+			element_id,
+			total_price,
+			surplus_number,
+			surplus_time,
+			number,
+			total_time,
+			status,
+			tx_flag,
+			create_date,
+			create_by,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{rule.id},
+			#{element.id},
+			#{totalPrice},
+			#{surplusNumber},
+			#{surplusTime},
+			#{number},
+			#{totalTime},
+			#{status},
+			#{txFlag},
+			#{createDate},
+			#{createBy.id},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE bi_collect SET 	
+			rule_id = #{rule.id},
+			element_id = #{element.id},
+			total_price = #{totalPrice},
+			surplus_number = #{surplusNumber},
+			surplus_time = #{surplusTime},
+			number = #{number},
+			total_time = #{totalTime},
+			status = #{status},
+			tx_flag = #{txFlag},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updatePL"  parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" open="begin" close="end;" separator=";">
+			UPDATE bi_collect SET 	
+				rule_id = #{item.rule.id},
+				element_id = #{item.element.id},
+				total_price = #{item.totalPrice},
+				surplus_number = #{item.surplusNumber},
+				surplus_time = #{item.surplusTime},
+				number = #{item.number},
+				total_time = #{item.totalTime},
+				status = #{item.status},
+				tx_flag = #{item.txFlag},
+				update_by = #{item.updateBy.id},
+				update_date = #{item.updateDate},
+				remarks = #{item.remarks},
+				organ_id = #{item.organId}
+			WHERE id = #{item.id}
+       	</foreach>
+    </update>
+	
+	<update id="delete">
+		UPDATE bi_collect SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

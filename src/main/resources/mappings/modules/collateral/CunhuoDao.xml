@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.collateral.dao.CunhuoDao">
+    
+	<sql id="cunhuoColumns">
+		a.id AS "id",
+		a.address AS "address",
+		a.bian_xian AS "bianXian",
+		a.brand AS "brand",
+		a.control AS "control",
+		a.general AS "general",
+		a.market1 AS "market1",
+		a.market2 AS "market2",
+		a.method AS "method",
+		a.mo_money AS "moMoney",
+		a.name AS "name",
+		a.num AS "num",
+		a.type AS "type",
+		a.dizhi_contract_id AS "dizhiContractId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="cunhuoJoins">
+	</sql>
+    
+	<select id="get" resultType="Cunhuo">
+		SELECT 
+			<include refid="cunhuoColumns"/>
+		FROM t_cunhuo a
+		<include refid="cunhuoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<!--add by shirf-->
+	<select id="getByPledge" resultType="Cunhuo">
+		SELECT 
+			<include refid="cunhuoColumns"/>
+		FROM t_cunhuo a
+		<include refid="cunhuoJoins"/>
+		WHERE a.dizhi_contract_id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Cunhuo">
+		SELECT 
+			<include refid="cunhuoColumns"/>
+		FROM t_cunhuo a
+		<include refid="cunhuoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="brand != null and brand != ''">
+				AND a.brand LIKE 
+					<if test="dbName == 'oracle'">'%'||#{brand}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{brand}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{brand},'%')</if>
+			</if>
+			<if test="control != null and control != ''">
+				AND a.control LIKE 
+					<if test="dbName == 'oracle'">'%'||#{control}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{control}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{control},'%')</if>
+			</if>
+			<if test="beginMoMoney != null and endMoMoney != null and beginMoMoney != '' and endMoMoney != ''">
+				AND a.mo_money BETWEEN #{beginMoMoney} AND #{endMoMoney}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Cunhuo">
+		SELECT 
+			<include refid="cunhuoColumns"/>
+		FROM t_cunhuo a
+		<include refid="cunhuoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_cunhuo(
+			id,
+			address,
+			bian_xian,
+			brand,
+			control,
+			general,
+			market1,
+			market2,
+			method,
+			mo_money,
+			name,
+			num,
+			type,
+			dizhi_contract_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{address},
+			#{bianXian},
+			#{brand},
+			#{control},
+			#{general},
+			#{market1},
+			#{market2},
+			#{method},
+			#{moMoney},
+			#{name},
+			#{num},
+			#{type},
+			#{dizhiContractId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_cunhuo SET 	
+			address = #{address},
+			bian_xian = #{bianXian},
+			brand = #{brand},
+			control = #{control},
+			general = #{general},
+			market1 = #{market1},
+			market2 = #{market2},
+			method = #{method},
+			mo_money = #{moMoney},
+			name = #{name},
+			num = #{num},
+			type = #{type},
+			dizhi_contract_id = #{dizhiContractId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_cunhuo SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

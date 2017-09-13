@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.init.dao.SysInitActivitDao">
+    
+	<sql id="sysInitActivitColumns">
+		a.id AS "id",
+		a.office_name AS "officeName",
+		a.name AS "name",
+		a.file_name AS "fileName",
+		a.organ_id AS "organId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="sysInitActivitJoins">
+	</sql>
+    
+	<select id="get" resultType="SysInitActivit">
+		SELECT 
+			<include refid="sysInitActivitColumns"/>
+		FROM sys_init_activit a
+		<include refid="sysInitActivitJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SysInitActivit">
+		SELECT 
+			<include refid="sysInitActivitColumns"/>
+		FROM sys_init_activit a
+		<include refid="sysInitActivitJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SysInitActivit">
+		SELECT 
+			<include refid="sysInitActivitColumns"/>
+		FROM sys_init_activit a
+		<include refid="sysInitActivitJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_init_activit(
+			id,
+			office_name,
+			name,
+			file_name,
+			organ_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{officeName},
+			#{name},
+			#{fileName},
+			#{organId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_init_activit SET 	
+			office_name = #{officeName},
+			name = #{name},
+			file_name = #{fileName},
+			organ_id = #{organId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sys_init_activit SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<insert id="saveAllData">
+		INSERT INTO sys_init_activit(
+			id,
+			office_name,
+			name,
+			file_name,
+			organ_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES 
+		<foreach collection="list" index="index" item="item"  separator="," >
+		(
+			#{item.id},
+			#{item.officeName},
+			#{sysInitActivit.name},
+			#{sysInitActivit.fileName},
+			#{item.organId},
+			#{sysInitActivit.createBy.id},
+			#{sysInitActivit.createDate},
+			#{sysInitActivit.updateBy.id},
+			#{sysInitActivit.updateDate},
+			#{sysInitActivit.delFlag}
+		)
+		</foreach>
+	</insert>
+</mapper>

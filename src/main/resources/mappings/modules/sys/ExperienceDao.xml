@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.sys.dao.ExperienceDao">
+    
+	<sql id="experienceColumns">
+		a.id AS "id",
+		a.position AS "position",
+		a.unit AS "unit",
+		a.work_date AS "workDate",
+		a.employ_id AS "employId",
+		a.sign_date AS "signDate",
+		a.work_end_date AS "workEndDate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.source_flag AS "sourceFlag",
+		a.source_status AS "sourceStatus"
+	</sql>
+	
+	<sql id="experienceJoins">
+	</sql>
+    
+	<select id="get" resultType="Experience">
+		SELECT 
+			<include refid="experienceColumns"/>
+		FROM sys_office_experience a
+		<include refid="experienceJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Experience">
+		SELECT 
+			<include refid="experienceColumns"/>
+		FROM sys_office_experience a
+		<include refid="experienceJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="employId != null and employId != ''">
+				AND  a.employ_id = #{employId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Experience">
+		SELECT 
+			<include refid="experienceColumns"/>
+		FROM sys_office_experience a
+		<include refid="experienceJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_office_experience(
+			id,
+			position,
+			unit,
+			work_date,
+			employ_id,
+			sign_date,
+			work_end_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			source_flag,
+			source_status
+		) VALUES (
+			#{id},
+			#{position},
+			#{unit},
+			#{workDate},
+			#{employId},
+			#{signDate},
+			#{workEndDate},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{sourceFlag},
+			#{sourceStatus}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_office_experience SET 	
+			position = #{position},
+			unit = #{unit},
+			work_date = #{workDate},
+			employ_id = #{employId},
+			sign_date = #{signDate},
+			work_end_date = #{workEndDate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			source_flag = #{sourceFlag},
+			source_status = #{sourceStatus}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sys_office_experience SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.sys.dao.SysOfficeEmployeeDao">
+    
+	<sql id="sysOfficeEmployeeColumns">
+		a.id AS "id",
+		a.pid AS "pid",
+		a.address AS "address",
+		a.birthday AS "birthday",
+		a.email AS "email",
+		a.flag AS "flag",
+		a.gender AS "gender",
+		a.id_card AS "idCard",
+		a.jian_li AS "jianLi",
+		a.jinzhi AS "jinzhi",
+		a.mess_addr AS "messAddr",
+		a.name AS "name",
+		a.national AS "national",
+		a.native_place AS "nativePlace",
+		a.phone AS "phone",
+		a.political_affiliation AS "politicalAffiliation",
+		a.position AS "position",
+		a.status AS "status",
+		a.twomenu AS "twomenu",
+		a.xue_li AS "xueLi",
+		a.jishuzhicheng AS "jishuzhicheng",
+		a.job_year AS "jobYear",
+		a.marry AS "marry",
+		a.professional AS "professional",
+		a.school AS "school",
+		a.xiangguan_job_year AS "xiangguanJobYear",
+		a.sign_date AS "signDate",
+		a.card_type AS "cardType",
+		a.li_date AS "liDate",
+		a.ru_date AS "ruDate",
+		a.bi_date AS "biDate",
+		a.depart AS "depart",
+		a.source_flag AS "sourceFlag",
+		a.source_status AS "sourceStatus",
+		a.approval_date AS "approvalDate",
+		a.nif_id AS "nifId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="sysOfficeEmployeeJoins">
+	</sql>
+    
+	<select id="get" resultType="SysOfficeEmployee">
+		SELECT 
+			<include refid="sysOfficeEmployeeColumns"/>
+		FROM sys_office_employee a
+		<include refid="sysOfficeEmployeeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SysOfficeEmployee">
+		SELECT 
+			<include refid="sysOfficeEmployeeColumns"/>
+		FROM sys_office_employee a
+		<include refid="sysOfficeEmployeeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status LIKE 
+					<if test="dbName == 'oracle'">'%'||#{status}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{status}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{status},'%')</if>
+			</if>
+			<if test="pid != null and pid != ''">
+				AND  a.pid = #{pid}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SysOfficeEmployee">
+		SELECT 
+			<include refid="sysOfficeEmployeeColumns"/>
+		FROM sys_office_employee a
+		<include refid="sysOfficeEmployeeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_office_employee(
+			id,
+			pid,
+			address,
+			birthday,
+			email,
+			flag,
+			gender,
+			id_card,
+			jian_li,
+			jinzhi,
+			mess_addr,
+			name,
+			national,
+			native_place,
+			phone,
+			political_affiliation,
+			position,
+			status,
+			twomenu,
+			xue_li,
+			jishuzhicheng,
+			job_year,
+			marry,
+			professional,
+			school,
+			xiangguan_job_year,
+			sign_date,
+			card_type,
+			li_date,
+			ru_date,
+			bi_date,
+			depart,
+			source_flag,
+			source_status,
+			approval_date,
+			nif_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{pid},
+			#{address},
+			#{birthday},
+			#{email},
+			#{flag},
+			#{gender},
+			#{idCard},
+			#{jianLi},
+			#{jinzhi},
+			#{messAddr},
+			#{name},
+			#{national},
+			#{nativePlace},
+			#{phone},
+			#{politicalAffiliation},
+			#{position},
+			#{status},
+			#{twomenu},
+			#{xueLi},
+			#{jishuzhicheng},
+			#{jobYear},
+			#{marry},
+			#{professional},
+			#{school},
+			#{xiangguanJobYear},
+			#{signDate},
+			#{cardType},
+			#{liDate},
+			#{ruDate},
+			#{biDate},
+			#{depart},
+			#{sourceFlag},
+			#{sourceStatus},
+			#{approvalDate},
+			#{nifId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_office_employee SET 	
+			pid = #{pid},
+			address = #{address},
+			birthday = #{birthday},
+			email = #{email},
+			flag = #{flag},
+			gender = #{gender},
+			id_card = #{idCard},
+			jian_li = #{jianLi},
+			jinzhi = #{jinzhi},
+			mess_addr = #{messAddr},
+			name = #{name},
+			national = #{national},
+			native_place = #{nativePlace},
+			phone = #{phone},
+			political_affiliation = #{politicalAffiliation},
+			position = #{position},
+			status = #{status},
+			twomenu = #{twomenu},
+			xue_li = #{xueLi},
+			jishuzhicheng = #{jishuzhicheng},
+			job_year = #{jobYear},
+			marry = #{marry},
+			professional = #{professional},
+			school = #{school},
+			xiangguan_job_year = #{xiangguanJobYear},
+			sign_date = #{signDate},
+			card_type = #{cardType},
+			li_date = #{liDate},
+			ru_date = #{ruDate},
+			bi_date = #{biDate},
+			depart = #{depart},
+			source_flag = #{sourceFlag},
+			source_status = #{sourceStatus},
+			approval_date = #{approvalDate},
+			nif_id = #{nifId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sys_office_employee SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

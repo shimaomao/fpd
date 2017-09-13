@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.credit.dao.CreditCoborrowerDao">
+    
+	<sql id="creditCoborrowerColumns">
+		a.id AS "id",
+		a.credit_apply_id AS "creditApplyId",
+		a.customer_id AS "customerId",
+		a.customer_name AS "customerName",
+		a.customer_type AS "customerType",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="creditCoborrowerJoins">
+	</sql>
+    
+    <update id="updateCoborrowerId" parameterType="java.util.Map">
+		UPDATE t_credit_coborrower SET 	
+			credit_apply_id = #{newCreditApplyIdId}
+		WHERE credit_apply_id = #{oldCreditApplyIdId}
+	</update>
+    
+	<select id="get" resultType="CreditCoborrower">
+		SELECT 
+			<include refid="creditCoborrowerColumns"/>
+		FROM t_credit_coborrower a
+		<include refid="creditCoborrowerJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="checkCreditCoborrower" resultType="CreditCoborrower">
+		SELECT 
+			<include refid="creditCoborrowerColumns"/>
+		FROM t_credit_coborrower a
+		<include refid="creditCoborrowerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.credit_apply_id = #{creditApplyId}
+			AND a.customer_id = #{customerId}
+		</where>
+		limit 1
+	</select>
+	
+	<select id="findList" resultType="CreditCoborrower">
+		SELECT 
+			<include refid="creditCoborrowerColumns"/>
+		FROM t_credit_coborrower a
+		<include refid="creditCoborrowerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="creditApplyId != null and creditApplyId != ''">
+				AND a.credit_apply_id = #{creditApplyId}
+			</if>
+			<if test="customerId != null and customerId != ''">
+				AND a.customer_id = #{customerId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CreditCoborrower">
+		SELECT 
+			<include refid="creditCoborrowerColumns"/>
+		FROM t_credit_coborrower a
+		<include refid="creditCoborrowerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.credit_apply_id = #{creditApplyId}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_credit_coborrower(
+			id,
+			credit_apply_id,
+			customer_id,
+			customer_name,
+			customer_type,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{creditApplyId},
+			#{customerId},
+			#{customerName},
+			#{customerType},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_credit_coborrower SET 	
+			credit_apply_id = #{creditApplyId},
+			customer_id = #{customerId},
+			customer_name = #{customerName},
+			customer_type = #{customerType},
+			status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_credit_coborrower SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

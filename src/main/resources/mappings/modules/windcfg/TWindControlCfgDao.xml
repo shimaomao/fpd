@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.windcfg.dao.TWindControlCfgDao">
+    
+	<sql id="tWindControlCfgColumns">
+		a.id AS "id",
+		a.pid AS "wind",
+		a.product_id AS "product",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId",
+		
+		p.id AS "product.id",
+		p.type AS "product.type",
+		p.name AS "product.name",
+		p.detail AS "product.detail",
+		p.risk_detail AS "product.riskDetail",
+		p.releases_obje AS "product.releasesObje",
+		p.com_sales AS "product.comSales",
+		p.area_id AS "product.area.id",
+		p.releases_way AS "product.releasesWay",
+		p.amount_max AS "product.amountMax",
+		p.amount_min AS "product.amountMin",
+		p.loan_way AS "product.loanWay",
+		p.pay_type AS "product.payType",
+		p.period AS "product.period",
+		p.year_days AS "product.yearDays",
+		p.rate AS "product.rate",
+		p.server_fee AS "product.serverFee",
+		p.server_refund AS "product.serverRefund",
+		p.guarantee_fee AS "product.guaranteeFee",
+		p.guarantee_refund AS "product.guaranteeRefund",
+		p.mange_fee AS "product.mangeFee",
+		p.mange_refund AS "product.mangeRefund",
+		p.advance_repay AS "product.advanceRepay",
+		p.break_fee AS "product.breakFee",
+		p.late_fee AS "product.lateFee",
+		p.rate_discount AS "product.rateDiscount",
+		p.iflixi_redu AS "product.iflixiRedu",
+		p.grace_period AS "product.gracePeriod",
+		p.grace_faxi AS "product.graceFaxi",
+		p.yuqi_faxi AS "product.yuqiFaxi",
+		p.yuqi_fee AS "product.yuqiFee",
+		p.loan_type AS "product.loanType",
+		p.loan_type2 AS "product.loanType2",
+		p.diyalv AS "product.diyalv",
+		p.zhiyalv AS "product.zhiyalv",
+		p.credit_way AS "product.creditWay",
+		p.credit_period AS "product.creditPeriod",
+		p.create_by AS "product.createBy.id",
+		p.create_date AS "product.createDate",
+		p.update_by AS "product.updateBy.id",
+		p.update_date AS "product.updateDate",
+		p.remarks AS "product.remarks",
+		p.del_flag AS "product.delFlag",
+		p.organ_id AS "product.organId",
+		
+		w.id AS "wind.id",
+		w.name AS "wind.name",
+		w.url AS "wind.url",
+		w.type AS "wind.type",
+		w.param AS "wind.param",
+		w.status AS "wind.status",
+		w.create_by AS "wind.createBy.id",
+		w.create_time AS "wind.createTime",
+		w.update_by AS "wind.updateBy.id",
+		w.update_time AS "wind.updateTime",
+		w.del_flag AS "wind.delFlag",
+		w.organ_id AS "wind.organId",
+		w.remarks AS "wind.remarks"
+	</sql>
+	
+	<sql id="tWindControlCfgJoins">
+		LEFT JOIN t_product p ON p.id = a.product_id
+		LEFT JOIN t_wind_control w ON w.id = a.pid
+	</sql>
+    
+	<select id="get" resultType="TWindControlCfg">
+		SELECT 
+			<include refid="tWindControlCfgColumns"/>
+		FROM t_wind_control_cfg a
+		<include refid="tWindControlCfgJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TWindControlCfg">
+		SELECT 
+			<include refid="tWindControlCfgColumns"/>
+		FROM t_wind_control_cfg a
+		<include refid="tWindControlCfgJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="wind != null">
+				<if test="wind.id != null and wind.id != ''">
+					AND w.id in
+					<foreach collection="wind.ids" item="wid"  open="(" separator="," close=")">
+					#{wid}
+					</foreach>
+				</if>
+				<if test="wind.name != null and wind.name != ''">
+					AND w.name LIKE 
+						<if test="dbName == 'oracle'">'%'||#{wind.name}||'%'</if>
+						<if test="dbName == 'mssql'">'%'+#{wind.name}+'%'</if>
+						<if test="dbName == 'mysql'">concat('%',#{wind.name},'%')</if>
+				</if>
+			</if>
+			<if test="product != null">
+				<if test="product.id != null and product.id != ''">
+					AND p.id = #{product.id}
+				</if>
+				<if test="product.name != null and product.name != ''">
+					AND p.name LIKE 
+						<if test="dbName == 'oracle'">'%'||#{product.name}||'%'</if>
+						<if test="dbName == 'mssql'">'%'+#{product.name}+'%'</if>
+						<if test="dbName == 'mysql'">concat('%',#{product.name},'%')</if>
+				</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TWindControlCfg">
+		SELECT 
+			<include refid="tWindControlCfgColumns"/>
+		FROM t_wind_control_cfg a
+		<include refid="tWindControlCfgJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_wind_control_cfg(
+			id,
+			pid,
+			product_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{wind.id},
+			#{product.id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_wind_control_cfg SET 	
+			pid = #{wind},
+			product_id = #{product},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_wind_control_cfg SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<delete id="deleteWLByRelId" >
+		DELETE FROM t_wind_control_cfg
+		WHERE pid in (#{ids})
+	</delete>
+	
+	<delete id="deleteWLByRelIdList">
+		DELETE FROM t_wind_control_cfg
+		WHERE pid in
+		<foreach collection="list" index="idex" item="item" open="(" separator="," close=")">   
+	        #{item}   
+	    </foreach>
+	    AND product_id = #{productId}
+	</delete>
+</mapper>

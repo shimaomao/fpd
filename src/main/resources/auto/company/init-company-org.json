@@ -1,0 +1,18 @@
+[
+    {
+        "admin_name": "hdadmin",
+        "description": "青海恒达小额贷款有限公司",
+        "tenant_name": "青海恒达小额贷款有限公司",
+        "type": "01",
+        "bsys": "1",
+        "simple_name": "3"
+    },
+    {
+        "admin_name": "admin2054",
+        "description": "担保机构管理员",
+        "tenant_name": "青海吉银融资担保有限公司",
+        "type": "02",
+        "bsys": "1",
+        "simple_name": "1"
+    }
+]

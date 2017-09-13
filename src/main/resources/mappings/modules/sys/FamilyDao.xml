@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.sys.dao.FamilyDao">
+    
+	<sql id="familyColumns">
+		a.id AS "id",
+		a.job AS "job",
+		a.name AS "name",
+		a.sex AS "sex",
+		a.type AS "type",
+		a.unit AS "unit",
+		a.employ_id AS "employId",
+		a.sign_date AS "signDate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.source_flag AS "sourceFlag",
+		a.source_status AS "sourceStatus"
+	</sql>
+	
+	<sql id="familyJoins">
+	</sql>
+    
+	<select id="get" resultType="Family">
+		SELECT 
+			<include refid="familyColumns"/>
+		FROM sys_office_family a
+		<include refid="familyJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Family">
+		SELECT 
+			<include refid="familyColumns"/>
+		FROM sys_office_family a
+		<include refid="familyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="employId != null and employId != ''">
+				AND  a.employ_id = #{employId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Family">
+		SELECT 
+			<include refid="familyColumns"/>
+		FROM sys_office_family a
+		<include refid="familyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_office_family(
+			id,
+			job,
+			name,
+			sex,
+			type,
+			unit,
+			employ_id,
+			sign_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			source_flag,
+			source_status
+		) VALUES (
+			#{id},
+			#{job},
+			#{name},
+			#{sex},
+			#{type},
+			#{unit},
+			#{employId},
+			#{signDate},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{sourceFlag},
+			#{sourceStatus}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_office_family SET 	
+			job = #{job},
+			name = #{name},
+			sex = #{sex},
+			type = #{type},
+			unit = #{unit},
+			employ_id = #{employId},
+			sign_date = #{signDate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			source_flag = #{sourceFlag},
+			source_status = #{sourceStatus}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sys_office_family SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

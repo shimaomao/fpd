@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.wish.merchant.dao.MerchantDao">
+    
+	<sql id="merchantColumns">
+		a.id AS "id",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy.id",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.merchant_id AS "merchantId",
+		a.user_id AS "userId",
+		a.pvd_uid AS "pvdUid",
+		a.comparison AS "comparison",
+		a.user_name AS "userName",
+		a.shop_code AS "shopCode",
+		a.shop_name AS "shopName",
+		a.email AS "email",
+		a.corp_name AS "corpName",
+		a.phone AS "phone",
+		a.ecommerce AS "ecommerce",
+		a.ecommerce_link AS "ecommerceLink",
+		a.ware_house AS "wareHouse",
+		a.goods_type AS "goodsType",
+		a.income_allotment AS "incomeAllotment",
+		a.merchant_address AS "merchantAddress",
+		a.merchant_reg_date AS "merchantRegDate",
+		a.assessment AS "assessment",
+		a.avg_assessment AS "avgAssessment",
+		a.shop_type AS "shopType",
+		a.qq_numb AS "qqNumb",
+		a.id_photo AS "idPhoto",
+		a.id_photo_path AS "idPhotoPath",
+		a.id_name AS "idName",
+		a.id_number AS "idNumber",
+		a.recent_update_date AS "recentUpdateDate",
+		a.first_write_name AS "firstWriteName",
+		a.business_license AS "businessLicense",
+		a.business_license_path AS "businessLicensePath",
+		a.business_license_numb AS "businessLicenseNumb",
+		a.tax_regist_ration AS "taxRegistRation",
+		a.legal_person_photo AS "legalPersonPhoto",
+		a.legal_person_photo_path AS "legalPersonPhotoPath",
+		a.legal_person_name AS "legalPersonName",
+		a.legal_person_id_number AS "legalPersonIdNumber",
+		a.recent_legal_update_date AS "recentLegalUpdateDate",
+		a.first_writelegal_person_name AS "firstWritelegalPersonName",
+	<!-- 	u8.name AS "user.name", -->
+		a.user_name_comp AS "userNameComp",
+		a.identity_num_comp AS "identityNumComp",
+		a.phone_comp AS "phoneComp",
+		a.account_num_comp AS "accountNumComp",
+		a.shop_createDate AS "shopCreateDate",
+		a.shop_updateDate AS "shopUpdateDate",
+		a.shop_busiLength AS "shopBusiLength",
+		a.last_busiLength AS "lastBusiLength",
+		a.account_no AS "accountNo",
+		a.account_owner_name AS "accountOwnerName",
+		a.account_owner_number AS "accountOwnerNumber",
+		a.account_related_phone AS "accountRelatedPhone",
+		a.open_status AS "openStatus"
+	</sql>
+	
+	<sql id="merchantJoins">
+		<!-- LEFT JOIN sys_user u8 ON u8.id = a.user_id -->
+	</sql>
+    
+	<select id="get" resultType="Merchant">
+		SELECT 
+			<include refid="merchantColumns"/>
+		FROM t_merchant a
+		<include refid="merchantJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getByMerchantId" resultType="Merchant">
+		SELECT 
+			<include refid="merchantColumns"/>
+		FROM t_merchant a
+		<include refid="merchantJoins"/>
+		WHERE a.merchant_id = #{merchantId}
+		AND a.del_flag = '0'
+	</select>
+	
+	
+	
+	
+	<select id="findList" resultType="Merchant">
+		SELECT 
+			<include refid="merchantColumns"/>
+		FROM t_merchant a
+		<include refid="merchantJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="userId != null and userId != ''">
+				AND a.user_id LIKE 
+					<if test="dbName == 'oracle'">'%'||#{userId}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{userId}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{userId},'%')</if>
+			</if>
+			<if test="userName != null and userName != ''">
+				AND a.user_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{userName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{userName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{userName},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="getByUserNum" resultType="Merchant">
+		SELECT 
+			<include refid="merchantColumns"/>
+		FROM t_merchant a
+		<include refid="merchantJoins"/>
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND a.user_id = #{userId}
+	</select>
+	
+	
+	
+	<select id="findAllList" resultType="Merchant">
+		SELECT 
+			<include refid="merchantColumns"/>
+		FROM t_merchant a
+		<include refid="merchantJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_merchant(
+			id,
+			create_date,
+			create_by,
+			update_date,
+			update_by,
+			remarks,
+			del_flag,
+			merchant_id,
+			user_id,
+			pvd_uid,
+			comparison,
+			user_name,
+			shop_code,
+			shop_name,
+			email,
+			corp_name,
+			phone,
+			ecommerce,
+			ecommerce_link,
+			ware_house,
+			goods_type,
+			income_allotment,
+			merchant_address,
+			merchant_reg_date,
+			assessment,
+			avg_assessment,
+			shop_type,
+			qq_numb,
+			id_photo,
+			id_name,
+			id_number,
+			recent_update_date,
+			first_write_name,
+			business_license,
+			business_license_numb,
+			tax_regist_ration,
+			legal_person_photo,
+			legal_person_name,
+			legal_person_id_number,
+			recent_legal_update_date,
+			first_writelegal_person_name,
+			user_name_comp,
+			identity_num_comp,
+			phone_comp,
+			account_num_comp,
+			shop_createDate,
+			shop_updateDate,
+			shop_busiLength,
+			last_busiLength,
+			account_no,
+			account_owner_name,
+			account_owner_number,
+			account_related_phone,
+			id_photo_path,
+			legal_person_photo_path,
+			business_license_path,
+			open_status
+		) VALUES (
+			#{id},
+			#{createDate},
+			#{createBy.id},
+			#{updateDate},
+			#{updateBy.id},
+			#{remarks},
+			#{delFlag},
+			#{merchantId},
+			#{userId},
+			#{pvdUid},
+			#{comparison},
+			#{userName},
+			#{shopCode},
+			#{shopName},
+			#{email},
+			#{corpName},
+			#{phone},
+			#{ecommerce},
+			#{ecommerceLink},
+			#{wareHouse},
+			#{goodsType},
+			#{incomeAllotment},
+			#{merchantAddress},
+			#{merchantRegDate},
+			#{assessment},
+			#{avgAssessment},
+			#{shopType},
+			#{qqNumb},
+			#{idPhoto},
+			#{idName},
+			#{idNumber},
+			#{recentUpdateDate},
+			#{firstWriteName},
+			#{businessLicense},
+			#{businessLicenseNumb},
+			#{taxRegistRation},
+			#{legalPersonPhoto},
+			#{legalPersonName},
+			#{legalPersonIdNumber},
+			#{recentLegalUpdateDate},
+			#{firstWritelegalPersonName},
+			#{userNameComp},
+			#{identityNumComp},
+			#{phoneComp},
+			#{accountNumComp},
+			#{shopCreateDate},
+			#{shopUpdateDate},
+			#{shopBusiLength},
+			#{lastBusiLength},
+			#{accountNo},
+			#{accountOwnerName},
+			#{accountOwnerNumber},
+			#{accountRelatedPhone},
+			#{idPhotoPath},
+			#{legalPersonPhotoPath},
+			#{businessLicensePath},
+			#{openStatus}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_merchant
+		<set>	
+			<if test="updateDate != null">update_date = #{updateDate},</if>
+			<if test="updateBy != null and updateBy.id != null">update_by = #{updateBy.id},</if>
+			<if test="remarks != null">remarks = #{remarks},</if>
+			<if test="merchantId != null">merchant_id = #{merchantId},</if>
+			<if test="userId != null">user_id = #{userId},</if>
+			<if test="pvdUid != null">pvd_uid = #{pvdUid},</if>
+			<if test="comparison != null">comparison = #{comparison},</if>
+			<if test="userName != null">user_name = #{userName},</if>
+			<if test="shopCode != null">shop_code = #{shopCode},</if>
+			<if test="shopName != null">shop_name = #{shopName},</if>
+			<if test="email != null">email = #{email},</if>
+			<if test="corpName != null">corp_name = #{corpName},</if>
+			<if test="phone != null">phone = #{phone},</if>
+			<if test="ecommerce != null">ecommerce = #{ecommerce},</if>
+			<if test="ecommerceLink != null">ecommerce_link = #{ecommerceLink},</if>
+			<if test="wareHouse != null">ware_house = #{wareHouse},</if>
+			<if test="goodsType != null">goods_type = #{goodsType},</if>
+			<if test="incomeAllotment != null">income_allotment = #{incomeAllotment},</if>
+			<if test="merchantAddress != null">merchant_address = #{merchantAddress},</if>
+			<if test="merchantRegDate != null">merchant_reg_date = #{merchantRegDate},</if>
+			<if test="assessment != null">assessment = #{assessment},</if>
+			<if test="avgAssessment != null">avg_assessment = #{avgAssessment},</if>
+			<if test="shopType != null">shop_type = #{shopType},</if>
+			<if test="qqNumb != null">qq_numb = #{qqNumb},</if>
+			<if test="idPhoto != null">id_photo = #{idPhoto},</if>
+			<if test="idName != null">id_name = #{idName},</if>
+			<if test="idNumber != null">id_number = #{idNumber},</if>
+			<if test="recentUpdateDate != null">recent_update_date = #{recentUpdateDate},</if>
+			<if test="firstWriteName != null">first_write_name = #{firstWriteName},</if>
+			<if test="businessLicense != null">business_license = #{businessLicense},</if>
+			<if test="businessLicensePath != null">business_license_path = #{businessLicensePath},</if>
+			<if test="businessLicenseNumb != null">business_license_numb = #{businessLicenseNumb},</if>
+			<if test="taxRegistRation != null">tax_regist_ration = #{taxRegistRation},</if>
+			<if test="legalPersonPhoto != null">legal_person_photo = #{legalPersonPhoto},</if>
+			<if test="idPhotoPath != null">id_photo_path = #{idPhotoPath},</if>
+			<if test="legalPersonPhotoPath != null">legal_person_photo_path = #{legalPersonPhotoPath},</if>
+			<if test="legalPersonName != null">legal_person_name = #{legalPersonName},</if>
+			<if test="legalPersonIdNumber != null">legal_person_id_number = #{legalPersonIdNumber},</if>
+			<if test="recentLegalUpdateDate != null">recent_legal_update_date = #{recentLegalUpdateDate},</if>
+			<if test="firstWritelegalPersonName != null">first_writelegal_person_name = #{firstWritelegalPersonName},</if>
+			<if test="userNameComp != null">user_name_comp = #{userNameComp},</if>
+			<if test="identityNumComp != null">identity_num_comp = #{identityNumComp},</if>
+			<if test="phoneComp != null">phone_comp = #{phoneComp},</if>
+			<if test="accountNumComp != null">account_num_comp = #{accountNumComp},</if>
+			<if test="shopCreateDate != null">shop_createDate = #{shopCreateDate},</if>
+			<if test="shopUpdateDate != null">shop_updateDate = #{shopUpdateDate},</if>
+			<if test="shopBusiLength != null">shop_busiLength = #{shopBusiLength},</if>
+			<if test="lastBusiLength != null">last_busiLength = #{lastBusiLength},</if>
+			<if test="accountNo != null">account_no = #{accountNo},</if>
+			<if test="accountOwnerName != null">account_owner_name = #{accountOwnerName},</if>
+			<if test="accountOwnerNumber != null">account_owner_number = #{accountOwnerNumber},</if>
+			<if test="accountRelatedPhone != null">account_related_phone = #{accountRelatedPhone},</if>
+			<if test="openStatus != null">open_status = #{openStatus}</if>
+		</set>
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateByUserId">
+		UPDATE t_merchant SET 	
+		<set>	
+			<if test="updateDate != null">update_date = #{updateDate},</if>
+			<if test="updateBy != null and updateBy.id != null">update_by = #{updateBy.id},</if>
+			<if test="remarks != null">remarks = #{remarks},</if>
+			<if test="merchantId != null">merchant_id = #{merchantId},</if>
+			<if test="pvdUid != null">pvd_uid = #{pvdUid},</if>
+			<if test="comparison != null">comparison = #{comparison},</if>
+			<if test="userName != null">user_name = #{userName},</if>
+			<if test="shopCode != null">shop_code = #{shopCode},</if>
+			<if test="shopName != null">shop_name = #{shopName},</if>
+			<if test="email != null">email = #{email},</if>
+			<if test="corpName != null">corp_name = #{corpName},</if>
+			<if test="phone != null">phone = #{phone},</if>
+			<if test="ecommerce != null">ecommerce = #{ecommerce},</if>
+			<if test="ecommerceLink != null">ecommerce_link = #{ecommerceLink},</if>
+			<if test="wareHouse != null">ware_house = #{wareHouse},</if>
+			<if test="goodsType != null">goods_type = #{goodsType},</if>
+			<if test="incomeAllotment != null">income_allotment = #{incomeAllotment},</if>
+			<if test="merchantAddress != null">merchant_address = #{merchantAddress},</if>
+			<if test="merchantRegDate != null">merchant_reg_date = #{merchantRegDate},</if>
+			<if test="assessment != null">assessment = #{assessment},</if>
+			<if test="avgAssessment != null">avg_assessment = #{avgAssessment},</if>
+			<if test="shopType != null">shop_type = #{shopType},</if>
+			<if test="qqNumb != null">qq_numb = #{qqNumb},</if>
+			<if test="idPhoto != null">id_photo = #{idPhoto},</if>
+			<if test="idName != null">id_name = #{idName},</if>
+			<if test="idNumber != null">id_number = #{idNumber},</if>
+			<if test="recentUpdateDate != null">recent_update_date = #{recentUpdateDate},</if>
+			<if test="firstWriteName != null">first_write_name = #{firstWriteName},</if>
+			<if test="businessLicense != null">business_license = #{businessLicense},</if>
+			<if test="businessLicensePath != null">business_license_path = #{businessLicensePath},</if>
+			<if test="businessLicenseNumb != null">business_license_numb = #{businessLicenseNumb},</if>
+			<if test="taxRegistRation != null">tax_regist_ration = #{taxRegistRation},</if>
+			<if test="legalPersonPhoto != null">legal_person_photo = #{legalPersonPhoto},</if>
+			<if test="idPhotoPath != null">id_photo_path = #{idPhotoPath},</if>
+			<if test="legalPersonPhotoPath != null">legal_person_photo_path = #{legalPersonPhotoPath},</if>
+			<if test="legalPersonName != null">legal_person_name = #{legalPersonName},</if>
+			<if test="legalPersonIdNumber != null">legal_person_id_number = #{legalPersonIdNumber},</if>
+			<if test="recentLegalUpdateDate != null">recent_legal_update_date = #{recentLegalUpdateDate},</if>
+			<if test="firstWritelegalPersonName != null">first_writelegal_person_name = #{firstWritelegalPersonName},</if>
+			<if test="userNameComp != null">user_name_comp = #{userNameComp},</if>
+			<if test="identityNumComp != null">identity_num_comp = #{identityNumComp},</if>
+			<if test="phoneComp != null">phone_comp = #{phoneComp},</if>
+			<if test="accountNumComp != null">account_num_comp = #{accountNumComp},</if>
+			<if test="shopCreateDate != null">shop_createDate = #{shopCreateDate},</if>
+			<if test="shopUpdateDate != null">shop_updateDate = #{shopUpdateDate},</if>
+			<if test="shopBusiLength != null">shop_busiLength = #{shopBusiLength},</if>
+			<if test="lastBusiLength != null">last_busiLength = #{lastBusiLength},</if>
+			<if test="accountNo != null">account_no = #{accountNo},</if>
+			<if test="accountOwnerName != null">account_owner_name = #{accountOwnerName},</if>
+			<if test="accountOwnerNumber != null">account_owner_number = #{accountOwnerNumber},</if>
+			<if test="accountRelatedPhone != null">account_related_phone = #{accountRelatedPhone},</if>
+			<if test="openStatus != null">open_status = #{openStatus}</if>
+		</set>
+		WHERE user_id = #{userId}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_merchant SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<insert id="insertLog">
+		INSERT INTO t_merchant_log(
+			original_id,
+			create_date,
+			create_by,
+			update_date,
+			update_by,
+			remarks,
+			del_flag,
+			merchant_id,
+			user_id,
+			pvd_uid,
+			comparison,
+			user_name,
+			shop_code,
+			shop_name,
+			email,
+			corp_name,
+			phone,
+			ecommerce,
+			ecommerce_link,
+			ware_house,
+			goods_type,
+			income_allotment,
+			merchant_address,
+			merchant_reg_date,
+			assessment,
+			avg_assessment,
+			shop_type,
+			qq_numb,
+			id_photo,
+			id_name,
+			id_number,
+			recent_update_date,
+			first_write_name,
+			business_license,
+			business_license_numb,
+			tax_regist_ration,
+			legal_person_photo,
+			legal_person_name,
+			legal_person_id_number,
+			recent_legal_update_date,
+			first_writelegal_person_name,
+			user_name_comp,
+			identity_num_comp,
+			phone_comp,
+			account_num_comp,
+			shop_createDate,
+			shop_updateDate,
+			shop_busiLength,
+			last_busiLength,
+			account_no,
+			account_owner_name,
+			account_owner_number,
+			account_related_phone,
+			id_photo_path,
+			legal_person_photo_path,
+			business_license_path,
+			open_status
+		) VALUES (
+			#{id},
+			#{createDate},
+			#{createBy.id},
+			#{updateDate},
+			#{updateBy.id},
+			#{remarks},
+			#{delFlag},
+			#{merchantId},
+			#{userId},
+			#{pvdUid},
+			#{comparison},
+			#{userName},
+			#{shopCode},
+			#{shopName},
+			#{email},
+			#{corpName},
+			#{phone},
+			#{ecommerce},
+			#{ecommerceLink},
+			#{wareHouse},
+			#{goodsType},
+			#{incomeAllotment},
+			#{merchantAddress},
+			#{merchantRegDate},
+			#{assessment},
+			#{avgAssessment},
+			#{shopType},
+			#{qqNumb},
+			#{idPhoto},
+			#{idName},
+			#{idNumber},
+			#{recentUpdateDate},
+			#{firstWriteName},
+			#{businessLicense},
+			#{businessLicenseNumb},
+			#{taxRegistRation},
+			#{legalPersonPhoto},
+			#{legalPersonName},
+			#{legalPersonIdNumber},
+			#{recentLegalUpdateDate},
+			#{firstWritelegalPersonName},
+			#{userNameComp},
+			#{identityNumComp},
+			#{phoneComp},
+			#{accountNumComp},
+			#{shopCreateDate},
+			#{shopUpdateDate},
+			#{shopBusiLength},
+			#{lastBusiLength},
+			#{accountNo},
+			#{accountOwnerName},
+			#{accountOwnerNumber},
+			#{accountRelatedPhone},
+			#{idPhotoPath},
+			#{legalPersonPhotoPath},
+			#{businessLicensePath},
+			#{openStatus}
+		)
+	</insert>
+</mapper>

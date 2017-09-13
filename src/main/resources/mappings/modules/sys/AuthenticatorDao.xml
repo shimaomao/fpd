@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.sys.dao.AuthenticatorDao">
+    
+	<sql id="authenColumns">
+	    a.id,
+		a.username,
+		a.name,
+		a.password,
+		a.mobile,
+		a.email,
+		a.token,
+		a.login_time AS "loginTime",
+		a.remarks,
+		<!-- a.create_by AS "createBy.id", -->
+		a.create_date,
+		<!-- a.update_by AS "updateBy.id", -->
+		a.update_date,
+		a.del_flag
+	</sql>
+	
+	<sql id="authenJoins">
+    </sql>
+    
+	<select id="get" resultType="AuthenticationUser">
+		SELECT
+			<include refid="authenColumns"/>
+		FROM sys_authentication_user a
+		<include refid="authenJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	<select id="findUserByName" resultType="AuthenticationUser">
+		SELECT
+			<include refid="authenColumns"/>
+		FROM sys_authentication_user a
+		<include refid="authenJoins"/>
+		WHERE a.username = #{username}
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_authentication_user(
+		    id,
+			username,
+			name,
+			password,
+			mobile,
+			email,
+			token,
+			login_time,
+			<!-- create_by,  -->
+			create_date, 
+			<!-- update_by,  -->
+			update_date, 
+			remarks, 
+			del_flag
+		) VALUES (
+		    #{id},
+			#{username},
+			#{name},
+			#{password},
+			#{mobile},
+			#{email},
+			#{token},
+			#{loginTime},
+			<!-- #{createBy.id},  -->
+			#{createDate}, 
+			<!-- #{updateBy.id},  -->
+			#{updateDate}, 
+			#{remarks}, 
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_authentication_user SET 
+		    username = #{username},
+			name = #{name},
+			password = #{password},
+			mobile = #{mobile},
+			email = #{email},
+			token = #{token},
+			login_time = #{loginTime},
+		<!-- 	update_by = #{updateBy.id},  -->
+			update_date = #{updateDate}, 
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<update id="delete">
+		UPDATE sys_authentication_user SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+</mapper>

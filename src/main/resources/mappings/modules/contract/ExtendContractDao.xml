@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.contract.dao.ExtendContractDao">
+    
+	<sql id="extendContractColumns">
+		a.id AS "id",
+		a.proc_ins_id AS "procInsId",
+		a.apply_date AS "applyDate",
+		a.contract_number AS "contractNumber",
+		a.level AS "level",
+		a.amount AS "amount",
+		a.loan_date AS "loanDate",
+		a.loan_period AS "loanPeriod",
+		a.loan_rate AS "loanRate",
+		a.num AS "num",
+		a.pay_day AS "payDay",
+		a.pay_principal_date AS "payPrincipalDate",
+		a.pay_type AS "payType",
+		a.period_type AS "periodType",
+		a.status AS "status",
+		a.loan_contract_id AS "loanContract.id",
+		a.pay_options AS "payOptions",
+		a.pay_day_type AS "payDayType",
+		a.loan_rate_type AS "loanRateType",
+		a.overdue_fine_rate AS "overdueFineRate",
+		a.overdue_loan_rate AS "overdueLoanRate",
+		a.manage_rate AS "manageRate",
+		a.punish_amount_rate AS "punishAmountRate",
+		a.service_rate AS "serviceRate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.organ_id AS "organId"
+	</sql>
+	
+	<sql id="extendContractJoins">
+	</sql>
+    
+	<select id="get" resultType="ExtendContract">
+		SELECT 
+			<include refid="extendContractColumns"/>
+		FROM t_extend_contract a
+		<include refid="extendContractJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ExtendContract">
+		SELECT 
+			<include refid="extendContractColumns"/>
+		FROM t_extend_contract a
+		<include refid="extendContractJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="contractNumber != null and contractNumber != ''">
+				AND a.contract_number = #{contractNumber}
+			</if>
+			<if test="loanContract != null and loanContract.id != null and loanContract.id != ''">
+				AND a.loan_contract_id = #{loanContract.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ExtendContract">
+		SELECT 
+			<include refid="extendContractColumns"/>
+		FROM t_extend_contract a
+		<include refid="extendContractJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_extend_contract(
+			id,
+			apply_date,
+			contract_number,
+			level,
+			amount,
+			loan_date,
+			loan_period,
+			loan_rate,
+			num,
+			pay_day,
+			pay_principal_date,
+			pay_type,
+			period_type,
+			status,
+			loan_contract_id,
+			pay_options,
+			pay_day_type,
+			loan_rate_type,
+			overdue_fine_rate,
+			overdue_loan_rate,
+			manage_rate,
+			punish_amount_rate,
+			service_rate,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			organ_id
+		) VALUES (
+			#{id},
+			#{applyDate},
+			#{contractNumber},
+			#{level},
+			#{amount},
+			#{loanDate},
+			#{loanPeriod},
+			#{loanRate},
+			#{num},
+			#{payDay},
+			#{payPrincipalDate},
+			#{payType},
+			#{periodType},
+			#{status},
+			#{loanContract.id},
+			#{payOptions},
+			#{payDayType},
+			#{loanRateType},
+			#{overdueFineRate},
+			#{overdueLoanRate},
+			#{manageRate},
+			#{punishAmountRate},
+			#{serviceRate},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{organId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_extend_contract SET 	
+			apply_date = #{applyDate},
+			contract_number = #{contractNumber},
+			level = #{level},
+			amount = #{amount},
+			loan_date = #{loanDate},
+			loan_period = #{loanPeriod},
+			loan_rate = #{loanRate},
+			num = #{num},
+			pay_day = #{payDay},
+			pay_principal_date = #{payPrincipalDate},
+			pay_type = #{payType},
+			period_type = #{periodType},
+			status = #{status},
+			loan_contract_id = #{loanContract.id},
+			pay_options = #{payOptions},
+			pay_day_type = #{payDayType},
+			loan_rate_type = #{loanRateType},
+			overdue_fine_rate = #{overdueFineRate},
+			overdue_loan_rate = #{overdueLoanRate},
+			manage_rate = #{manageRate},
+			punish_amount_rate = #{punishAmountRate},
+			service_rate = #{serviceRate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			organ_id = #{organId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_extend_contract SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getMaxNum" resultType="Integer">
+		SELECT max(a.num)
+		FROM t_extend_contract a
+		WHERE a.loan_contract_id = #{id}
+	</select>
+</mapper>

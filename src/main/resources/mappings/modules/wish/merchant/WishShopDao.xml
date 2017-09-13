@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wanfin.fpd.modules.wish.merchant.dao.WishShopDao">
+    
+	<sql id="wishShopColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.merchant_id AS "merchantId",
+		a.is_store_currently_trusted AS "isStoreCurrentlyTrusted",
+		a.admittance_duration AS "admittanceDuration",
+		a.continuous_operation AS "continuousOperation",
+		a.user_id AS "userId"
+	</sql>
+	
+	<sql id="wishShopJoins">
+	</sql>
+    
+	<select id="get" resultType="WishShop">
+		SELECT 
+			<include refid="wishShopColumns"/>
+		FROM t_wish_shop a
+		<include refid="wishShopJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WishShop">
+		SELECT 
+			<include refid="wishShopColumns"/>
+		FROM t_wish_shop a
+		<include refid="wishShopJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WishShop">
+		SELECT 
+			<include refid="wishShopColumns"/>
+		FROM t_wish_shop a
+		<include refid="wishShopJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_wish_shop(
+			id,
+			create_by,
+			create_date,
+			update_date,
+			update_by,
+			remarks,
+			del_flag,
+			merchant_id,
+			is_store_currently_trusted,
+			admittance_duration,
+			continuous_operation,
+			user_id
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateDate},
+			#{updateBy.id},
+			#{remarks},
+			#{delFlag},
+			#{merchantId},
+			#{isStoreCurrentlyTrusted},
+			#{admittanceDuration},
+			#{continuousOperation},
+			#{userId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_wish_shop SET 	
+			update_date = #{updateDate},
+			update_by = #{updateBy.id},
+			remarks = #{remarks},
+			merchant_id = #{merchantId},
+			is_store_currently_trusted = #{isStoreCurrentlyTrusted},
+			admittance_duration = #{admittanceDuration},
+			continuous_operation = #{continuousOperation},
+			user_id = #{userId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_wish_shop SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

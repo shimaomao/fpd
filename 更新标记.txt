@@ -1,0 +1,73 @@
+2016-10-11  更新了坏账核销流程 
+
+2017-02-17  为了识别理财产品图片是否被处理过，添加字段
+ALTER TABLE `t_contract_files`
+ADD COLUMN `dealed`  tinyint(2) UNSIGNED NULL DEFAULT 0 COMMENT '是否处理过,2表示处理过' AFTER `task_id`;
+
+字典类型				
+product_purpose	---------20170614
+
+INSERT INTO `wf-mplatform`.`sys_dict` (`id`, `value`, `label`, `type`, `description`, `sort`, `parent_id`, `create_by`, `create_date`, `update_by`, `update_date`, `remarks`, `del_flag`) VALUES ('30301192b7314d8997856cf57a3f9f97', '12', '企业-房地产贷款', 'product_purpose', '贷款用途', '70', '0', '1', '2017-02-18 15:52:54', '1', '2017-02-18 15:52:54', '企业-房地产贷款', '0');
+INSERT INTO `wf-mplatform`.`sys_dict` (`id`, `value`, `label`, `type`, `description`, `sort`, `parent_id`, `create_by`, `create_date`, `update_by`, `update_date`, `remarks`, `del_flag`) VALUES ('70f80432c1cd40e1839baff5858fdd74', '2', '买车', 'product_purpose', '产品用途', '10', '0', '1', '1900-01-01 01:01:01', '1', '1900-01-01 01:01:01', '', '0');
+INSERT INTO `wf-mplatform`.`sys_dict` (`id`, `value`, `label`, `type`, `description`, `sort`, `parent_id`, `create_by`, `create_date`, `update_by`, `update_date`, `remarks`, `del_flag`) VALUES ('78ccf91ea7644a66a33e6b50f53fe392', '14', '其他', 'product_purpose', '产品用途', '10', '0', '1', '2017-06-13 17:04:31', '1', '2017-06-13 17:04:31', '', '0');
+INSERT INTO `wf-mplatform`.`sys_dict` (`id`, `value`, `label`, `type`, `description`, `sort`, `parent_id`, `create_by`, `create_date`, `update_by`, `update_date`, `remarks`, `del_flag`) VALUES ('87dc2b9fb6ef4affb7c99fc4159d0273', '13', '企业-项目融资', 'product_purpose', '贷款用途', '80', '0', '1', '2017-02-18 15:53:10', '1', '2017-02-18 15:53:10', '企业-项目融资', '0');
+INSERT INTO `wf-mplatform`.`sys_dict` (`id`, `value`, `label`, `type`, `description`, `sort`, `parent_id`, `create_by`, `create_date`, `update_by`, `update_date`, `remarks`, `del_flag`) VALUES ('a10783fac09b49be9979f3e6782bda70', '1', '进货', 'product_purpose', '产品用途', '10', '0', '1', '1900-01-01 01:01:01', '1', '1900-01-01 01:01:01', '', '0');
+INSERT INTO `wf-mplatform`.`sys_dict` (`id`, `value`, `label`, `type`, `description`, `sort`, `parent_id`, `create_by`, `create_date`, `update_by`, `update_date`, `remarks`, `del_flag`) VALUES ('a6ae88fe86124e8cb744d12ee8fd5c05', '9', '企业-固定资产贷款', 'product_purpose', '贷款用途', '40', '0', '1', '2017-02-18 15:52:04', '1', '2017-02-18 15:52:04', '企业-固定资产贷款', '0');
+INSERT INTO `wf-mplatform`.`sys_dict` (`id`, `value`, `label`, `type`, `description`, `sort`, `parent_id`, `create_by`, `create_date`, `update_by`, `update_date`, `remarks`, `del_flag`) VALUES ('b224b2b0b2c641a29257939a680b1784', '6', '个人-资金周转', 'product_purpose', '贷款用途', '10', '0', '1', '2017-02-18 15:50:26', '1', '2017-02-18 15:50:26', '个人-资金周转', '0');
+INSERT INTO `wf-mplatform`.`sys_dict` (`id`, `value`, `label`, `type`, `description`, `sort`, `parent_id`, `create_by`, `create_date`, `update_by`, `update_date`, `remarks`, `del_flag`) VALUES ('be507487e2b64719a1430c59ecaa7d4c', '7', '个人-个人经营', 'product_purpose', '贷款用途', '20', '0', '1', '2017-02-18 15:50:43', '1', '2017-02-18 15:50:43', '个人-个人经营', '0');
+INSERT INTO `wf-mplatform`.`sys_dict` (`id`, `value`, `label`, `type`, `description`, `sort`, `parent_id`, `create_by`, `create_date`, `update_by`, `update_date`, `remarks`, `del_flag`) VALUES ('ca17c89f5a51492b81193011c7cce822', '5', '房屋装修', 'product_purpose', '用途', '10', '0', '1', '2016-09-27 10:24:08', '1', '2016-09-27 10:24:08', '', '0');
+INSERT INTO `wf-mplatform`.`sys_dict` (`id`, `value`, `label`, `type`, `description`, `sort`, `parent_id`, `create_by`, `create_date`, `update_by`, `update_date`, `remarks`, `del_flag`) VALUES ('cdd31ae4d054437c959e4c6792fc632d', '4', '资金周转', 'product_purpose', '产品用途', '10', '0', '1', '1900-01-01 01:01:01', '1', '1900-01-01 01:01:01', '', '0');
+INSERT INTO `wf-mplatform`.`sys_dict` (`id`, `value`, `label`, `type`, `description`, `sort`, `parent_id`, `create_by`, `create_date`, `update_by`, `update_date`, `remarks`, `del_flag`) VALUES ('cdf7e0f1f4b94439a8f07040385cf1ac', '10', '企业-流动资金贷款', 'product_purpose', '贷款用途', '50', '0', '1', '2017-02-18 15:52:20', '1', '2017-02-18 15:52:20', '企业-流动资金贷款', '0');
+INSERT INTO `wf-mplatform`.`sys_dict` (`id`, `value`, `label`, `type`, `description`, `sort`, `parent_id`, `create_by`, `create_date`, `update_by`, `update_date`, `remarks`, `del_flag`) VALUES ('d47716fd3a99419a83e20afc1942dc2e', '11', '企业-并购贷款', 'product_purpose', '贷款用途', '60', '0', '1', '2017-02-18 15:52:39', '1', '2017-02-18 15:52:39', '企业-并购贷款', '0');
+INSERT INTO `wf-mplatform`.`sys_dict` (`id`, `value`, `label`, `type`, `description`, `sort`, `parent_id`, `create_by`, `create_date`, `update_by`, `update_date`, `remarks`, `del_flag`) VALUES ('d68aeb0d7f024aa591b7f3e9035188db', '8', '个人-综合消费', 'product_purpose', '贷款用途', '30', '0', '1', '2017-02-18 15:51:16', '1', '2017-02-18 15:51:26', '个人-综合消费', '0');
+INSERT INTO `wf-mplatform`.`sys_dict` (`id`, `value`, `label`, `type`, `description`, `sort`, `parent_id`, `create_by`, `create_date`, `update_by`, `update_date`, `remarks`, `del_flag`) VALUES ('e1e00512a98744e7bd971b8a11e9ab7c', '3', '买房', 'product_purpose', '产品用途', '10', '0', '1', '1900-01-01 01:01:01', '1', '1900-01-01 01:01:01', '', '0');
+
+
+product_purpose_new---------20170614
+
+INSERT INTO `wf-mplatform`.`sys_dict` (`id`, `value`, `label`, `type`, `description`, `sort`, `parent_id`, `create_by`, `create_date`, `update_by`, `update_date`, `remarks`, `del_flag`) VALUES ('40301192b7314d8997856cf57a3f9f97', '12', '企业-房地产贷款', 'product_purpose_new', '贷款用途', '70', '0', '1', '2017-02-18 15:52:54', '1', '2017-02-18 15:52:54', '企业-房地产贷款', '0');
+INSERT INTO `wf-mplatform`.`sys_dict` (`id`, `value`, `label`, `type`, `description`, `sort`, `parent_id`, `create_by`, `create_date`, `update_by`, `update_date`, `remarks`, `del_flag`) VALUES ('97dc2b9fb6ef4affb7c99fc4159d0273', '13', '企业-项目融资', 'product_purpose_new', '贷款用途', '80', '0', '1', '2017-02-18 15:53:10', '1', '2017-02-18 15:53:10', '企业-项目融资', '0');
+INSERT INTO `wf-mplatform`.`sys_dict` (`id`, `value`, `label`, `type`, `description`, `sort`, `parent_id`, `create_by`, `create_date`, `update_by`, `update_date`, `remarks`, `del_flag`) VALUES ('98dc2b9fb6ef4affb7c99fc4159d0273', '14', '其它', 'product_purpose_new', '贷款用途', '80', '0', '1', '2017-02-18 15:53:10', '1', '2017-02-18 15:53:10', '其它', '0');
+INSERT INTO `wf-mplatform`.`sys_dict` (`id`, `value`, `label`, `type`, `description`, `sort`, `parent_id`, `create_by`, `create_date`, `update_by`, `update_date`, `remarks`, `del_flag`) VALUES ('b6ae88fe86124e8cb744d12ee8fd5c05', '9', '企业-固定资产贷款', 'product_purpose_new', '贷款用途', '40', '0', '1', '2017-02-18 15:52:04', '1', '2017-02-18 15:52:04', '企业-固定资产贷款', '0');
+INSERT INTO `wf-mplatform`.`sys_dict` (`id`, `value`, `label`, `type`, `description`, `sort`, `parent_id`, `create_by`, `create_date`, `update_by`, `update_date`, `remarks`, `del_flag`) VALUES ('c224b2b0b2c641a29257939a680b1784', '6', '个人-资金周转', 'product_purpose_new', '贷款用途', '10', '0', '1', '2017-02-18 15:50:26', '1', '2017-02-18 15:50:26', '个人-资金周转', '0');
+INSERT INTO `wf-mplatform`.`sys_dict` (`id`, `value`, `label`, `type`, `description`, `sort`, `parent_id`, `create_by`, `create_date`, `update_by`, `update_date`, `remarks`, `del_flag`) VALUES ('ddf7e0f1f4b94439a8f07040385cf1ac', '10', '企业-流动资金贷款', 'product_purpose_new', '贷款用途', '50', '0', '1', '2017-02-18 15:52:20', '1', '2017-02-18 15:52:20', '企业-流动资金贷款', '0');
+INSERT INTO `wf-mplatform`.`sys_dict` (`id`, `value`, `label`, `type`, `description`, `sort`, `parent_id`, `create_by`, `create_date`, `update_by`, `update_date`, `remarks`, `del_flag`) VALUES ('de507487e2b64719a1430c59ecaa7d4c', '7', '个人-个人经营', 'product_purpose_new', '贷款用途', '20', '0', '1', '2017-02-18 15:50:43', '1', '2017-02-18 15:50:43', '个人-个人经营', '0');
+INSERT INTO `wf-mplatform`.`sys_dict` (`id`, `value`, `label`, `type`, `description`, `sort`, `parent_id`, `create_by`, `create_date`, `update_by`, `update_date`, `remarks`, `del_flag`) VALUES ('e47716fd3a99419a83e20afc1942dc2e', '11', '企业-并购贷款', 'product_purpose_new', '贷款用途', '60', '0', '1', '2017-02-18 15:52:39', '1', '2017-02-18 15:52:39', '企业-并购贷款', '0');
+INSERT INTO `wf-mplatform`.`sys_dict` (`id`, `value`, `label`, `type`, `description`, `sort`, `parent_id`, `create_by`, `create_date`, `update_by`, `update_date`, `remarks`, `del_flag`) VALUES ('e68aeb0d7f024aa591b7f3e9035188db', '8', '个人-综合消费', 'product_purpose_new', '贷款用途', '30', '0', '1', '2017-02-18 15:51:16', '1', '2017-02-18 15:51:26', '个人-综合消费', '0');
+
+
+				
+extends_days		0     显示值  改为'无'  原值为'0'  	---------20170614
+
+
+
+
+修改业务申请模板---------20170614
+
+<label class="control-label" for="purposeId">贷款用途</label>
+  <div class="controls">
+    <select id="purposeId" name="purposeId" class="input-xlarge" dataurl="/form/builder/builder/ajaxUrl?params=product_purpose">
+	
+	<option value="1">进货</option>
+	<option value="2">买车</option>
+	<option value="3">买房</option></select>
+	<option value="4">资金周转</option>
+	<option value="5">房屋装修</option>
+	<option value="6">个人-资金周转</option>
+	<option value="7">个人-个人经营</option>
+	<option value="8">个人-综合消费</option></select>
+	<option value="9">企业-固定资产贷款</option>
+	<option value="10">企业-流动资金贷款</option>
+	<option value="11">企业-并购贷款</option>
+	<option value="12">企业-房地产贷款</option>
+	<option value="13">企业-项目融资</option>
+	<option value="14">其他</option>
+	
+  </div>
+				
+
+
+
+
+				
+
